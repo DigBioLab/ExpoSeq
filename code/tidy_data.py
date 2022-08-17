@@ -1,32 +1,100 @@
 import pandas as pd
-from tkinter import filedialog
-from glob import glob
 from itertools import groupby
-from os import path
+import re
 
-
-def collectFiles():
-    filenames = []
-    basenames = []
-    ask_input = 'Y'
-    while ask_input != 'N' or 'n' or 'no' or 'No':
-        data_folder = filedialog.askdirectory()
-        data_folder = path.abspath(data_folder) + '\\*'
-        filenames_raw_data = glob(data_folder ) # might not be the same name for everyone, has to be changed if package should be used by everyone
-
-        filenames.append(filenames_raw_data)
-        ask_input = input("Do you want to add more folders? Press: (Y/n)")
-
-    filenames = filenames.sort()
-    return filenames
 
 
 def group_files(filenames):
-    grouped_filenames = [list(group) for key, group in groupby(
-                                        filenames,
-                                        lambda a: a.split('.')[0])
-                         ]
+    grouped_filenames = []
+    used_filenames = []
+    for index_filename in range(0, len(filenames)):
+        substring = filenames[index_filename].split('.')[0]
+        subgroup = []
+        for filepath in filenames:
+            if substring in filepath and filepath not in used_filenames:
+                subgroup.append(filepath)
+                used_filenames.append(filepath)
+        if bool(subgroup) != False:
+            grouped_filenames.append(subgroup)
     return grouped_filenames
+
+def input_pattern():
+    filepattern = input()
+    return filepattern
+
+
+def pattern_generator(filepattern):
+    filepattern_seperate = list(filepattern)
+    local_pattern = ""
+    local_pattern_more_digits = ""
+    for letter in range(0, len(filepattern_seperate)):
+        if filepattern_seperate[letter].isnumeric() != True:
+            if filepattern_seperate[letter].isupper():
+                local_pattern = local_pattern + '[A-Z]'
+                local_pattern_more_digits = local_pattern_more_digits + '[A-Z]'
+            elif filepattern_seperate[letter].islower():
+                local_pattern = local_pattern + '[a-z]'
+                local_pattern_more_digits = local_pattern_more_digits + '[a-z]'
+            elif filepattern_seperate[letter].isspace():
+                local_pattern = local_pattern + '\s'
+                local_pattern_more_digits = local_pattern_more_digits + '\s'
+            else:
+                local_pattern = local_pattern + '[' + filepattern_seperate[letter] + ']'
+                local_pattern_more_digits = local_pattern_more_digits + '[' + filepattern_seperate[letter] + ']'
+        else:
+            local_pattern_more_digits = local_pattern_more_digits + '[1-9]+'
+            local_pattern = local_pattern + '[1-9]'
+
+
+    return local_pattern, local_pattern_more_digits
+
+
+
+
+
+def grouping_files(local_pattern, local_pattern_more_digits, filenames): # will not work if you have three numbers in your filepattern on different places and your second number has two digits but your last number has one digit
+    used_filenames = []
+    grouped_filenames = []
+    for index_filename in range(0, len(filenames)):
+        subgroup = []
+        if not bool(filenames[index_filename] in used_filenames):
+            try:
+                local_pattern_single = re.search(local_pattern,
+                                            filenames[index_filename]).group()
+                local_pattern_multiple = re.search(local_pattern_more_digits,
+                                                   filenames[index_filename]).group()
+                for filepath in filenames:
+                    if local_pattern_single != local_pattern_multiple:
+                        if filepath not in used_filenames and local_pattern_single in filepath:
+                            subgroup.append(filepath)
+                            used_filenames.append(filepath)
+                    else:
+                        if filepath not in used_filenames and local_pattern_multiple in filepath:
+                            subgroup.append(filepath)
+                            used_filenames.append(filepath)
+                if bool(subgroup) != False:
+                    grouped_filenames.append(subgroup)
+            except:
+                pass
+    return grouped_filenames
+
+
+
+
+
+
+
+
+
+
+
+
+#def group_files(filenames):
+ #   grouped_filenames = [list(group) for key, group in groupby(
+  #                                      filenames,
+   #                                     lambda string: string.split('.')[0])
+    #                     ]
+    #return grouped_filenames
 
 
 
@@ -38,12 +106,6 @@ def group_files(filenames):
 # read other AlignmentReport and extract key variables and attach to table for each row
 #
 
+## read alignment report
 
-
-summed_evalues = []
-for file in filenames_raw_data:
-    Export = pd.read_tabel(file)
-    Export2 = Export[(Export['lengthOfCDR3'] % 3) == 0] #This removes rows with a nt length not divisible by 3 (think aa translation)
-    evalues = (str(Export2.cloneCount.sum())) #\n = go to the next line
-    summed_evalues.append([file[0:file.index('_UniqueCDR3_Exp_UniqueCDR3.txt')], evalues])
-
+if o.endswith('.fastq_AlignmentReport.txt')
