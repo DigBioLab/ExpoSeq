@@ -8,10 +8,8 @@ import re
 with open(file) as f:
     txtfile = f.readlines()
 class read_intermediate_reports:
-    def __init__(self, filename, alignment_report, input_pattern):
+    def __init__(self, filename, input_pattern):
         self.sequencing_report = pd.read_table(filename)
-        self.alignment_report = alignment_report
-        self.digit = "\d+"
         self.pattern = input_pattern
         #questions have to be otuside of class, otherwise they'll be asked each time a file is read
 
@@ -27,6 +25,14 @@ class read_intermediate_reports:
         number_clones = sequencing_report.shape[1]
         return evalues, clone_counts_tidied, number_clones
 
+
+
+
+class read_alignment_report:
+    def __init__(self, alignment_report):
+        self.alignment_report = alignment_report
+        self.digit = "\d+"
+
     def find_word_align_rep(self, word, regex): #"Total sequencing reads"  # auomate this or ask user how it is called in his / her file
         for line in alignment_report:
             if line.find(word) != -1:
@@ -35,9 +41,6 @@ class read_intermediate_reports:
                                                 preferred_line).group()
                 total_sequenced_reads = int(total_sequenced_reads)
         return total_sequenced_reads
-
-
-
 
 
 

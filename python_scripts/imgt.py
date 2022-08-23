@@ -6,7 +6,7 @@ Created on Tue Jan 18 17:23:57 2022
 @author: chvis
 """
 
-# imgt code - not done
+# imgt python_scripts - not done
 
 imgt = pd.read_csv('/Users/chvis/Jupyter-Demo/pandas_test/2_IMGT-gapped-nt-sequences.txt', sep='\t')
 #imgt.columns

@@ -32,7 +32,7 @@ list1 = os.listdir('/Users/chvis/Jupyter-Demo/pandas_test/mixcr_analysis/')
 #[x[0:x.index('_UniqueCDR3_Exp_UniqueCDR3.txt')]for x in list1 if x.endswith('_UniqueCDR3_Exp_UniqueCDR3.txt')]
 
 
-# # This code has been changed to the one below, but i am keeping it in case i need to run something similar
+# # This python_scripts has been changed to the one below, but i am keeping it in case i need to run something similar
 # for i in list1:
 #     if i.endswith('_UniqueCDR3_Exp_UniqueCDR3.txt'):
 #         #print (i+',')
