@@ -5,8 +5,7 @@ import re
 # input == number of total sequencing reads
 
 # create class depending on which data should be analyzed
-with open(file) as f:
-    txtfile = f.readlines()
+
 class read_intermediate_reports:
     def __init__(self, filename, input_pattern):
         self.sequencing_report = pd.read_table(filename)
@@ -30,11 +29,11 @@ class read_intermediate_reports:
 
 class read_alignment_report:
     def __init__(self, alignment_report):
-        self.alignment_report = alignment_report
+        self.report = alignment_report
         self.digit = "\d+"
 
     def find_word_align_rep(self, word, regex): #"Total sequencing reads"  # auomate this or ask user how it is called in his / her file
-        for line in alignment_report:
+        for line in self.report:
             if line.find(word) != -1:
                 preferred_line = line
                 total_sequenced_reads = re.search(regex,
