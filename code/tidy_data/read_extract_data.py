@@ -33,6 +33,7 @@ class read_intermediate_reports:
                 preferred_line = line
                 total_sequenced_reads = re.search(regex,
                                                 preferred_line).group()
+                total_sequenced_reads = int(total_sequenced_reads)
         return total_sequenced_reads
 
 

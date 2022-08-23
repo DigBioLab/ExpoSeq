@@ -367,8 +367,8 @@ finaldataframe_top100_sorted.to_csv('finaldataframe_top100_sorted.csv')
 os.chdir('/Users/chvis/Jupyter-Demo/pandas_test') 
 df_heat = df_combined3[:]
 df2_heat = finaldataframe_top100_sorted[:]
-df3_heat = np.zeros([41,41])
-for i in range(len(df3_heat)):
+df3_heat = np.zeros([41,41]) # is the final matrix
+for i in range(len(df3_heat)): # loop for having x and y axis
     for j in range(len(df3_heat)):
         df3_heat[i,j]= df2_heat.iloc[i,j]/((df_heat.loc[df_heat['Experiment']==df2_heat.index[i],
                                                         "Uniqueclones_>1"].iloc[0]+df_heat.loc[df_heat['Experiment']==df2_heat.columns[j],

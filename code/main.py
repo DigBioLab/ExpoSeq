@@ -1,4 +1,4 @@
-from load_data import collectFiles
+from code.augment_data.load_data import collectFiles
 from code.tidy_data.read_extract_data import pattern_generator, grouping_files
 
 filenames = collectFiles()
