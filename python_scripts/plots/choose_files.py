@@ -10,7 +10,7 @@ number_hierarchy = local_pattern_more_digits.count("\d")
 
 # def boxplot_files
 boxplot_data_frame = pd.DataFrame()
-alignment_report = "fastq_AlignmentReport"
+report_name = "fastq_AlignmentReport"
 max_files = len(grouped_filenames)
 limit = int(input(f"how many do you want to plot? Max No. is {max_files}"))
 current_status = 0
@@ -21,7 +21,7 @@ while current_status != (limit -1): # not in class because it reduces flexibilit
 
         #        filename = re.search(local_pattern_more_digits,
          #                           file).group()
-            if alignment_report in file:
+            if report_name in file:
                 alignment_frame = collect_boxplot_data(file, local_pattern_more_digits)
                 boxplot_data_frame = pd.concat([boxplot_data_frame, alignment_frame],
                                                     ignore_index = False)

@@ -8,8 +8,10 @@ def collect_boxplot_data(report_filename, local_pattern):
     digit = data_extractor.digit
     total_sequencing_reads = data_extractor.find_word_align_rep(word = "Total sequencing reads",
                                                                 regex = digit) # digit in class
-    successfully_aligned_reads = data_extractor.find_word_align_rep(word = "Succesfully aligned reads",
+    total_sequencing_reads = int(total_sequencing_reads)
+    successfully_aligned_reads = data_extractor.find_word_align_rep(word = "Successfully aligned reads",
                                                                     regex = digit)
+    successfully_aligned_reads = int(successfully_aligned_reads)
     experiment = data_extractor.find_word_align_rep("Output file",
                                                     regex = local_pattern)
     data = {'Experiment': experiment,
