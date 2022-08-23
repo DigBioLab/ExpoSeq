@@ -14,8 +14,8 @@ def collect_boxplot_data(report_filename, local_pattern):
     successfully_aligned_reads = int(successfully_aligned_reads)
     experiment = data_extractor.find_word_align_rep("Output file",
                                                     regex = local_pattern)
-    data = {'Experiment': experiment,
-            'Aligned_Reads': successfully_aligned_reads,
-            'tot_sequenced_reads': total_sequencing_reads}
+    data = {'Experiment': [experiment],
+            'Aligned_Reads': [successfully_aligned_reads],
+            'tot_sequenced_reads': [total_sequencing_reads]}
     alignment_frame = pd.DataFrame(data)
     return alignment_frame
