@@ -12,17 +12,34 @@ class read_intermediate_reports:
         self.pattern = input_pattern
         #questions have to be otuside of class, otherwise they'll be asked each time a file is read
 
+    def filter_rows_on_min(self, column, min_count):
+        self.sequencing_report = self.sequencing_report[(self.sequencing_report[column] > min_count)]
+        return self.sequencing_report
 
-    def extract_evalues_and_counts(self, ignore_zeros):
-        if ignore_zeros == "Y" or "y":
-            delete_zeros = sequencing_report['lengthOfCDR3'] % 3 == 0
-            sequencing_report = sequencing_report[delete_zeros]
-            evalues = sequencing_report.cloneCount.sum()
+    def filter_rows_not_divisible(self, divisor, column):
+        self.sequencing_report = self.sequencing_report[(self.sequencing_report[column] % divisor) == 0]
+        return self.sequencing_report
 
-        if ignore_one_counts == "Y" or "y":
-            clone_counts_tidied = sequencing_report[(sequencing_report['cloneCount'] > min_count)]
-        number_clones = sequencing_report.shape[1]
-        return evalues, clone_counts_tidied, number_clones
+    def get_file_length(self):
+        length = self.sequencing_report.shape[0]
+        return length
+
+    def get_individuals(self, column):
+        unique_values = self.sequencing_report.column.unique(dropna = True)
+        return unique_values
+    def sort_table(self, sort_params):
+        self.sequencing_report = self.sequencing_report.sort_values(by = sort_params)
+        return self.sequencing_report
+
+    def merge_dataframe(self, )
+
+
+
+
+
+
+
+
 
 
 
