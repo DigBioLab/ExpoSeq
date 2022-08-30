@@ -8,7 +8,7 @@ import re
 
 class read_intermediate_reports:
     def __init__(self, filename, input_pattern):
-        self.sequencing_report = pd.read_table(filename)
+        self.sequencing_report = filename
         self.pattern = input_pattern
         #questions have to be otuside of class, otherwise they'll be asked each time a file is read
 
@@ -25,13 +25,13 @@ class read_intermediate_reports:
         return length
 
     def get_individuals(self, column):
-        unique_values = self.sequencing_report.column.unique(dropna = True)
+        unique_values = self.sequencing_report[column].unique()
         return unique_values
     def sort_table(self, sort_params):
         self.sequencing_report = self.sequencing_report.sort_values(by = sort_params)
         return self.sequencing_report
 
-    def merge_dataframe(self, )
+
 
 
 

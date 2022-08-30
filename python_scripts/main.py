@@ -1,5 +1,3 @@
-from augment_data import load_data
-from augment_data.structure_files import input_pattern as pattern
 from python_scripts.augment_data.structure_files import grouping_files
 from python_scripts.augment_data.structure_files import pattern_generator
 from python_scripts.augment_data.load_data import collectFiles
