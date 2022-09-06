@@ -30,8 +30,10 @@ class read_intermediate_reports:
     def sort_table(self, sort_params):
         self.sequencing_report = self.sequencing_report.sort_values(by = sort_params)
         return self.sequencing_report
-
-
+    def nest_data(self, nest_by, column_to_list):
+        apply_fun = lambda x: pd.unique([z for z in x]).tolist()
+        self.sequencing_report = self.sequencing_report.groupby(nest_by)[column_to_list].agg(apply_fun).reset_index()
+        return self.sequencing_report
 
 
 
