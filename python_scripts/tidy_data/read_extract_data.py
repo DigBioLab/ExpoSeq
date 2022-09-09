@@ -31,16 +31,10 @@ class read_intermediate_reports:
         self.sequencing_report = self.sequencing_report.sort_values(by = sort_params)
         return self.sequencing_report
 
-
-
-class nest_data(read_intermediate_reports):
-    def __init__(self, filename, input_pattern):
-        read_intermediate_reports.__init__(self, filename, input_pattern)
     def nest_data(self, nest_by, column_to_list):
         apply_fun = lambda x: pd.unique([z for z in x]).tolist()
         self.sequencing_report = self.sequencing_report.groupby(nest_by)[column_to_list].agg(apply_fun).reset_index()
         return self.sequencing_report
-
     def sum_nest_data(self, nested_column_name, axis):
         column = self.sequencing_report.nested_column_name
         clone_counts = np.array(column)
@@ -50,7 +44,6 @@ class nest_data(read_intermediate_reports):
             summed_counts.append(sum)
         summed_counts = np.array(summed_counts)
         return summed_counts
-
 
 
 

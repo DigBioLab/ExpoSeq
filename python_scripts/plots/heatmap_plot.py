@@ -8,14 +8,12 @@ sequencing_report_all = collect_intermediate_files(grouped_filenames,
                                                    local_pattern_more_digits)
 tidy_data = read_extract_data.read_intermediate_reports(filename = sequencing_report_all,
                                                         input_pattern = local_pattern_more_digits)
-tidy_nest = read_extract_data.nest_data(grouped_filenames,
-                                        local_pattern_more_digits)
 tidy_data.filter_rows_not_divisible(divisor = 3,
                                     column = 'lengthOfCDR3')
 # if app insert a test and error report if someone fails to insert correct column name
 tidy_data.filter_rows_on_min(column = 'cloneCount',
                              min_count = 1)
-tidy_nest.nest_data(nest_by = "Experiment",
+tidy_data.nest_data(nest_by = "Experiment",
                     column_to_list = ['nSeqCDR3',
                                       'cloneCount'])
 
