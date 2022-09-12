@@ -31,12 +31,15 @@ class read_intermediate_reports:
         self.sequencing_report = self.sequencing_report.sort_values(by = sort_params)
         return self.sequencing_report
 
-    def nest_data(self, nest_by, column_to_list):
-        apply_fun = lambda x: pd.unique([z for z in x]).tolist()
+    def nest_data(self, nest_by, column_to_list, unique):
+        if unique == True:
+            apply_fun = lambda x: pd.unique([z for z in x]).tolist()
+        else:
+            apply_fun = lambda x: list(x)
         self.sequencing_report = self.sequencing_report.groupby(nest_by)[column_to_list].agg(apply_fun).reset_index()
         return self.sequencing_report
     def sum_nest_data(self, nested_column_name, axis):
-        column = self.sequencing_report.nested_column_name
+        column = self.sequencing_report[nested_column_name]
         clone_counts = np.array(column)
         summed_counts = []
         for nest in clone_counts:
@@ -44,6 +47,14 @@ class read_intermediate_reports:
             summed_counts.append(sum)
         summed_counts = np.array(summed_counts)
         return summed_counts
+
+    def max_row(self, column):
+        length_nested_seq = []
+        for nested in self.sequencing_report[column]:
+            length_nested_seq.append(len(nested))
+            length_nested_seq = np.array(length_nested_seq)
+        max = max(length_nested_seq)
+        return max
 
 
 
