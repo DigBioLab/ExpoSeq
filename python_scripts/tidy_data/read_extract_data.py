@@ -56,6 +56,14 @@ class read_intermediate_reports:
         max = max(length_nested_seq)
         return max
 
+    def extract_substring_rows(self, lib_name, col_name = "Experiment"):
+        sub_table = self.sequencing_report[self.sequencing_report[col_name].str.contains(lib_name)]
+        return sub_table
+
+
+
+
+
 
 
 

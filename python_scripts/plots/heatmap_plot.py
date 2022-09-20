@@ -1,10 +1,15 @@
 import numpy as np
 import seaborn as sns
+from python_scripts.tidy_data.tidy_heatmap import cleaning
+#from python_scripts.main import local_pattern_more_digits, grouped_filenames
 
+sequencing_report_all, max_experiments = cleaning(local_pattern_more_digits,
+                                                  grouped_filenames)
 
 
 heatmap_axis = input("How many experiments do you want to plot? Max. No. {max_experiments}")
 heatmap_axis = int(heatmap_axis)
+
 heatmap_absolute = np.zeros([heatmap_axis, heatmap_axis])
 heatmap_absolute_jaccard = np.zeros([heatmap_axis, heatmap_axis])
 heatmap_absolute_sorensen = np.zeros([heatmap_axis, heatmap_axis])

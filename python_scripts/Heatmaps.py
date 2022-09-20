@@ -75,7 +75,7 @@ for Match_from_list in list1:
                      libsnamestoadd.append(Match_to_list[0:Match_to_list.index('_UniqueCDR3_Exp_UniqueCDR3.txt')])
                 print([Match_to_list[0:Match_to_list.index('_UniqueCDR3_Exp_UniqueCDR3.txt')]])
                 Export = pd.read_csv('/Users/chvis/Jupyter-Demo/pandas_test/mixcr_analysis/'+Match_to_list, sep='\t')
-                Export = Export[(Export['lengthOfCDR3'] % 3) == 0] #This removes rows with a nt length not divisible by 3 (think aa transeslation)
+                Export = Export[(Export['lengthOfCDR3'] % 3) == 0] #This removes rows with a nt length not divisible by 3 (think aa translation)
                 Export = Export[(Export['cloneCount'] > 1)]   # by running this i get rid of the clones with only 1 cloneCount
                 nt_sequences = (Export.nSeqCDR3) # here aminoacids!!!
                 df_nt_sequences = pd.DataFrame(nt_sequences) #Make into actual dataframe - can be checked with ifinstance funciton
