@@ -59,9 +59,14 @@ print(unique_nt_df)
 unique_merged = unique_nt_df[:]
 for match_to in list1:
     if match_to.endswith('_UniqueCDR3_Exp_UniqueCDR3.txt'):
-        Export = pd.read_csv('/Users/chvis/Jupyter-Demo/pandas_test/mixcr_analysis/'+match_to, sep='\t')
+        Export = pd.read_csv(match_to, sep='\t')
         Export1 = Export[(Export['cloneCount'] > 1)] 
         Export2 = Export1[(Export1['lengthOfCDR3'] % 3) == 0] #This removes rows with a nt length not divisible by 3 (think aa translation)
+
+        column = Export2.groupby('nSeqCDR3', as_index=False)['cloneFraction'].cumsum()
+        Export2['cloneFraction'] = column['cloneFraction']
+        Export2 = Export2.drop_duplicates(subset= 'nSeqCDR3')
+
         match_input = (Export2.loc[0:10,['nSeqCDR3', 'cloneFraction']])
         unique_merged = unique_merged.merge(match_input,how='left', on='nSeqCDR3')
         unique_merged = unique_merged.rename(columns={'cloneFraction': match_to[0:match_to.index('_UniqueCDR3_Exp_UniqueCDR3.txt')]})

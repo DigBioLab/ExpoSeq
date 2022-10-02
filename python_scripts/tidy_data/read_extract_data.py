@@ -60,6 +60,11 @@ class read_intermediate_reports:
         sub_table = self.sequencing_report[self.sequencing_report[col_name].str.contains(lib_name)]
         return sub_table
 
+    def summarize_duplicates(self, column_to_sum, duplicate_column):
+        column = self.sequencing_report.groupby(duplicate_column)[column_to_sum].transform('sum')
+        self.sequencing_report[column_to_sum] = column
+        self.sequencing_report = self.sequencing_report.drop_duplicates(subset=duplicate_column)
+        return self.sequencing_report
 
 
 

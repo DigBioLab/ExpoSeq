@@ -16,7 +16,7 @@ tidy_data.filter_rows_not_divisible(divisor = divisible_by,
 # if app insert a test and error report if someone fails to insert correct column name
 tidy_data.filter_rows_on_min(column = 'cloneCount',
                             min_count = min_count)
-sub_table = tidy_data.extract_substring_rows(lib_name = "Library_1")
+sub_table = tidy_data.extract_substring_rows(lib_name = "Library_1") # change library here
 
 sub_table = add_fraction(sequencing_report = sub_table)
 tidy_data = read_extract_data.read_intermediate_reports(filename = sub_table,
@@ -42,6 +42,7 @@ for sample in range(len(sub_table)):
         unique_list.append(unique)  ## for each run append the number of unique sequences to a new cell in this list - will be accumulative
         total_list.append(len(temp_list))  ## append the total sequences amount for plotting
         counter += 1
+    plt.plot(total_list, [len(x) for x in unique_list], label = sub_table.iloc[sample].Experiment)
     x_axis.append(total_list)
     y_axis.append([len(x) for x in unique_list])
 
@@ -50,3 +51,5 @@ labels = sub_table.Experiment
 if len(sub_table) > 7:
     warnings.warn("Risk of Overplotting: Many different colors are used. It may be hard to differ between the data")
 
+for i in range(len(x_axis)):
+    plt.plot(x_axis[i], y_axis[i])

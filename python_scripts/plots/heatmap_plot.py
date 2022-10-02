@@ -106,3 +106,9 @@ out.flat = [u+v for (u,v) in b]
 
 normalized_heatmap = heatmap_absolute/(out/2)
 sns.heatmap(normalized_heatmap, cmap="Blues", annot=True, annot_kws={"size":4}, fmt='.2f')
+
+import seaborn as sns
+import numpy as np
+matrix = np.loadtxt(r"C:\Users\nils\PycharmProjects\ExpoSeq\heatmap_protein_morosita_horn.txt")
+matrix = matrix.astype(np.float16)
+sns.heatmap(matrix, cmap="Blues", annot=True, annot_kws={"size":4}, fmt='.2f')
