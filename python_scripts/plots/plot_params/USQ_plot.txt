@@ -1,0 +1,7 @@
+{
+#'fmt': ':',
+'alpha':  1,
+'fillstyle': 'full',
+'linewidth': 0.2,
+
+}

@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import numpy as np
+from python_scripts.tidy_data.tidy_library import mapping_funcs
 # output == number of aligned reads
 # input == number of total sequencing reads
 
@@ -60,15 +61,17 @@ class read_intermediate_reports:
         sub_table = self.sequencing_report[self.sequencing_report[col_name].str.contains(lib_name)]
         return sub_table
 
-    def summarize_duplicates(self, column_to_sum, duplicate_column):
-        column = self.sequencing_report.groupby(duplicate_column)[column_to_sum].transform('sum')
+    def summarize_duplicates(self, column_to_sum, duplicate_column, group):
+        if group != '' or False:
+            group.append(duplicate_column)
+            group_columns = group
+        else:
+            group_columns = [duplicate_column]
+        column = self.sequencing_report.groupby(group_columns)[column_to_sum].transform('sum')
         self.sequencing_report[column_to_sum] = column
-        self.sequencing_report = self.sequencing_report.drop_duplicates(subset=duplicate_column)
+        self.sequencing_report = self.sequencing_report.drop_duplicates(group_columns,
+                                                                        keep = 'last')
         return self.sequencing_report
-
-
-
-
 
 
 

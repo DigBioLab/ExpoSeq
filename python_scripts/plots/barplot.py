@@ -38,5 +38,3 @@ for cluster in grouped_filenames:
                 if file == cluster[len(cluster)]:
                     not_used.append(filename)
                 pass
-
-

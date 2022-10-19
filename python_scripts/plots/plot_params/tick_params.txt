@@ -1,0 +1,11 @@
+{
+"which": "both",
+"top": "off",
+"bottom": "on",
+"left": "on",
+"right": "off",
+"labelleft": False,
+"labelright": False,
+#"labelrotation": ,
+
+}

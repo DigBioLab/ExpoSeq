@@ -48,7 +48,7 @@ for column in df_stacked:
 numpy_list = np.array(all_seq_combined)
 (unique,count) = np.unique(numpy_list, return_counts=True)
 frequncies = np.asarray((unique,count)).T
-unique_nt_df = pd.DataFrame(frequncies, columns = ['nSeqCDR3','count'])
+unique_nt_df = pd.DataFrame(frequncies, columns = ['nSeqCDR3','count']) # count?
 #print(df)   
 #unique_nt_df['count'].hist(bins=100)#column =['CDR','count'])
 print(unique_nt_df)
@@ -73,3 +73,6 @@ for match_to in list1:
 print(unique_merged)
 convert_F1_F01_etc(unique_merged)
 unique_merged=unique_merged.sort_index(axis=1)
+
+
+
