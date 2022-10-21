@@ -6,20 +6,12 @@ import pandas as pd
 from python_scripts.test_data.rename_labels import Library_2_to_panning
 
 
-def cleaning_data(protein, sequencing_report_input, local_pattern_more_digits, specific_experiments = False,
-                  experiments = False, divisible_by = 3, min_count = 1, new_fraction = 'new_fraction'):
+def cleaning_data(protein, sequencing_report_input, tidy_data, specific_experiments = False,
+                  experiments = False, new_fraction = 'new_fraction'):
     if specific_experiments != False:
         sequencing_report_input = sequencing_report_input[sequencing_report_input['Experiment'].isin(experiments)]
     else:
         pass
-    tidy_data = read_intermediate_reports(filename=sequencing_report_input,
-                                          input_pattern=local_pattern_more_digits)
-    tidy_data.filter_rows_not_divisible(divisor=divisible_by,
-                                        column='lengthOfCDR3')
-    # if app insert a test and error report if someone fails to insert correct column name
-
-    tidy_data.filter_rows_on_min(column='cloneCount',
-                                 min_count=min_count)
 
     report = tidy_data.sequencing_report
     new_column = report['cloneCount'] / report.groupby('Experiment')['cloneCount'].transform('sum')

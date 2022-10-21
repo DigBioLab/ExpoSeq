@@ -2,6 +2,6 @@
 #'fmt': ':',
 'alpha':  1,
 'fillstyle': 'full',
-'linewidth': 0.2,
+'linewidth': 0.8,
 
 }

@@ -1,72 +1,81 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 25 12:20:39 2022
+Created on Tue Mar 22 14:52:44 2022
 
 @author: chvis
 """
 
-
-import matplotlib
-import matplotlib.pyplot as plt
-matplotlib.style.use('default')
 import os
 import pandas as pd
-import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+## In this script i want to show a bar graph for the unique sequences found in each project
+
+os.chdir('/Users/chvis/Jupyter-Demo/pandas_test')
+
+dataset = pd.read_csv('df_combined3.csv').drop(columns='Unnamed: 0')
+dataset = dataset.replace({'Experiment':Library_2_to_panning})
+dataset = dataset.sort_values(by='Experiment', ignore_index=True)
+
+Chris_df = dataset.iloc[[0,1,5,9,2,3,4,6,7,8,10,11],:]
+Line_df = dataset.iloc[[15,21,16,19,22,24,17,18,20,23,25,26],:]
+Helen_df = dataset.iloc[[27,28,32,29,30,31,33,34],:]
+Chris_myo_df = dataset.iloc[[12,13,14],:]
+Isabel_df = dataset.iloc[[35,36,37],:]
+Shirin_df = dataset.iloc[[38,39,40],:]
+
+## Function to quickly make graphs
+## PROBLEM: Savefig does not work in the function for some reason, so will do them manually instead
+## Turn the last line on or off depending on whether you want to export
+
+def make_barplot_unique_seqs(df, outfile):
+    plt.figure()
+    labels = df['Experiment']
+    data = df['Uniqueclones_>1']
+    plt.bar(labels,data)
+    plt.ylabel('Unique clones')
+    plt.xlabel('Selection rounds')
+    plt.xticks(rotation=45, ha='right', rotation_mode='anchor')
+    plt.draw()
+    plt.tight_layout()
+    #vlines = [0.5, 3.5] ## Chris
+    #vlines = [1.5, 5.5] ## Line
+    vlines = [0.5, 2.5] ## Helen
+
+    for vl in vlines:
+        plt.axvline(x=vl, linestyle='--', color='black')
+    plt.savefig(outfile+'_uni_clones.png', dpi=300)
 
 
-## from this website under "calculate morisita Horn" https://github.com/vsarsani/stat-lab/blob/master/MHindex.ipynb
+make_barplot_unique_seqs(Chris_df, 'Chris')
+make_barplot_unique_seqs(Line_df, 'Line')
+make_barplot_unique_seqs(Helen_df, 'Helen')
+make_barplot_unique_seqs(Chris_myo_df, 'Chris_myo')
+make_barplot_unique_seqs(Isabel_df, 'Isabel')
+make_barplot_unique_seqs(Shirin_df, 'Shirin')
 
-MH_index = []
-for x in unique_merged_final.iloc[:,2:]:
-    d1 = unique_merged_final[x]
-    for y in unique_merged_final.iloc[:,2:]:
-        if y.startswith('Library_'):
-            d2 = unique_merged_final[y]
-            product_d1_d2 = d1*d2
-            d1_square = d1*d1
-            d2_square = d2*d2
-            cal_cols=pd.concat([d1,d2,product_d1_d2,d1_square,d2_square], axis=1).fillna(0)
-            cal_cols.columns=['d1','d2','product_d1_d2','d1_square','d2_square']
-            sub = cal_cols['product_d1_d2']>0
-            subset = cal_cols[sub]
-            MH = 2*subset['product_d1_d2'].sum()/(subset['d1_square'].sum()+subset['d2_square'].sum())
-            #MH_index.extend([MH])
-            MH_index.append(MH)
-    
-# MH_index_use = MH_index[:]
-# var = 1      
-# new_df = pd.DataFrame()
-# for q in unique_merged_final.iloc[:,2:].columns:
-#     new_list = []
-#     for val in MH_index_use:
-#         print(var)
-#         if (var%41)!=0: 
-#            new_list.append(val)
-#            var=var+1
-#         else:
-#             new_df[q] = new_list
-#             var=var+1
-#             break
 
-# MH_index_use = MH_index[:]
- 
-# new_df = pd.DataFrame()
-# for q in unique_merged_final.iloc[:,2:].columns:
-#     #print(q)
-#     new_list = []
-#     var = 0
-#     for c in MH_index_use:
-#         if (var%41)=0: 
-#            new_df[q] = new_list
-#            break
-#         else: 
-#            new_list.append(c)
-#            var=var+1
 
-## We tried the below to make this matrix with python, but failed.
-## I instead spent 5 minutes to do it manually in excel
-## The labels where also added in excel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #%% Dictionaries to easily convert data
 ## Make a dictionary to put selection rounds into projects
 TPL_to_Project = {'TPL0027' : 'Shirin', 
@@ -145,6 +154,49 @@ Library_to_TPL = {'Library_1_F01' : 'TPL0049',
              'Library_4_F07' : 'TPL0285',
              'Library_4_F08' : 'TPL0301',
              'Library_4_F09' : 'TPL0302',   
+    }
+
+Library_to_TPL_1digit = {'Library_1_F1_' : 'TPL0049',
+             'Library_1_F2_' : 'TPL0050',
+             'Library_1_F3_' : 'TPL0065',
+             'Library_1_F5_' : 'TPL0066',
+             'Library_1_F6_' : 'TPL0067',
+             'Library_1_F7_' : 'TPL0068',
+             'Library_1_F8_' : 'TPL0095',
+             'Library_1_F9_' : 'TPL0096',
+             'Library_1_F10_' : 'TPL0097',
+             'Library_1_F11_' : 'TPL0098',
+             'Library_1_F12_' : 'TPL0099',
+             'Library_2_F1_' : 'TPL0101',
+             'Library_2_F2_' : 'TPL0103',
+             'Library_2_F3_' : 'TPL0109',
+             'Library_2_F5_' : 'TPL0110',
+             'Library_2_F6_' : 'TPL0111',
+             'Library_2_F7_' : 'TPL0123',
+             'Library_2_F8_' : 'TPL0124',
+             'Library_2_F9_' : 'TPL0125',
+             'Library_2_F10_' : 'TPL0126',
+             'Library_2_F11_' : 'TPL0127',
+             'Library_2_F12_' : 'TPL0128',
+             'Library_3_F1_' : 'TPL0214',
+             'Library_3_F2_' : 'TPL0220',
+             'Library_3_F3_' : 'TPL0221',
+             'Library_3_F5_' : 'TPL0227',
+             'Library_3_F6_' : 'TPL0266',
+             'Library_3_F7_' : 'TPL0228',
+             'Library_3_F8_' : 'TPL0229',
+             'Library_3_F9_' : 'TPL0230',
+             'Library_3_F10_' : 'TPL0037',
+             'Library_3_F11_' : 'TPL0038',
+             'Library_3_F12_' : 'TPL0039',
+             'Library_4_F1_' : 'TPL0129',
+             'Library_4_F2_' : 'TPL0130',
+             'Library_4_F3_' : 'TPL0204',
+             'Library_4_F5_' : 'TPL0239',
+             'Library_4_F6_' : 'TPL0256',
+             'Library_4_F7_' : 'TPL0285',
+             'Library_4_F8_' : 'TPL0301',
+             'Library_4_F9_' : 'TPL0302',   
     }
 
 Library_to_panning = {'Library_1_F01' : 'E--_K',
@@ -269,7 +321,7 @@ TPL_to_panning = {'TPL0049' : 'E--_K',
              'TPL0038' : 'BB-_L',
              'TPL0039' : 'BBB_L',
              'TPL0129' : 'ACA_K',
-             'TPL0130' : 'ACA_K',
+             'TPL0130' : 'ACB_K',
              'TPL0204' : 'H--_L',
              'TPL0239' : 'HH-_L',
              'TPL0256' : 'HHH_L',
@@ -277,88 +329,3 @@ TPL_to_panning = {'TPL0049' : 'E--_K',
              'TPL0301' : 'JJ-_L_1nM',
              'TPL0302' : 'JJJ_L_200pM',   
     }
-
-
-#%%
-import seaborn as sns
-os.chdir('/Users/chvis/Jupyter-Demo/pandas_test')
-MH_matrix = pd.read_csv('/Users/chvis/Jupyter-Demo/pandas_test/MH_index_manual.csv', sep=';', index_col=0)
-MH_matrix = MH_matrix.drop(index=['Library_2_F10_2', 'Library_3_F08_2', 'Library_3_F09_2']) #L2_F10=19 , L3_F08=28 , L3_09=29
-MH_matrix = MH_matrix.drop(columns=['Library_2_F10_2', 'Library_3_F08_2', 'Library_3_F09_2'])
-#Color the samples based on libraries and projects
-tags = pd.read_csv('/Users/chvis/Jupyter-Demo/pandas_test/Experiments_ex_info_fail_delete.csv',sep=';', index_col=(0))
-df_cluster = tags.join(MH_matrix)
-df_cluster.rename(columns=Library_2_to_panning, inplace=True) # convert to 
-df_cluster.rename(index=Library_2_to_panning, inplace=True)
-Lib_color = df_cluster.Lib_ID.map({
-    'L1': 'rosybrown',
-    'L2': 'indianred',
-    'L3': 'maroon',
-    'L4': 'red'
-})
-
-Project_color = df_cluster.Project.map({
-    'Chris': 'slategrey',
-    'Line': 'lightsteelblue',
-    'Helen': 'cornflowerblue',
-    'C_MyoII': 'royalblue',
-    'Isabel': 'navy',
-    'Shirin': 'blue'
-})
-#Clustermap used as heatmap by turning off the clustering row_cluster=False, col_cluster=False
-numerical_only = df_cluster.columns[2:]
-heat_map = sns.clustermap(df_cluster[numerical_only], figsize=(12,12), cmap="rocket", row_cluster=False, col_cluster=False, annot=True, annot_kws={"size":4}, fmt='.2f', row_colors=[Lib_color, Project_color])
-ax = heat_map.ax_heatmap
-ax.plot([11, 11], [0, 741], 'r-', lw = 3) # make a vertical line after L1-L2 seperator
-ax.plot([21, 21], [0, 741], 'r-', lw = 3) #L2-L3 seperator
-ax.plot([30, 30], [0, 741], 'r-', lw = 3) #L3-L4 seperator
-ax.plot([0, 741], [11, 11], 'r-', lw = 3) #L1-L2 seperator 
-ax.plot([0, 741], [21, 21], 'r-', lw = 3) #L2-L3 seperator
-ax.plot([0, 741], [30, 30], 'r-', lw = 3) #L3-L4 seperator
-plt.savefig('heatmap_MH.png', dpi=400)
-
-
-## clustermap does not really seem relevant
-# numerical_only = df_cluster.columns[2:]
-# modify = sns.clustermap(df_cluster[numerical_only], figsize=(12,12), cmap="rocket", annot=True, annot_kws={"size":4}, fmt='.2f', row_colors=[Lib_color, Project_color])
-# plt.savefig('clustermap_MH.png', dpi=400)
-#modify.ax_row_dendrogram.set_visible(False)
-### HERE IS THE ISSUE
-#modify.ax_heatmap.xaxis.set_label_position('top')
-#modify.ax_heatmap.yaxis.set_label_position('left')
-
-           
-
-
-        
-
-  
-
-
-            
-            
-
-
-##  Just use for i in range(len(single_row) and step_size_41) and append it to new matrix (list of lists)
-
-
-
-
-
-
-### I found this script to make a list into a matrix
-### source: https://stackoverflow.com/questions/66049911/converting-list-into-matrix
-
-# L = MH_index
-# v = 41
-
-# M = [[] for _ in range(v)]
-# r = 0
-# for i in L:
-#     M[r].append(i)
-#     r += 1
-#     if r == v:
-#         r = 0
-#     matrix_MH_index.append(M)
-
-
