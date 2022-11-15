@@ -8,9 +8,8 @@ from python_scripts.tidy_data.tidy_library import mapping_funcs
 # create class depending on which data should be analyzed
 
 class read_intermediate_reports:
-    def __init__(self, filename, input_pattern):
+    def __init__(self, filename):
         self.sequencing_report = filename
-        self.pattern = input_pattern
         #questions have to be otuside of class, otherwise they'll be asked each time a file is read
 
     def filter_rows_on_min(self, column, min_count):
@@ -73,7 +72,9 @@ class read_intermediate_reports:
                                                                         keep = 'last')
         return self.sequencing_report
 
-
+    def map_to_column(self, object_to_map, column_to_map, new_column_name):
+        self.sequencing_report[new_column_name] = self.sequencing_report[column_to_map].map(object_to_map)
+        return self.sequencing_report
 
 
 

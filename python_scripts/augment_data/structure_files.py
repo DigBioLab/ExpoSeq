@@ -5,6 +5,7 @@ def input_pattern():
     return filepattern
 
 
+
 def pattern_generator(filepattern): # works only if input is single digit
     filepattern_seperate = list(filepattern)
     local_pattern = ""
@@ -40,14 +41,13 @@ def grouping_files(local_pattern, local_pattern_more_digits, filenames): # will 
     for index_filename in range(0, len(filenames)):
         subgroup = []
         if not bool(filenames[index_filename] in used_filenames):
-
             local_pattern_single = re.search(local_pattern,
                                              filenames[index_filename])
             local_pattern_multiple = re.search(local_pattern_more_digits,
                                                filenames[index_filename])
             if local_pattern_single is None:
-                local_pattern_multiple = re.search(local_pattern_more_digits,
-                                                   filenames[index_filename])
+               # local_pattern_multiple = re.search(local_pattern_more_digits,
+                #                                   filenames[index_filename])
                 local_pattern_single = local_pattern
                 local_pattern_multiple = local_pattern_multiple.group()
             else:
@@ -65,3 +65,12 @@ def grouping_files(local_pattern, local_pattern_more_digits, filenames): # will 
             if bool(subgroup) != False:
                 grouped_filenames.append(subgroup)
     return grouped_filenames
+
+
+def find_exp_name(filename): # assumes that company appends uniqueCDR3_Exp_UniqueCDR3 to filenames so that they can be seperated by _
+    list_filename = filename.split('\\')
+    last_item_list = list_filename[-1]
+    local_split = last_item_list.split("_")
+    del local_split[len(local_split) - 3:]
+    experiment_name = '_'.join(local_split)
+    return experiment_name

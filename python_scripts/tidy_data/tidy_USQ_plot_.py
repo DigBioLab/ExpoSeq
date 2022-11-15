@@ -1,6 +1,7 @@
 # USQ = unique sequences quality
 from python_scripts.tidy_data import read_extract_data
 from python_scripts.tidy_data.interpret_data import add_fraction
+from python_scripts.test_data.rename_labels import Library_2_to_panning
 
 def cleaning_data(sequencing_report_all, local_pattern_more_digits):
     divisible_by = 3
@@ -22,5 +23,7 @@ def cleaning_data(sequencing_report_all, local_pattern_more_digits):
                         column_to_list=['nSeqCDR3', 'clonefrac', 'cloneCount'],
                         unique=False)
     sub_table = tidy_data.sequencing_report
+    experiment = sub_table["Experiment"].map(Library_2_to_panning) #delete in the end since it is very individual
+    sub_table["Experiment"] = experiment
     return sub_table
 

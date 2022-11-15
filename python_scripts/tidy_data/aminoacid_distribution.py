@@ -7,12 +7,14 @@ from pandas import DataFrame, concat
 import matplotlib.pyplot as plt
 from python_scripts.plots.plot_params.open_txtfiles import openParams
 
+
+experiment = sequencing_report_all["Experiment"].map(Library_2_to_panning)
+sequencing_report_all["Experiment"] = experiment
 tidy_data.sequencing_report = mapFunc(sequencing_report = tidy_data.sequencing_report,
                                       column='nSeqCDR3',
                                       func=genetic_dogma,
                                       column_name='peptide_seq')
-experiment = sequencing_report_all["Experiment"].map(Library_2_to_panning)
-sequencing_report_all["Experiment"] = experiment
+
 
 tidy_data.summarize_duplicates(column_to_sum="cloneCount",
                                duplicate_column="aaSeqCDR3",
@@ -25,6 +27,7 @@ rounds = [first_round, second_round, third_round]
 width = 1/(len(rounds))
 labels = ["First Round", "Second Round", "Third Round"]
 n = 0
+colors = ["orange", "royalblue", "limegreen"] # has to be changed
 # works only for three panning rounds otherwise barplot will be confused
 for round in rounds:
     sub_report = sequencing_report.loc[sequencing_report["Experiment"].isin(round)]
@@ -46,7 +49,7 @@ for round in rounds:
     normalized_aa = summed_aa/np.sum(summed_aa)
     aminoacids_keys = aa_count.columns
     X = np.arange(normalized_aa.shape[0])
-    plt.bar(X + (0.3 - 0.3*n), normalized_aa, label = labels[n], width = 0.3)
+    plt.bar(X + (0.3 - 0.3*n), normalized_aa, label = labels[n], width = 0.3, color = colors[n])
     n += 1
 X = np.arange(normalized_aa.shape[0])
 plt.xticks(X, aminoacids_keys)

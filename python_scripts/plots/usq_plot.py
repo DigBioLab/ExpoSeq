@@ -43,7 +43,7 @@ def plot_USQ(sequencing_report, local_pattern_more_digits):
    #     plt.plot(x_axis[i], y_axis[i], **params_plot)
     params_legend = openParams("USQ_plot_legend_params.txt")
 
-    fig.legend(sub_table.Experiment, title = "Sample Names", **params_legend)
+    plt.legend(sub_table.Experiment, title = "Sample Names", **params_legend)
     plt.xlabel("Total sampled sequences", **plot_style)
     plt.ylabel("Found Unique Sequences", **plot_style)
    # plt.show(fig)

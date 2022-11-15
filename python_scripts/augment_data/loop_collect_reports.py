@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+from python_scripts.augment_data.structure_files import find_exp_name
 def collect_intermediate_files(grouped_filenames, local_pattern_more_digits):
     all_intermediate_files = pd.DataFrame()
     #max_files = len(grouped_filenames)
@@ -22,3 +23,27 @@ def collect_intermediate_files(grouped_filenames, local_pattern_more_digits):
             else:
                 pass
     return all_intermediate_files
+
+
+def collect_nocluster_files(filenames): # with local_intermediate_report.shape[1] it only collect cdr3 files not uniquecdr. uniquecdr has only 7 columns while cdr3 has 9. ask chirs why
+    all_intermediate_files = pd.DataFrame()
+    each_instance = pd.DataFrame()
+    list_experiments = []
+    for file in filenames:
+        try:
+            local_intermediate_report = pd.read_table(file)
+            experiment_name = find_exp_name(file)
+            if local_intermediate_report.shape[1] > 8 and experiment_name not in list_experiments:
+                local_intermediate_report.insert(0,
+                                                 "Experiment",
+                                                 experiment_name)
+                instance = local_intermediate_report.iloc[:1]
+                all_intermediate_files = pd.concat([all_intermediate_files, local_intermediate_report])
+                each_instance = pd.concat([each_instance, instance])
+                list_experiments.append(experiment_name)
+            else:
+                pass
+        except:
+            pass
+    return all_intermediate_files, each_instance
+

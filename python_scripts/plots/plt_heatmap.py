@@ -19,7 +19,8 @@ def plot_heatmap(unique_sequences, unique_experiments):
     #           dpi = 300)
     sns.heatmap(matrix,
                 **data)
-
+    plt.xticks(rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
+    plt.yticks(va='top', size=5)
     savefig = ""
    # while savefig != "Y" or "n":
     #    savefig = input("Do you want to save the figure? Y/n" )
