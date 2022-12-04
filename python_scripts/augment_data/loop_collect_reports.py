@@ -47,3 +47,19 @@ def collect_nocluster_files(filenames): # with local_intermediate_report.shape[1
             pass
     return all_intermediate_files, each_instance
 
+def load_alignment_reports(filenames):
+    all_alignment_reports = pd.DataFrame()
+    for i in filenames:
+        if "fastq_AlignmentReport" in i:
+            report = pd.read_table(i)
+            splitted_report = report.iloc[:, 0].str.split(":",
+                                                          expand = True)
+            splitted_report = splitted_report.iloc[:, 0:2].T
+            transposed_report = splitted_report.rename(columns=splitted_report.iloc[0]).drop(splitted_report.index[0])
+            all_alignment_reports = pd.concat([all_alignment_reports, transposed_report])
+    all_alignment_reports = all_alignment_reports.reset_index()
+    try:
+        del all_alignment_reports["index"]
+    except:
+        pass
+    return all_alignment_reports
