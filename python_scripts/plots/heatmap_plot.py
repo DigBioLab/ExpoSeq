@@ -1,14 +1,13 @@
 import numpy as np
 import seaborn as sns
-from python_scripts.tidy_data.tidy_heatmap import cleaning
+from python_scripts.tidy_data.tidy_heatmap import cleaning_data
 #from python_scripts.main import local_pattern_more_digits, grouped_filenames
 
-sequencing_report_all, max_experiments = cleaning(local_pattern_more_digits,
-                                                  grouped_filenames)
+unique_sequences, unique_experiments = cleaning_data(sequencing_report, protein = True, specific_experiment)
 
 
 heatmap_axis = input("How many experiments do you want to plot? Max. No. {max_experiments}")
-heatmap_axis = int(heatmap_axis)
+heatmap_axis = int(len(unique_experiments))
 
 heatmap_absolute = np.zeros([heatmap_axis, heatmap_axis])
 heatmap_absolute_jaccard = np.zeros([heatmap_axis, heatmap_axis])
@@ -17,9 +16,7 @@ heatmap_absolute = heatmap_absolute.astype(np.uint32)
 heatmap_morosita_horn = np.zeros([heatmap_axis, heatmap_axis])
 matches_collected = []
 sum_matches = 0
-
-nested_seq = sequencing_report_all.nSeqCDR3
-
+nested_seq = sequencing_report.nSeqCDR3
 start = 0
 index_x = 0
 lib_matches = 0
@@ -44,8 +41,6 @@ for first_cluster in range(0, 37):
        # index_x += 1
         lib_matches = 0
     start += 1
-
-
 nested_clone_fraction = sequencing_report_all.cloneFraction
 array_clone_counts = np.array(nested_clone_fraction)
 nested_seq = sequencing_report_all.nSeqCDR3

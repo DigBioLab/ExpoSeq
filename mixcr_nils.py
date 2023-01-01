@@ -60,7 +60,7 @@ def process_mixcr():
         else:
             fastq_files = file_one
         filename_base = basename
-        reports = "alignment_reports/"
+        reports = "my_experiments/alignment_reports/"
         result = "temp/" + filename_base + ".vdjca"
         subprocess.run(["java",
                         "-jar",

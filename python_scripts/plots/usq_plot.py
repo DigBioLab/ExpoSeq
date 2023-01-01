@@ -7,9 +7,9 @@ from collections import Counter
 import warnings
 from python_scripts.plots.plot_params.open_txtfiles import openParams
 
-def plot_USQ(sequencing_report, local_pattern_more_digits):
-    sub_table = cleaning_data(sequencing_report_all = sequencing_report,
-                              local_pattern_more_digits = local_pattern_more_digits)
+def plot_USQ(sequencing_report, library):
+    sub_table = cleaning_data(sequencing_report = sequencing_report,
+                              lib_name = library)
     x_axis = []
     y_axis = []
     params_plot = openParams('USQ_plot.txt')

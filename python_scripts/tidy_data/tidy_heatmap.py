@@ -6,41 +6,41 @@ import pandas as pd
 from python_scripts.test_data.rename_labels import Library_2_to_panning
 
 
-def cleaning_data(protein, sequencing_report_input, tidy_data, specific_experiments = False,
-                  experiments = False, new_fraction = 'new_fraction'):
+def cleaning_data(sequencing_report, protein = True, specific_experiments = False):
+    new_fraction = 'new_fraction'
     if specific_experiments != False:
-        sequencing_report_input = sequencing_report_input[sequencing_report_input['Experiment'].isin(experiments)]
+        sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:
         pass
-
-    report = tidy_data.sequencing_report
-    new_column = report['cloneCount'] / report.groupby('Experiment')['cloneCount'].transform('sum')
-    report[new_fraction] = np.array(new_column)
-    tidy_data.sequencing_report = report
+    new_column = sequencing_report['cloneCount'] / sequencing_report.groupby('Experiment')['cloneCount'].transform('sum')
+    sequencing_report[new_fraction] = np.array(new_column)
     if protein == True:
-        tidy_data.sequencing_report = mapFunc(sequencing_report = tidy_data.sequencing_report,
-                                                column = 'nSeqCDR3',
-                                                func = genetic_dogma,
-                                                column_name = 'peptide_seq')
-        strang_column = 'peptide_seq'
+   #     sequencing_report = mapFunc(sequencing_report = sequencing_report,
+    #                                column = 'nSeqCDR3',
+     #                               func = genetic_dogma,
+       #                             column_name = 'peptide_seq')
+        strand_column = 'aaSeqCDR3'
     else:
-        strang_column = 'nSeqCDR3'
-    tidy_data.summarize_duplicates(column_to_sum = new_fraction,
-                                   duplicate_column = strang_column,
-                                    group = ['Experiment']) # group has to be list
-    sequencing_report = tidy_data.sequencing_report
-    unique_experiments = tidy_data.get_individuals("Experiment")
-    unique_sequences = pd.DataFrame(sequencing_report.nSeqCDR3.unique()) #nseqcdr3 has to be changed since it is a chosen name for column
-    unique_sequences.rename(columns={0: strang_column},
+        strand_column = 'nSeqCDR3'
+
+    group_columns = [strand_column]
+    column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')
+    sequencing_report[new_fraction] = column
+    sequencing_report = sequencing_report.drop_duplicates(group_columns,
+                                                            keep='last')
+    unique_experiments = sequencing_report["Experiment"].unique()
+    unique_sequences = pd.DataFrame(sequencing_report[strand_column].unique()) #nseqcdr3 has to be changed since it is a chosen name for column
+    unique_sequences.rename(columns={0: strand_column},
                             inplace=True)
     unique_experiments = list(unique_experiments)
     for experiment in unique_experiments:
-        local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strang_column, new_fraction]]
+        local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strand_column,
+                                                                                       new_fraction]]
         unique_sequences = unique_sequences.merge(local_data,
                                                   how='left',
-                                                  on = strang_column)
+                                                  on = strand_column)
         unique_sequences = unique_sequences.rename(columns={new_fraction: new_fraction + experiment})
-    unique_sequences.drop(strang_column,
+    unique_sequences.drop(strand_column,
                           inplace=True,
                           axis=1)
     unique_sequences = unique_sequences.fillna(0)
@@ -48,10 +48,13 @@ def cleaning_data(protein, sequencing_report_input, tidy_data, specific_experime
 
 
 
-def morosita_horn_matrix(unique_sequences, unique_experiments):
+def morosita_horn_matrix(sequencing_report, protein, specific_experiments, rename_from_dic = True):
+    unique_sequences, unique_experiments = cleaning_data(sequencing_report = sequencing_report,
+                                                         protein = protein,
+                                                         specific_experiments = specific_experiments)
     columns = len(unique_experiments)
-    morosita_horn_matrix = np.zeros((columns, columns))
-
+    morosita_horn_matrix = np.zeros((columns,
+                                     columns))
     for index_sample_one in range(columns):
         d1 = unique_sequences.iloc[:, index_sample_one]
         start = 0
@@ -61,10 +64,13 @@ def morosita_horn_matrix(unique_sequences, unique_experiments):
             d1_square = d1**2
             d2_square = d2**2
             cal_cols=pd.concat([d1,d2,product_d1_d2,d1_square,d2_square], axis=1).fillna(0)
-            cal_cols.columns=['d1','d2','product_d1_d2','d1_square','d2_square']
-            sub = cal_cols['product_d1_d2']>0
+            cal_cols.columns=['d1',
+                              'd2',
+                              'product_d1_d2',
+                              'd1_square',
+                              'd2_square']
+            sub = cal_cols['product_d1_d2'] > 0
             subset = cal_cols[sub]
-            #MH = (2*product_d1_d2.sum()) /(d1_square.sum() + d2_square.sum())
             MH = 2*subset['product_d1_d2'].sum()/(subset['d1_square'].sum()+subset['d2_square'].sum())
             morosita_horn_matrix[index_sample_one, index_sample_two] = MH
             morosita_horn_matrix[index_sample_two, index_sample_one] = MH
@@ -72,11 +78,12 @@ def morosita_horn_matrix(unique_sequences, unique_experiments):
     matrix = pd.DataFrame(morosita_horn_matrix,
                           index = list(unique_experiments),
                           columns = list(unique_experiments))
-    matrix.rename(columns = Library_2_to_panning,
-                  inplace = True)
-    matrix.rename(index = Library_2_to_panning,
-                  inplace = True)
-    return matrix
+    if rename_from_dic == True:
+        matrix.rename(columns = Library_2_to_panning,
+                      inplace = True)
+        matrix.rename(index = Library_2_to_panning,
+                      inplace = True)
+    return matrix, unique_sequences, unique_experiments
 
 
 def morosita_horn_matrix_two(unique_sequences, unique_experiments):

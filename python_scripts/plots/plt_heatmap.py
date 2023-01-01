@@ -6,8 +6,11 @@ import matplotlib.pyplot as plt
 from python_scripts.tidy_data import tidy_heatmap
 
 
-def plot_heatmap(unique_sequences, unique_experiments):
-    matrix = tidy_heatmap.morosita_horn_matrix(unique_sequences, unique_experiments)
+def plot_heatmap(sequencing_report, protein, specific_experiments, rename_from_dic = True):
+    matrix, unique_sequences, unique_experiments = tidy_heatmap.morosita_horn_matrix(sequencing_report = sequencing_report,
+                                                                                     protein = protein,
+                                                                                     specific_experiments = specific_experiments,
+                                                                                     rename_from_dic = rename_from_dic)
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5AGG')
