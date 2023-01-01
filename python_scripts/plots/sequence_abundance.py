@@ -1,11 +1,8 @@
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 import pandas as pd
 from difflib import SequenceMatcher
 import itertools
-import re
-from random import sample
-from sklearn.model_selection import train_test_split
+
 
 
 def create_batch_on_length(batch_size, sequencing_report_all, lib = "Library_1_F2_2"):

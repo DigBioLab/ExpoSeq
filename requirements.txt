@@ -1,0 +1,11 @@
+tk
+numpy
+pandas
+bio
+matplotlib
+scipy
+seaborn
+logomaker
+editdistance
+networkx
+PyQt5

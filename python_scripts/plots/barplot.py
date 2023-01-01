@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 from python_scripts.plots.plot_params.open_txtfiles import openParams
 from python_scripts.tidy_data.barplot import cleaning_data
 import numpy as np
+import matplotlib
 def barplot(all_alignment_reports, sequencing_report_all, apply_log = True):
+    matplotlib.use("Qt5Agg")
     boxplot_data_frame = cleaning_data(all_alignment_reports,
                                        sequencing_report_all)
     plt.bar(boxplot_data_frame.Experiment, np.array(boxplot_data_frame.tot_sequenced_reads).astype(np.float32), label="Total Sequenced Reads",
@@ -19,3 +21,4 @@ def barplot(all_alignment_reports, sequencing_report_all, apply_log = True):
     plt.xlabel("Sample", **plot_style)
     if apply_log == True:
         plt.yscale("log")
+    plt.tight_layout()
