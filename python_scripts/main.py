@@ -2,7 +2,7 @@ from python_scripts.augment_data.load_data import collectFiles
 from python_scripts.augment_data.loop_collect_reports import collect_nocluster_files, load_alignment_reports
 from python_scripts.tidy_data.trimming import trimming
 from python_scripts.plots import usq_plot, plt_heatmap, barplot
-from python_scripts.tidy_data import tidy_heatmap
+from python_scripts.tidy_data.heatmaps import tidy_morosita_horn
 from python_scripts.test_data.rename_labels import Library_2_to_panning
 from python_scripts.plots.saveFig import saveFig
 from python_scripts.augment_data.check_reports import check_completeness

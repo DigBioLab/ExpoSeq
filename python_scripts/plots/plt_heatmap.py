@@ -3,14 +3,27 @@ from os.path import dirname, abspath
 from ast import literal_eval
 import matplotlib
 import matplotlib.pyplot as plt
-from python_scripts.tidy_data import tidy_heatmap
+from python_scripts.tidy_data import heatmaps
 
+def plot_heatmap(sequencing_report, protein, heatmap, specific_experiments = False, rename_from_dic = True):
 
-def plot_heatmap(sequencing_report, protein, specific_experiments, rename_from_dic = True):
-    matrix, unique_sequences, unique_experiments = tidy_heatmap.morosita_horn_matrix(sequencing_report = sequencing_report,
-                                                                                     protein = protein,
-                                                                                     specific_experiments = specific_experiments,
-                                                                                     rename_from_dic = rename_from_dic)
+    if heatmap == "morosita_horn":
+        unique_sequences, unique_experiments = heatmaps.tidy_morosita_horn.cleaning_data(sequencing_report,
+                                                             protein = True,
+                                                             specific_experiments = specific_experiments)
+        matrix, unique_sequences, unique_experiments = heatmaps.tidy_heatmap.morosita_horn_matrix(unique_sequences,
+                                                                                                  unique_experiments)
+    if heatmap == "jaccard":
+        matrix, unique_sequences, unique_experiments = heatmaps.tidy_jaccard.cleaning_jaccard(sequencing_report,
+                                                                                              protein=protein)
+
+    if heatmap == "sorensen":
+        matrix, unique_sequences, unique_experiments = heatmaps.tidy_sorensen(sequencing_report,
+                                                                              protein = protein)
+    if heatmap == "relative":
+        matrix, unique_sequences, unique_experiments = heatmaps.tidy_heatmap_share(sequencing_report,
+                                                                                    protein=protein)
+
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5AGG')
