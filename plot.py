@@ -1,8 +1,9 @@
 import pandas as pd
 from python_scripts.plots.usq_plot import plot_USQ
 from python_scripts.plots.plt_heatmap import plot_heatmap
-
-class Toolbox(experiment = "chris_pannings", rename_from_dic = True):
+from python_scripts.plots.logo_plot import plot_logo
+from python_scripts.plots.length_distribution import length_distribution
+class Toolbox():
     def __init__(self, experiment):
         try:
             with open("my_experiments/" + experiment + "/panning_report", "rb") as f:
@@ -12,12 +13,20 @@ class Toolbox(experiment = "chris_pannings", rename_from_dic = True):
             raise("The Report could not be uploaded. Check the correct experiment name which you can find in the my experiments directory. ")
         self.rename_from_dic = rename_from_dic
 
-
-    def usq_plot(self, library):
+    def usqPlot(self, library):
         plot_USQ(sequencing_report = self.sequencing_report,
                  lib_name = library)
+    def logoPlot(self, samples = "all", highlight_specific_pos = False, highlight_pos_range = False):
+        plot_logo(self.sequencing_report,
+                  samples,
+                  highlight_specific_pos,
+                  highlight_pos_range)
 
-    def
+    def lengthDistribution(self, samples = "all"):
+        length_distribution(self.sequencing_report, samples)
+
+
+
 
     class Identity():
         def __init__(self, analyze_protein = True, choose_experiments = "all"):

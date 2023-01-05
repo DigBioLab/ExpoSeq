@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
-def length_distribution(sequencing_report_all, all_experiments = True):
-    if all_experiments == True:
+def length_distribution(sequencing_report_all, samples):
+    if samples == True:
         unique_experiments = sequencing_report_all["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
     # Subplots are organized in a Rows x Cols Grid
@@ -19,23 +18,29 @@ def length_distribution(sequencing_report_all, all_experiments = True):
     # Create a Position index
     Position = range(1,Tot + 1)
     n = 0
-    fig = plt.figure(1)
+    fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
         batch = sequencing_report_all[sequencing_report_all["Experiment"] == experiment]
         length = batch["aaSeqCDR3"].str.len()
-        unique_length, counts_length = np.unique(np.array(length), return_counts = True)
+        unique_length, counts_length = np.unique(np.array(length)
+                                                 , return_counts = True)
 
             # add every single subplot to the figure with a for loop
         ax = fig.add_subplot(Rows, Cols, Position[n])
         ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
         ax.title.set_text(experiment)
         ax.title.set_size(10)
-        ax.set_ylabel("Read Count", fontsize=6.0)  # Y label
-        ax.set_xlabel('Read Length', fontsize=6.0)  # X label
+        ax.set_ylabel("Read Count",
+                      fontsize=6.0)  # Y label
+        ax.set_xlabel('Read Length',
+                      fontsize=6.0)  # X label
         n += 1
     fig.suptitle('Distribution of number of sequences with certain length')
     plt.show()
-    plt.tight_layout()
+
+
+
+
 
  #   plt.show()
    # plt.bar(unique_length, counts_length)
