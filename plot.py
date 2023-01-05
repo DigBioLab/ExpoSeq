@@ -3,7 +3,7 @@ from python_scripts.plots.usq_plot import plot_USQ
 from python_scripts.plots.plt_heatmap import plot_heatmap
 from python_scripts.plots.logo_plot import plot_logo
 from python_scripts.plots.length_distribution import length_distribution
-class Toolbox():
+class PlotManager():
     def __init__(self, experiment):
         try:
             with open("my_experiments/" + experiment + "/panning_report", "rb") as f:
