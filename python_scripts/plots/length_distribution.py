@@ -1,10 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def length_distribution(sequencing_report_all, samples):
+def length_distribution(sequencing_report, samples):
     if samples == True:
-        unique_experiments = sequencing_report_all["Experiment"].unique()
+        unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
+    else:
+        sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(samples)]
+        unique_experiments = sequencing_report["Experiment"].unique()
+        unique_experiments = np.sort(unique_experiments)
+
     # Subplots are organized in a Rows x Cols Grid
     # Tot and Cols are known
     Tot = unique_experiments.shape[0]
@@ -20,7 +25,7 @@ def length_distribution(sequencing_report_all, samples):
     n = 0
     fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
-        batch = sequencing_report_all[sequencing_report_all["Experiment"] == experiment]
+        batch = sequencing_report[sequencing_report["Experiment"] == experiment]
         length = batch["aaSeqCDR3"].str.len()
         unique_length, counts_length = np.unique(np.array(length)
                                                  , return_counts = True)

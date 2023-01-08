@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-from bool_sequences_matrix import find_seq_matches
+from python_scripts.tidy_data.heatmaps.bool_sequences_matrix import find_seq_matches
+
 def heatmap_sorensen(sequencing_report, protein, specific_experiments):
     heatmap_axis, unique_sequences, unique_experiments = find_seq_matches(sequencing_report,
                                                                           protein,

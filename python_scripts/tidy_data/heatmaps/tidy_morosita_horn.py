@@ -1,6 +1,4 @@
 import numpy as np
-from python_scripts.genetic_dogma import genetic_dogma
-from python_scripts.tidy_data.interpret_data import mapFunc
 import pandas as pd
 from python_scripts.test_data.rename_labels import Library_2_to_panning
 
@@ -22,9 +20,9 @@ def cleaning_data(sequencing_report, protein = True, specific_experiments = Fals
     else:
         strand_column = 'nSeqCDR3'
 
-    group_columns = [strand_column]
+    group_columns = ["Experiment", strand_column]
     column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')
-    sequencing_report[new_fraction] = column
+    #sequencing_report[new_fraction] = column
     sequencing_report = sequencing_report.drop_duplicates(group_columns,
                                                             keep='last')
     unique_experiments = sequencing_report["Experiment"].unique()
@@ -38,6 +36,7 @@ def cleaning_data(sequencing_report, protein = True, specific_experiments = Fals
         unique_sequences = unique_sequences.merge(local_data,
                                                   how='left',
                                                   on = strand_column)
+        unique_sequences = unique_sequences.fillna(0)
         unique_sequences = unique_sequences.rename(columns={new_fraction: new_fraction + experiment})
     unique_sequences.drop(strand_column,
                           inplace=True,

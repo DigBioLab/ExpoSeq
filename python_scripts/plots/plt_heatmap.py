@@ -4,25 +4,29 @@ from ast import literal_eval
 import matplotlib
 import matplotlib.pyplot as plt
 from python_scripts.tidy_data import heatmaps
+from python_scripts.tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
 
 def plot_heatmap(sequencing_report, protein, heatmap, specific_experiments = False, rename_from_dic = True):
 
     if heatmap == "morosita_horn":
-        unique_sequences, unique_experiments = heatmaps.tidy_morosita_horn.cleaning_data(sequencing_report,
+        unique_sequences, unique_experiments = tidy_morosita_horn.cleaning_data(sequencing_report,
                                                              protein = True,
                                                              specific_experiments = specific_experiments)
-        matrix, unique_sequences, unique_experiments = heatmaps.tidy_heatmap.morosita_horn_matrix(unique_sequences,
+        matrix, unique_sequences, unique_experiments = tidy_morosita_horn.morosita_horn_matrix(unique_sequences,
                                                                                                   unique_experiments)
     if heatmap == "jaccard":
-        matrix, unique_sequences, unique_experiments = heatmaps.tidy_jaccard.cleaning_jaccard(sequencing_report,
-                                                                                              protein=protein)
+        matrix, unique_sequences, unique_experiments = tidy_jaccard.cleaning_jaccard(sequencing_report,
+                                                                                              protein=protein,
+                                                                                     specific_experiments = specific_experiments)
 
     if heatmap == "sorensen":
-        matrix, unique_sequences, unique_experiments = heatmaps.tidy_sorensen(sequencing_report,
-                                                                              protein = protein)
+        matrix, unique_sequences, unique_experiments = tidy_sorensen.heatmap_sorensen(sequencing_report,
+                                                                              protein = protein,
+                                                                                      specific_experiments = specific_experiments)
     if heatmap == "relative":
-        matrix, unique_sequences, unique_experiments = heatmaps.tidy_heatmap_share(sequencing_report,
-                                                                                    protein=protein)
+        matrix, unique_sequences, unique_experiments = tidy_heatmap_share.heatmap_share(sequencing_report,
+                                                                                         protein=protein,
+                                                                                        specific_experiments = specific_experiments)
 
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
