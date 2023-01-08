@@ -14,15 +14,6 @@ def collectFiles(filetypes = ('.txt', '.fastq_AlignmentReport')):
     return filenames
 
 
-def collectFiles_kivy():
-    filenames = []
-    data_folder = path.abspath(path) + '\\*'
-    filetypes = ('.txt')
-    filenames.extend(glob(data_folder + filetypes))
-    names = []
-    for filename in filenames:
-        name = path.basename(path.splitext(filename)[0])
-        names.append(name)
-    return filenames, names
+
 
 
