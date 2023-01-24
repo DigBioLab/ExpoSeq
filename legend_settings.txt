@@ -8,5 +8,3 @@
 "mode": None,
 "title_fontsize": 'small',
 }
-
-

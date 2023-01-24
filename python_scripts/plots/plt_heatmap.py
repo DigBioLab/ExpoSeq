@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from python_scripts.tidy_data import heatmaps
 from python_scripts.tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
 
-def plot_heatmap(sequencing_report, protein, heatmap, specific_experiments = False, rename_from_dic = True):
+def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments = False, rename_from_dic = True):
 
     if heatmap == "morosita_horn":
         unique_sequences, unique_experiments = tidy_morosita_horn.cleaning_data(sequencing_report,
@@ -31,14 +31,8 @@ def plot_heatmap(sequencing_report, protein, heatmap, specific_experiments = Fal
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5AGG')
-    ROOT = dirname(abspath('ExpoSeq'))
-    with open(ROOT + '\python_scripts\plots\plot_params\heatmap_plot_params.txt') as f:
-        data = f.read()
-    data = literal_eval(data)
-   # plt.figure(
-    #           dpi = 300)
     sns.heatmap(matrix,
-                **data)
+                ax = ax)
     plt.xticks(rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
     plt.yticks(va='top', size=5)
     savefig = ""

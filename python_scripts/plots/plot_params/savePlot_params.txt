@@ -1,6 +1,0 @@
-{
-"fname": "C:\\Users\\nils\\Desktop\\Tropical Pharmaceutical Lab\\Project\\heatmaps",
-"dpi": 300,
-"format": "png",
-"bbox_inches": "tight",
-}
