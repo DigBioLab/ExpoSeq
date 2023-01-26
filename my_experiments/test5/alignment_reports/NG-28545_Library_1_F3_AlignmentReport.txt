@@ -1,0 +1,23 @@
+Analysis date: Wed Jan 25 14:01:00 CET 2023
+Input file(s): C:\Users\nilsh\OneDrive\Desktop\TPL\NGS_pipeline\data\NG-28545_Library_1_F3_2.fastq
+Output file(s): temp\NG-28545_Library_1_F3.vdjca
+Version: 4.1.2; built=Mon Nov 28 10:16:06 CET 2022; rev=ec9c6fd320; lib=repseqio.v2.0
+Command line arguments: align -p milab-human-tcr-dna-multiplex-cdr3 C:/Users/nilsh/OneDrive/Desktop/TPL/NGS_pipeline/data\NG-28545_Library_1_F3_2.fastq temp/NG-28545_Library_1_F3.vdjca -rmy_experiments/test5/alignment_reports/NG-28545_Library_1_F3_AlignmentReport.txt
+Analysis time: 2,74m
+Total sequencing reads: 1295202
+Successfully aligned reads: 1231099 (95,05%)
+Alignment failed, no hits (not TCR/IG?): 47004 (3,63%)
+Alignment failed because of absence of J hits: 17090 (1,32%)
+Alignment failed because of low total score: 9 (0%)
+Overlapped: 0 (0%)
+Overlapped and aligned: 0 (0%)
+Alignment-aided overlaps: 0 (NaN%)
+Overlapped and not aligned: 0 (0%)
+No CDR3 parts alignments, percent of successfully aligned: 56 (0%)
+Partial aligned reads, percent of successfully aligned: 2044 (0,17%)
+IGH chains: 1231099 (100%)
+IGH non-functional: 31226 (2,54%)
+Realigned with forced non-floating bound: 0 (0%)
+Realigned with forced non-floating right bound in left read: 0 (0%)
+Realigned with forced non-floating left bound in right read: 0 (0%)
+======================================
