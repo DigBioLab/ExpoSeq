@@ -1,0 +1,12 @@
+{"cmap": "rocket",
+"annot": True,
+"annot_kws": {"size": 3},
+"fmt": ".2f",
+"cbar": False,
+"square": True,
+"xticklabels": True,
+"yticklabels": True,
+"linewidths": .1,
+
+}
+

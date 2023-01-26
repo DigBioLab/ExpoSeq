@@ -15,6 +15,7 @@ def cleaning(sample_name, report, chosen_seq_length):
         chosen_sequence = int(sequences.str.len().max())
     if chosen_seq_length == "mean":
         chosen_sequence = int(sequences.str.len().mean())
+
     compDict = {aa: chosen_sequence*[0] for aa in aminoacids}
     sequences = local_report[local_report.aaSeqCDR3.astype(str).str.len() == chosen_sequence]["aaSeqCDR3"]
     length_filtered_seqs = sequences.shape[0]
@@ -28,6 +29,6 @@ def cleaning(sample_name, report, chosen_seq_length):
     aa_distribution = pd.DataFrame.from_dict(compDict)
     #aa_distribution = aa_distribution.divide(aa_distribution.shape[1])
     aa_distribution = aa_distribution.divide(aa_distribution.sum(axis = 1), axis = 0)
-    return aa_distribution, chosen_sequence, length_filtered_seqs
+    return aa_distribution,chosen_sequence, length_filtered_seqs
 
 

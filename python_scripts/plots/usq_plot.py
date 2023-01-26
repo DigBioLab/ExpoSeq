@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 import random
 from collections import Counter
 import warnings
+from python_scripts.plots.plot_params.open_txtfiles import openParams
 
-
-def plot_USQ(sequencing_report, library, font_settings, legend_settings):
+def plot_USQ(sequencing_report, library):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               lib_name = library)
     x_axis = []
     y_axis = []
+    params_plot = openParams('USQ_plot.txt')
+    plot_style = openParams('plot_style.txt')
     fig = plt.figure()
     for sample in range(len(sub_table)):
         sequences = list(sub_table.iloc[sample].nSeqCDR3)
@@ -32,17 +34,16 @@ def plot_USQ(sequencing_report, library, font_settings, legend_settings):
                  [len(x) for x in unique_list],
                  figure = fig,
                  label = sub_table.iloc[sample].Experiment,
-                 alpha = 1,
-                fillstyle = 'full',
-                linewidth = 0.8,
-        )
+                 **params_plot)
         x_axis.append(total_list)
         y_axis.append([len(x) for x in unique_list])
     if len(sub_table) > 7:
         warnings.warn("Risk of Overplotting: Many different colors are used. It may be hard to differ between the data")
   #  for i in range(len(x_axis)):
    #     plt.plot(x_axis[i], y_axis[i], **params_plot)
-    plt.legend(sub_table.Experiment, title = "Sample Names", **legend_settings)
-    plt.xlabel("Total sampled sequences", **font_settings)
-    plt.ylabel("Found Unique Sequences", **font_settings)
+    params_legend = openParams("USQ_plot_legend_params.txt")
+
+    plt.legend(sub_table.Experiment, title = "Sample Names", **params_legend)
+    plt.xlabel("Total sampled sequences", **plot_style)
+    plt.ylabel("Found Unique Sequences", **plot_style)
    # plt.show(fig)

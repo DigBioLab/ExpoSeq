@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def length_distribution(fig, sequencing_report, samples, font_settings):
+def length_distribution(sequencing_report, samples):
     if samples == True:
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -23,7 +23,7 @@ def length_distribution(fig, sequencing_report, samples, font_settings):
     # Create a Position index
     Position = range(1,Tot + 1)
     n = 0
-   # fig = plt.figure(1, constrained_layout=True)
+    fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
         batch = sequencing_report[sequencing_report["Experiment"] == experiment]
         length = batch["aaSeqCDR3"].str.len()
@@ -35,12 +35,10 @@ def length_distribution(fig, sequencing_report, samples, font_settings):
         ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
         ax.title.set_text(experiment)
         ax.title.set_size(10)
-        adapted_fontsize = 10 - Cols + 2
-        font_settings["fontsize"] = adapted_fontsize
         ax.set_ylabel("Read Count",
-                      **font_settings)  # Y label
+                      fontsize=6.0)  # Y label
         ax.set_xlabel('Read Length',
-                      **font_settings)  # X label
+                      fontsize=6.0)  # X label
         n += 1
     fig.suptitle('Distribution of number of sequences with certain length')
     plt.show()
