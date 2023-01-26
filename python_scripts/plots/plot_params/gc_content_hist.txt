@@ -1,7 +1,0 @@
-{
-"bins": 100, # change if you smaller percentage intervals
-"histtype": "step",
-"color": "black",
-"range": (0, 100),
-"density": True,
-}
