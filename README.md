@@ -8,7 +8,7 @@ To get started, please download and follow the instructions for MiXCR under the 
 
 Once MiXCR is installed and set up, you can install the ExpoSeq repository by running the following command:
 ```bash
-pip install ExpoSeq```
+pip install ExpoSeq
 
 ## Importing the Plotting Tool
 
