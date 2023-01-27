@@ -21,3 +21,7 @@ To use the PlotManager to create plots, you will need to upload your FASTQ data 
 
 Once your data is uploaded, you can use the PlotManager to create a variety of plots, such as a Morosita-Horn plot. Here is an example of how to create this type of plot:
 ```plotting.morosita_horn()```
+
+
+## For Collaborators
+open a new project and pull the repository (link in browser) to your IDE. Then, install the libraries with pip install requirements.txt
