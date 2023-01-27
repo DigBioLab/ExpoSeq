@@ -7,7 +7,7 @@ ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files. It util
 To get started, please download and follow the instructions for MiXCR under the following link: https://docs.milaboratories.com/mixcr/getting-started/installation/
 
 Once MiXCR is installed and set up, you can install the ExpoSeq repository by running the following command:
-pip install ExpoSeq
+```pip install ExpoSeq```
 
 ## Importing the Plotting Tool
 
