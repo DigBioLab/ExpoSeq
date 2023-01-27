@@ -1,6 +1,6 @@
 # Welcome to ExpoSeq
 
-ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble T- and B-cell receptors from high-throughput sequencing data.
+ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble from high-throughput sequencing data.
 
 ## Installation
 
