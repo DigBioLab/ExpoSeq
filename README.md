@@ -24,7 +24,7 @@ Once your data is uploaded, you can use the PlotManager to create a variety of p
 If you want to change the style of the plot you can use the class. If you have called it plotting you can do for instance the following: ```plotting.style.title_xaxis("your_title")``` 
 If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
 ```import matplotlib.pyplot as plt```
-plt.xlabel("your_title")
+```plt.xlabel("your_title")```
 
 
 
