@@ -24,4 +24,4 @@ Once your data is uploaded, you can use the PlotManager to create a variety of p
 
 
 ## For Collaborators
-open a new project and pull the repository (link in browser) to your IDE. Then, install the libraries with pip install requirements.txt
+open a new project and pull the repository (link in browser) to your IDE. Then, install the libraries with pip install -r requirements.txt
