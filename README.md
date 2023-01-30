@@ -29,4 +29,4 @@ If you want to implement further plot change you can also refer to the matplotli
 
 
 ## For Collaborators
-open a new project and pull the repository (link in browser) to your IDE. Then, install the libraries with pip install -r requirements.txt
+open a new project and pull the repository (link in browser) to your IDE. Then, install the libraries with ```pip install -r requirements.txt```
