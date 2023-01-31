@@ -66,7 +66,17 @@ def upload():
                             "No Alignment Reports were uploaded. You will continue the analysis without being able to analyze the Alignment Quality.")
                     else:
                         all_alignment_reports = check_completeness(all_alignment_reports, sequencing_report)
-
+                    try:
+                        unique_experiments = sequencing_report["Experiment"].unique()
+                        experiment_dic = {item: item for item in list(unique_experiments)}
+                        with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+                            pickle.dump(experiment_dic, f)
+                    except:
+                        col_name = input("Please type in the exact column name which contains the name of the samples")
+                        unique_experiments = sequencing_report[col_name].unique()
+                        experiment_dic = {item: item for item in list(unique_experiments)}
+                        with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+                            pickle.dump(experiment_dic, f)
             if next_step == "2":
                 while True:
                     user_input = input("Enter the name of the experiment you want to analyze")
@@ -165,6 +175,5 @@ def upload():
                     pickle.dump(experiment_dic, f)
         else:
             pass
-
 
     return sequencing_report, all_alignment_reports, experiment

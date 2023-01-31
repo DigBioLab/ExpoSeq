@@ -21,6 +21,7 @@ class PlotManager:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+
         else:
             with open("test_data/sequencing_report.txt", "rb") as f:
                 self.sequencing_report = pd.read_table(f, sep = ",")
@@ -29,6 +30,7 @@ class PlotManager:
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
@@ -46,15 +48,28 @@ class PlotManager:
         else:
             self.binding_data = self.add_binding
     def print_samples(self):
-        print(self.sequencing_report["Experiment"].unique())
+        print(self.unique_experiments)
     def save(self):
         saveFig()
     def close(self):
         plt.close()
 
-    def
+    def change_experiment_names(self, specific = False):
+        if specific == False:
+            for key in self.unique_experiments:
+                print(f"Current value for {key}: {self.unique_experiments[key]}")
+                new_value = input("Enter a new value or press any key to skip")
+                if len(new_value) > 1:
+                    self.unique_experiments[key] = new_value
+                else:
+                    pass
+        else:
+            new_value = input("Enter the new name for " + specific)
+            self.unique_experiments[specific] = new_value
 
-    def usqPlot(self, library, font_settings, legend_settings):
+
+
+    def usqPlot(self, library):
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_USQ(sequencing_report = self.sequencing_report,
