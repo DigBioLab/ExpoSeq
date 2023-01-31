@@ -14,20 +14,26 @@ def add_fastq_files():
     while True:
         path_to_files = filedialog.askdirectory()
         filenames.extend(glob(path_to_files + "/*.fastq"))
+        print("These are the files you chose:")
+        for i in filenames:
+            print(os.path.basename(i))
         read_more_files = input("do you want to add another folder? (Y/n)")
+
         if read_more_files == "Y" or read_more_files == "y":
             continue
         else:
             break
     sorted(filenames)
+
     return filenames
 
 
 def process_mixcr(experiment):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
+
     ROOT = dirname(abspath('ExpoSeq'))
-    with open(ROOT + 'global_vars.txt') as f:
+    with open(ROOT + '\global_vars.txt') as f:
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]

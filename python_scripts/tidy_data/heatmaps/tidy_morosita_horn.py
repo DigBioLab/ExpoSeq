@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from python_scripts.test_data.rename_labels import Library_2_to_panning
+from test_data.rename_labels import Library_2_to_panning
 
 
 def cleaning_data(sequencing_report, protein = True, specific_experiments = False):

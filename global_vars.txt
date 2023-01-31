@@ -1,6 +1,6 @@
 {
-"mixcr_path": "C:\\Users\\nilsh\\OneDrive\\Desktop\\TPL\\NGS_pipeline\\mixcr.jar",
-"last_experiment": "chris_pannings",
+"mixcr_path": "",
+"last_experiment": "",
 "fontfamily": "serif",
 "fontsize": "medium",
 "fontstyle": "normal",

@@ -1,7 +1,6 @@
 # USQ = unique sequences quality
-from python_scripts.tidy_data import read_extract_data
 from python_scripts.tidy_data.interpret_data import add_fraction
-from python_scripts.test_data.rename_labels import Library_2_to_panning
+from test_data.rename_labels import Library_2_to_panning
 
 def cleaning_data(sequencing_report, lib_name):
     sub_table = sequencing_report[sequencing_report["Experiment"].str.contains(lib_name)]

@@ -2,7 +2,7 @@ import pandas as pd
 from python_scripts.tidy_data.heatmaps.bool_sequences_matrix import find_seq_matches
 import numpy as np
 
-#sequencing_report = pd.read_table(r"C:\Users\nilsh\PycharmProjects\ExpoSeq\python_scripts\test_data\panning_report", sep = ",")
+#sequencing_report = pd.read_table(r"C:\Users\nilsh\PycharmProjects\ExpoSeq\python_scripts\test_data\sequencing_report.txt", sep = ",")
 #sequencing_report = sequencing_report.drop('Unnamed: 0', axis=1)
 #protein = True
 def cleaning_jaccard(sequencing_report, protein, specific_experiments):

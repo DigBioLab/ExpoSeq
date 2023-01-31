@@ -12,13 +12,19 @@ from tkinter import filedialog
 from ast import literal_eval
 from python_scripts.plots.barplot import barplot
 from plot_styler import PlotStyle
+import pandas as pd
 
 class PlotManager:
     def __init__(self, test_version = False):
         if test_version == False:
             self.sequencing_report, self.global_params = upload()
         else:
-            self.sequencing_report, self.global_params =
+            with open("test_data/sequencing_report.txt", "rb") as f:
+                self.sequencing_report = pd.read_table(f, sep = ",")
+            with open("global_vars.txt", "r") as f:
+                self.global_params = f.read()
+            self.global_params = literal_eval(self.global_params)
+
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)

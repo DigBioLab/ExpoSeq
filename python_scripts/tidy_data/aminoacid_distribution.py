@@ -1,7 +1,7 @@
 import numpy as np
 from python_scripts.tidy_data.interpret_data import mapFunc
 from python_scripts.genetic_dogma import genetic_dogma
-from python_scripts.test_data.rename_labels import Library_2_to_panning
+from test_data.rename_labels import Library_2_to_panning
 from collections import Counter
 from pandas import DataFrame, concat
 import matplotlib.pyplot as plt
