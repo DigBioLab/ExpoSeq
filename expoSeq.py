@@ -14,8 +14,11 @@ from python_scripts.plots.barplot import barplot
 from plot_styler import PlotStyle
 
 class PlotManager:
-    def __init__(self):
-        self.sequencing_report, self.global_params = upload()
+    def __init__(self, test_version = False):
+        if test_version == False:
+            self.sequencing_report, self.global_params = upload()
+        else:
+            self.sequencing_report, self.global_params =
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
