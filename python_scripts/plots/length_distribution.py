@@ -1,7 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def length_distribution(fig, sequencing_report, samples, font_settings):
+def length_distribution_single(fig,ax, sequencing_report, sample, font_settings):
+    batch = sequencing_report[sequencing_report["Experiment"] == sample]
+    length = batch["aaSeqCDR3"].str.len()
+    unique_length, counts_length = np.unique(np.array(length)
+                                                , return_counts = True)
+    max_length = np.max(unique_length)
+
+    ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
+    ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
+    ax.title.set_text(sample)
+    ax.title.set_size(10)
+
+    ax.set_ylabel("Read Count",
+                      **font_settings)  # Y label
+    ax.set_xlabel('Read Length',
+                      **font_settings)  # X label
+
+    fig.suptitle('Distribution of number of sequences with certain length')
+
+
+
+def length_distribution_multi(fig, sequencing_report, samples, font_settings):
     if samples == True:
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)

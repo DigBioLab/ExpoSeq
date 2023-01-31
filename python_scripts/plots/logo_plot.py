@@ -27,7 +27,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                                               color="lightcyan")
 
 
-def plot_logo_multi(fig, sequencing_report, samples,font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
+def plot_logo_multi(fig, sequencing_report, samples,font_settings, chosen_seq_length = 16):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -70,14 +70,7 @@ def plot_logo_multi(fig, sequencing_report, samples,font_settings, highlight_spe
                                    rotation=0)
             plt.title(i, **font_settings) # check out https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.title.html
 
-            if highlight_specific_pos != False:
-                logo_plot.highlight_position(p = 5,
-                                             color = 'gold',
-                                             alpha = .5)
-            if highlight_pos_range != False:
-                logo_plot.ax.highlight_position_range(pmin = 3,
-                                                      pmax = 5,
-                                                      color = "lightcyan")
+
             n = n + 1
         else:
             print("Sample " + i + "was skipped because no sequence was found")
