@@ -15,6 +15,7 @@ from python_scripts.plots.barplot import barplot
 from plot_styler import PlotStyle
 import pandas as pd
 import pickle
+import chat_bot
 
 class PlotManager:
     def __init__(self, test_version = False):
@@ -52,7 +53,8 @@ class PlotManager:
         self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
 
-
+    def askMe(self):
+        chat_bot.askMe(self.global_params)
     def print_antigens(self):
         print(self.binding_data.columns.to_list()[1:-1])
     def print_samples(self):
@@ -214,15 +216,24 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
 
     def embedding_tsne(self,
-                       list_experiments,
+                       samples,
                        strands = True,
                        pca_components = 80,
                        perplexity = 30,
                        iterations_tsne = 2500):
+        """
+
+        :param samples: the samples you would like to compare towards their sequences
+        :param strands: Default is True. It means that you will plot a batch of the strands in your plot
+        :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
+        :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
+        :param iterations_tsne: number of iterations the model
+        :return:
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         show_difference(self.sequencing_report,
-                        list_experiments,
+                        samples,
                         strands,
                         self.batch_size,
                         pca_components,
