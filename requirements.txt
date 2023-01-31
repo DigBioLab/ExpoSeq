@@ -11,3 +11,4 @@ networkx
 PyQt5
 sgt
 scikit-learn
+openai
