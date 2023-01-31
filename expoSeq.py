@@ -16,9 +16,17 @@ from plot_styler import PlotStyle
 import pandas as pd
 import pickle
 import chat_bot
-
+import os
 class PlotManager:
     def __init__(self, test_version = False):
+        if os.path.isdir("my_experiments"):
+            pass
+        else:
+            os.mkdir("my_experiments")
+        if os.path.isdir("temp"):
+            pass
+        else:
+            os.mkdir("temp")
         if test_version == False:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
