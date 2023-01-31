@@ -1,1 +1,1 @@
-{'mixcr_path': 'C:/Users/nilsh/OneDrive/Desktop/DTU/NGS_pipeline/mixcr-4.2.0/mixcr.jar', 'last_experiment': '', 'fontfamily': 'serif', 'fontsize': 'medium', 'fontstyle': 'normal', 'fontweight': 'bold', 'position': (0.5, 0.5)}
+test14

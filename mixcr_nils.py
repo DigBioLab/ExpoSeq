@@ -5,7 +5,7 @@ from tkinter import filedialog
 import subprocess
 from os.path import dirname, abspath
 from ast import literal_eval
-
+import pickle
 import pandas as pd
 
 
@@ -29,7 +29,7 @@ def add_fastq_files():
     return filenames
 
 
-def process_mixcr(experiment,method = "milab-human-tcr-dna-multiplex-cdr3", paired_end_sequencing = False):
+def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
 
@@ -137,6 +137,7 @@ def process_mixcr(experiment,method = "milab-human-tcr-dna-multiplex-cdr3", pair
         clones_sample = clones_sample.reset_index()
         clones_sample = clones_sample.drop(columns = ["readFraction_y", "index"])
         clones_sample = clones_sample.rename(columns={"readFraction_x": "clonesFraction"})
+        clones_sample["Experiment"] = filename_base
         sequencing_report = pd.concat([sequencing_report, clones_sample])
         files_to_remove = os.listdir("temp")
         for file in files_to_remove:
@@ -146,6 +147,7 @@ def process_mixcr(experiment,method = "milab-human-tcr-dna-multiplex-cdr3", pair
     data["last_experiment"] = experiment
     with open("global_vars.txt", "w") as f:
         f.write(str(experiment))
-    unique_experiments = sequencing_report["Experiments"].unique()
-    with open("my_experiments/" + experiment + "/unique_experiments.txt", "w") as f:
-        f.write(unique_experiments)
+    unique_experiments = sequencing_report["Experiment"].unique()
+    experiment_dic = {item: item for item in list(unique_experiments)}
+    with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+        pickle.dump(experiment_dic, f)

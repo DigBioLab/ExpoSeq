@@ -13,18 +13,22 @@ from ast import literal_eval
 from python_scripts.plots.barplot import barplot
 from plot_styler import PlotStyle
 import pandas as pd
+import pickle
 
 class PlotManager:
     def __init__(self, test_version = False):
         if test_version == False:
-            self.sequencing_report, self.global_params = upload()
+            self.sequencing_report, self.alignment_report, self.experiment = upload()
+            with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
+                self.unique_experiments = pickle.load(f)
         else:
             with open("test_data/sequencing_report.txt", "rb") as f:
                 self.sequencing_report = pd.read_table(f, sep = ",")
             with open("global_vars.txt", "r") as f:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
-
+            with open("test_data/experiment_names.pickle", "rb") as f:
+                self.unique_experiments = pickle.load(f)
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
@@ -47,6 +51,9 @@ class PlotManager:
         saveFig()
     def close(self):
         plt.close()
+
+    def
+
     def usqPlot(self, library, font_settings, legend_settings):
         self.fig.clear()
         self.ax = self.fig.gca()
