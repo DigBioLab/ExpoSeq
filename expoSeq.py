@@ -150,6 +150,9 @@ class PlotManager:
                             self.sequencing_report,
                             samples,
                             font_settings=self.font_settings)
+        self.plot_type = "multi"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
 
 
     def basic_cluster(self, sample):
@@ -177,7 +180,9 @@ class PlotManager:
                           self.binding_data,
                           specific_experiments,
                           self.batch_size)
-        self.zero = 1
+        self.plot_type = "multi"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
    # def cluster_multiple_AG(self, sample, antigens):
     #    self.fig.clear()
      #   self.ax = self.fig.gca()
@@ -227,7 +232,7 @@ class PlotManager:
         :param strands: Default is True. It means that you will plot a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
-        :param iterations_tsne: number of iterations the model
+        :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
         :return:
         """
         self.fig.clear()
@@ -244,51 +249,70 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         self.zero = 1
-    def morosita_horn(self):
+    def morosita_horn(self, specific_samples = False):
+        """
+        :param specific_experiments: you can give a list with specific experiments
+        :return: Returns a matrix of the identity between your samples based on the Morosita Horn Index
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_heatmap(self.sequencing_report,
                      True,
                      "morosita_horn",
                      self.ax,
-                     specific_experiments = False,
+                     specific_experiments = specific_experiments,
                      )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
-    def jaccard(self):
+    def jaccard(self, specific_samples = False):
+        """
+
+        :param specific_experiments: give a list with specific samples you would like to analyze
+        :return: Returns a matrix of the identity between your samples based on the Jaccard Index
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_heatmap(self.sequencing_report,
                      True,
                      "jaccard",
                      self.ax,
-                     specific_experiments = False,
+                     specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-    def sorensen(self):
+    def sorensen(self, specific_samples = False):
+        """
+
+        :param specific_samples: give a list with specific samples you would like to analyze
+        :return: Returns a matrix of the identity between your samples based on the Sorensen Dice Index
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_heatmap(self.sequencing_report,
                      True,
                      "sorensen",
                      self.ax,
-                     specific_experiments = False,
+                     specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-    def relative(self):
+    def relative(self, specific_samples = False):
+        """
+
+        :param specific_samples: give a list with specific samples you would like to analyze
+        :return: Returns a matrix of the identity between your samples based on the proportion of identical sequences
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_heatmap(self.sequencing_report,
                      True,
                      "relative",
                      self.ax,
-                     specific_experiments = False,
+                     specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
         self.ax = self.fig.gca()
