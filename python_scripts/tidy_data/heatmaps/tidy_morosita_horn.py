@@ -46,7 +46,7 @@ def cleaning_data(sequencing_report, protein = True, specific_experiments = Fals
 
 
 
-def morosita_horn_matrix(unique_sequences, unique_experiments, rename_from_dic = True):
+def morosita_horn_matrix(unique_sequences, unique_experiments):
 
     columns = len(unique_experiments)
     morosita_horn_matrix = np.zeros((columns,
@@ -74,11 +74,6 @@ def morosita_horn_matrix(unique_sequences, unique_experiments, rename_from_dic =
     matrix = pd.DataFrame(morosita_horn_matrix,
                           index = list(unique_experiments),
                           columns = list(unique_experiments))
-    if rename_from_dic == True:
-        matrix.rename(columns = Library_2_to_panning,
-                      inplace = True)
-        matrix.rename(index = Library_2_to_panning,
-                      inplace = True)
     return matrix, unique_sequences, unique_experiments
 
 
@@ -102,8 +97,5 @@ def morosita_horn_matrix_two(unique_sequences, unique_experiments):
     matrix = pd.DataFrame(morosita_horn_matrix,
                           index = column_names,
                           columns = column_names)
-    matrix.rename(columns = Library_2_to_panning,
-                  inplace = True)
-    matrix.rename(index = Library_2_to_panning,
-                  inplace = True)
+
     return morosita_horn_matrix, matrix

@@ -4,6 +4,7 @@ from python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
 from python_scripts.plots.length_distribution import length_distribution_multi, length_distribution_single
 from python_scripts.augment_data.binding_data import collect_binding_data
 from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG, cluster_antigens
+from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
 from python_scripts.plots.cluster_embedding import show_difference
 from python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
@@ -21,6 +22,7 @@ class PlotManager:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.add_binding = input("Do you have binding Data? Y/n")
             if self.add_binding.lower() in ["Y", "y"]:
                 self.binding_data = collect_binding_data()
@@ -28,12 +30,13 @@ class PlotManager:
                 self.binding_data = self.add_binding
         else:
             with open("test_data/sequencing_report.csv", "rb") as f:
-                self.sequencing_report = pd.read_table(f, sep = ",")
+                self.sequencing_report = pd.read_csv(f, sep = ",")
             with open("global_vars.txt", "r") as f:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.binding_data = pd.read_table("test_data/binding_data.txt", sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
         with open('font_settings.txt', "r") as f:
@@ -53,7 +56,7 @@ class PlotManager:
     def print_antigens(self):
         print(self.binding_data.columns.to_list()[1:-1])
     def print_samples(self):
-        print(self.unique_experiments)
+        print(self.unique_experiments.keys())
     def save(self):
         saveFig()
     def close(self):
@@ -71,7 +74,7 @@ class PlotManager:
         else:
             new_value = input("Enter the new name for " + specific)
             self.unique_experiments[specific] = new_value
-
+        self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
 
     def usqPlot(self, library):
         """
@@ -148,7 +151,11 @@ class PlotManager:
 
 
     def basic_cluster(self, sample):
+        """
 
+        :param sample: type in a sample name you want to analyze
+        :return:
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         clusterSeq(
@@ -169,17 +176,43 @@ class PlotManager:
                           specific_experiments,
                           self.batch_size)
         self.zero = 1
-    def cluster_multiple_AG(self, sample, antigens):
+   # def cluster_multiple_AG(self, sample, antigens):
+    #    self.fig.clear()
+     #   self.ax = self.fig.gca()
+      #  cluster_antigens(self.sequencing_report,
+       #                  sample,
+        #                 antigens,
+         #                self.batch_size)
+        #self.plot_type = "multi"
+        #self.ax = self.fig.gca()
+        #self.style = PlotStyle(self.ax, self.plot_type)
+        #self.zero = 1
+    def tsne_cluster_AG(self, sample, toxins, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
+        """
+
+        :param sample: the sample you would like to analyze
+        :param toxins: the toxins you would like to cluster
+        :param pca_components: optional. Default is 70
+        :param perplexity: optional. Default 25
+        :param iterations_tsne: optional. Default is 2500
+        :return: It first embeds the sequences in a vector space and then clusters them with PCA and TSNE. The sequences with the binding data are processed with the input sequences, to enable the plotting of the binding data.
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
-        cluster_antigens(self.sequencing_report,
-                         sample,
-                         antigens,
-                         self.batch_size)
-        self.plot_type = "multi"
+        cluster_toxins_tsne(self.fig,
+                            self.ax,
+                            self.sequencing_report,
+                            sample,
+                            toxins,
+                            self.binding_data,
+                            self.font_settings,
+                            pca_components,
+                            perplexity,
+                            iterations_tsne)
+        self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-        self.zero = 1
+
     def embedding_tsne(self,
                        list_experiments,
                        strands = True,
@@ -212,7 +245,6 @@ class PlotManager:
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-
 
     def jaccard(self):
         self.fig.clear()

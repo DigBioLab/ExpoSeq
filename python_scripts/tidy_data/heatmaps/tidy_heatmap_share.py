@@ -24,8 +24,8 @@ def heatmap_share(sequencing_report, protein, specific_experiments):
             a = lib_matches
             b = d1.sum() - lib_matches
             c = d2.sum() - lib_matches
-            heatmap_absolute[index_sample_one, index_sample_two] = float(lib_matches / identity_both)
-            heatmap_absolute[index_sample_two, index_sample_one] = float(lib_matches / identity_both)
+            heatmap_absolute[index_sample_one, index_sample_two] = float(lib_matches / shape_second_sample)
+            heatmap_absolute[index_sample_two, index_sample_one] = float(lib_matches / shape_second_sample)
     matrix = pd.DataFrame(heatmap_absolute,
                           index=list(unique_experiments),
                           columns=list(unique_experiments))
