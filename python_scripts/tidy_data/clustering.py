@@ -1,7 +1,7 @@
 from scipy.sparse import csr_matrix
-from networkx.convert_matrix import from_scipy_sparse_matrix
 import numpy as np
 import editdistance
+import networkx as nx
 
 def cleaning(report):
     aa = list(report["aaSeqCDR3"])
@@ -22,7 +22,7 @@ def cleaning(report):
     mat = csr_matrix((collect_coordinates[:, 2],
                       (collect_coordinates[:, 0], collect_coordinates[:, 1])),
                      (len(aa), len(aa)))
-    G = from_scipy_sparse_matrix(mat)
+    G = nx.from_scipy_sparse_matrix(mat)
     degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
     return G, degree_sequence
 

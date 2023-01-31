@@ -1,18 +1,17 @@
 from python_scripts.tidy_data.tidy_USQ_plot_ import cleaning_data
-import matplotlib
-matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import random
 from collections import Counter
 import warnings
+import matplotlib
+matplotlib.use('Qt5Agg')
 
-
-def plot_USQ(sequencing_report, library, font_settings, legend_settings):
+def plot_USQ(fig, sequencing_report, library, font_settings, legend_settings):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               lib_name = library)
+
     x_axis = []
     y_axis = []
-    fig = plt.figure()
     for sample in range(len(sub_table)):
         sequences = list(sub_table.iloc[sample].nSeqCDR3)
         fraction = list(sub_table.iloc[sample].clonefrac)
@@ -45,4 +44,4 @@ def plot_USQ(sequencing_report, library, font_settings, legend_settings):
     plt.legend(sub_table.Experiment, title = "Sample Names", **legend_settings)
     plt.xlabel("Total sampled sequences", **font_settings)
     plt.ylabel("Found Unique Sequences", **font_settings)
-   # plt.show(fig)
+

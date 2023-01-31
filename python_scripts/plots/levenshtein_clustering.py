@@ -42,19 +42,6 @@ def clusterSeq(sequencing_report, sample, batch_size):
 
 
 
-DELFIA1 = pd.read_csv(r"C:\Users\nilsh\OneDrive\Desktop\TPL\NGS_pipeline\data\Binding_data\Chris_main_df.csv")
-DELFIA2 = pd.read_csv(r"C:\Users\nilsh\OneDrive\Desktop\TPL\NGS_pipeline\data\Binding_data\Helen_project_df.csv")
-DELFIA3 = pd.read_csv(r"C:\Users\nilsh\OneDrive\Desktop\TPL\NGS_pipeline\data\Binding_data\Line_project_df.csv")
-DELFIA4 = pd.read_csv(r"C:\Users\nilsh\OneDrive\Desktop\TPL\NGS_pipeline\data\Binding_data\Chris_myo_project_df.csv")
-delfia_samples = pd.concat([DELFIA1,DELFIA2,DELFIA3,DELFIA4])
-delfia_samples = delfia_samples.rename(columns={'JUNCTION_H':'aaSeqCDR3'})
-
-
-
-#report_batch = sequencing_report_all[sequencing_report_all["Experiment"] == library]
-
-#report_batch = report_batch[["Experiment", "cloneCount", "aaSeqCDR3"]]
-
 
 def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experiments = False, batch_size = 300):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)

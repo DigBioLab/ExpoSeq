@@ -3,6 +3,5 @@
 "fontsize": "medium",
 "fontstyle": "normal",
 "fontweight": "bold",
-"position": (0.5, 0.5),
 #rotation
 }

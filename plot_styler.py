@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from ast import literal_eval
 
 class PlotStyle:
-    def __init__(self, ax):
+    def __init__(self, ax, ):
         self.ax = ax
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()

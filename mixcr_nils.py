@@ -146,7 +146,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     sequencing_report.to_csv("my_experiments/" + experiment + "/sequencing_report.txt")
     data["last_experiment"] = experiment
     with open("global_vars.txt", "w") as f:
-        f.write(str(experiment))
+        f.write(str(data))
     unique_experiments = sequencing_report["Experiment"].unique()
     experiment_dic = {item: item for item in list(unique_experiments)}
     with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:

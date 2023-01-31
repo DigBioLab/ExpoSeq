@@ -1,10 +1,34 @@
 import logomaker
-from python_scripts.plots.plot_params.open_txtfiles import openParams
 import numpy as np
 import matplotlib.pyplot as plt
 from python_scripts.tidy_data.tidy_seqlogoPlot import cleaning
 
-def plot_logo(fig, sequencing_report, samples,font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
+
+def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16)
+    aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
+                                                                      sequencing_report,
+                                                                      chosen_seq_length)
+    logo_plot = logomaker.Logo(aa_distribution,
+                               shade_below=.5,
+                               fade_below=.5,
+                               font_name='Arial Rounded MT Bold',
+                               ax=ax,
+                               )
+    logo_plot.style_xticks(anchor=0,
+                           spacing=1,
+                           rotation=0)
+    plt.title("Logo Plot" + sample, **font_settings)
+    if highlight_specific_pos != False:
+        logo_plot.highlight_position(p=5,
+                                     color='gold',
+                                     alpha=.5)
+    if highlight_pos_range != False:
+        logo_plot.ax.highlight_position_range(pmin=3,
+                                              pmax=5,
+                                              color="lightcyan")
+
+
+def plot_logo_multi(fig, sequencing_report, samples,font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -21,7 +45,7 @@ def plot_logo(fig, sequencing_report, samples,font_settings, highlight_specific_
     # Create a Position index
     Position = range(1, Tot + 1)
     n = 0
-    adapted_fontsize = 10 - Cols + 2
+    adapted_fontsize = 10 - int(Cols) + 2
     font_settings["fontsize"] = adapted_fontsize
   #  fig = plt.figure(1, constrained_layout=True)
     for i in unique_experiments:
@@ -41,7 +65,7 @@ def plot_logo(fig, sequencing_report, samples,font_settings, highlight_specific_
                                         font_name='Arial Rounded MT Bold',
                                         ax=ax,
                                         )
-            logo_plot.set_xticks(range(aa_distribution.shape[0]))
+            #logo_plot.set_xticks(range(aa_distribution.shape[0]))
             logo_plot.style_xticks(anchor=0,
                                    spacing=1,
                                    rotation=0)

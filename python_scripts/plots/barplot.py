@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
-from python_scripts.plots.plot_params.open_txtfiles import openParams
 from python_scripts.tidy_data.barplot import cleaning_data
 import numpy as np
 import matplotlib
-def barplot(all_alignment_reports, sequencing_report_all, apply_log = True):
+def barplot(all_alignment_reports, sequencing_report_all,font_settings, legend_settings, apply_log = True):
     matplotlib.use("Qt5Agg")
     boxplot_data_frame = cleaning_data(all_alignment_reports,
                                        sequencing_report_all)
@@ -14,11 +13,9 @@ def barplot(all_alignment_reports, sequencing_report_all, apply_log = True):
             label="Aligned Reads",
             color="royalblue")
     plt.xticks(rotation=45, ha = 'right', size=5)
-    params_legend = openParams("USQ_plot_legend_params.txt")
-    plt.legend(**params_legend)
-    plot_style = openParams('plot_style.txt')
-    plt.ylabel("Reads Count", **plot_style)
-    plt.xlabel("Sample", **plot_style)
+    plt.legend(**legend_settings)
+    plt.ylabel("Reads Count", **font_settings)
+    plt.xlabel("Sample", **font_settings)
     if apply_log == True:
         plt.yscale("log")
     plt.tight_layout()

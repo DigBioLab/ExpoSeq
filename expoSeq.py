@@ -1,6 +1,6 @@
 from python_scripts.plots.usq_plot import plot_USQ
 from python_scripts.plots.plt_heatmap import plot_heatmap
-from python_scripts.plots.logo_plot import plot_logo
+from python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
 from python_scripts.plots.length_distribution import length_distribution
 from python_scripts.augment_data.binding_data import collect_binding_data
 from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG, cluster_antigens
@@ -30,7 +30,6 @@ class PlotManager:
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
-
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
@@ -40,7 +39,7 @@ class PlotManager:
         self.zero = 0
         self.batch_size = 300
         self.add_binding = input("Do you have binding Data? Y/n")
-        self.fig = plt.figure(1, constrained_layout=True)
+        self.fig = plt.figure(1)
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax)
         if self.add_binding.lower() in ["Y", "y"]:
@@ -68,14 +67,17 @@ class PlotManager:
             self.unique_experiments[specific] = new_value
 
 
-
     def usqPlot(self, library):
         self.fig.clear()
         self.ax = self.fig.gca()
-        plot_USQ(sequencing_report = self.sequencing_report,
+        plot_USQ(fig = self.fig,
+                sequencing_report = self.sequencing_report,
                  library = library,
                  font_settings = self.font_settings,
                  legend_settings = self.legend_settings)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
         self.zero = 1
     def logoPlot(self,
                  samples = "all",
@@ -83,21 +85,22 @@ class PlotManager:
                  highlight_pos_range = False,
                  chosen_seq_length = 16):
         self.fig.clear()
-        self.ax = self.fig.gca()
-        plot_logo(self.fig,
+        plot_logo_multi(self.fig,
                   self.sequencing_report,
                   samples,
+                  self.font_settings,
                   highlight_specific_pos,
-                  highlight_pos_range)
+                  highlight_pos_range,
+                  chosen_seq_length)
+
         self.zero = 1
     def lengthDistribution(self, samples = "all"):
         self.fig.clear()
-        self.ax = self.fig.gca()
         length_distribution(self.fig,
                             self.sequencing_report,
                             samples,
                             font_settings=self.font_settings)
-        self.zero = 1
+
 
     def basic_cluster(self, sample):
         self.fig.clear()
@@ -139,6 +142,10 @@ class PlotManager:
                         perplexity,
                         iterations_tsne,
                         self.ax)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
+        self.zero = 1
     def morosita_horn(self):
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -148,7 +155,11 @@ class PlotManager:
                      self.ax,
                      specific_experiments = False,
                      )
-        self.zero = 1
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
+
+
     def jaccard(self):
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -158,7 +169,9 @@ class PlotManager:
                      self.ax,
                      specific_experiments = False,
                      )
-        self.zero = 1
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
     def sorensen(self):
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -168,7 +181,9 @@ class PlotManager:
                      self.ax,
                      specific_experiments = False,
                      )
-        self.zero = 1
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
     def relative(self):
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -178,7 +193,9 @@ class PlotManager:
                      self.ax,
                      specific_experiments = False,
                      )
-        self.zero = 1
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax)
 
 
 

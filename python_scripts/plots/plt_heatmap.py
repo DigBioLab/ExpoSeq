@@ -30,7 +30,7 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments =
 
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
-    matplotlib.use('Qt5AGG')
+    matplotlib.use('Qt5Agg')
     sns.heatmap(matrix,
                 ax = ax)
     plt.xticks(rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
