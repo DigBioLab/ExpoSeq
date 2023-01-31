@@ -27,7 +27,7 @@ class PlotManager:
             else:
                 self.binding_data = self.add_binding
         else:
-            with open("test_data/sequencing_report.txt", "rb") as f:
+            with open("test_data/sequencing_report.csv", "rb") as f:
                 self.sequencing_report = pd.read_table(f, sep = ",")
             with open("global_vars.txt", "r") as f:
                 self.global_params = f.read()
