@@ -105,7 +105,9 @@ class PlotManager:
     def basic_cluster(self, sample):
         self.fig.clear()
         self.ax = self.fig.gca()
-        clusterSeq(self.sequencing_report,
+        clusterSeq(
+                   self.ax,
+                   self.sequencing_report,
                    sample,
                    self.batch_size)
         self.zero = 1

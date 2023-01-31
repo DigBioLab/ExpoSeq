@@ -3,8 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from python_scripts.tidy_data.tidy_seqlogoPlot import cleaning
 
-
-def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16)
+def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
     aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
                                                                       sequencing_report,
                                                                       chosen_seq_length)

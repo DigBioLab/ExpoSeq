@@ -5,17 +5,14 @@ import networkx
 import math
 import pandas as pd
 
-def clusterSeq(sequencing_report, sample, batch_size):
+def clusterSeq(ax, sequencing_report, sample, batch_size):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     sample_report = sample_report.head(batch_size)
     G, degree_sequence = cleaning(sample_report)
-    fig = plt.figure(sample,
-                     figsize=(5, 5),
-                     constrained_layout = True)
+
     # Create a gridspec for adding subplots of different sizes
     clone_counts = sample_report["cloneCount"]
-    axgrid = fig.add_gridspec(5, 4)
-    ax0 = fig.add_subplot(axgrid[0:3, :])
+
     G_deg = G.degree()
     to_remove = [n for (n, deg) in G_deg if deg == 0]
     G.remove_nodes_from(to_remove)
@@ -30,17 +27,17 @@ def clusterSeq(sequencing_report, sample, batch_size):
             nodesize[y] = 15
         if n == 0:
             nodesize[y] = 50
+    networkx.draw_networkx(G, arrows = True, with_labels = False,ax = ax)
     networkx.draw_networkx_nodes(G, pos=networkx.spring_layout(G), node_size = nodesize)
-    ax0.set_title("Connected components of " + sample)
-    ax0.set_axis_off()
-    ax2 = fig.add_subplot(axgrid[3:, :])
+    ax.set_title("Connected components of " + sample)
+    ax.set_axis_off()
+    fig2 = plt.figure()
+    ax2 = fig2.gca()
     ax2.bar(*unique(degree_sequence, return_counts=True))
     ax2.set_title(sample + ' Histogram')
     ax2.set_xlabel("Degree")
     ax2.set_ylabel("# of Nodes")
     plt.savefig(sample + '.png', dpi=300)
-
-
 
 
 def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experiments = False, batch_size = 300):
