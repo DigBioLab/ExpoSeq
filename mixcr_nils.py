@@ -1,4 +1,5 @@
 import os
+import sys
 from glob import glob
 from tkinter import filedialog
 import subprocess
@@ -28,12 +29,12 @@ def add_fastq_files():
     return filenames
 
 
-def process_mixcr(experiment):
+def process_mixcr(experiment,method = "milab-human-tcr-dna-multiplex-cdr3", paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
 
-    ROOT = dirname(abspath('ExpoSeq'))
-    with open(ROOT + '\global_vars.txt') as f:
+
+    with open('global_vars.txt') as f:
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]
@@ -41,45 +42,54 @@ def process_mixcr(experiment):
         print("choose the mixcr java file with the file chooser")
         path_to_mixcr = filedialog.askopenfilename()
         data["mixcr_path"] = path_to_mixcr
-        f = open(ROOT + 'global_vars.txt' 'w')
-        f.write(str(data))
+        with open("global_vars.txt", "w") as f:
+            f.write(str(data))
+
     else:
         pass
 
     #kAligner2_4.0
     #nebnext-human-bcr-cdr3
     #milab-human-tcr-dna-multiplex-cdr3
+    os.mkdir("my_experiments/" + experiment)
+    os.mkdir("my_experiments/" + experiment + "/alignment_reports")  # raise error if already exists
 
-    paired_end_sequencing = False
-    filenames_unique = [unique for unique in filenames if "_1.fastq" in unique]
     sequencing_report = pd.DataFrame([])
-    for i in filenames_unique:
-        file_one = i
-        filenames.remove(file_one)
-        basename = os.path.basename(os.path.splitext(file_one)[0])
-        basename = basename[:len(basename) - 2]
-        if paired_end_sequencing == True:
+    if paired_end_sequencing == True:
+        filenames_unique_reverse = [unique for unique in filenames if "2.fastq" in unique]
+        filenames_unique_forward = [unique for unique in filenames if "1.fastq" in unique]
+        combined_filenames = []
+        for i in filenames_unique_reverse:
+            file_one = i
+            basename = os.path.basename(os.path.splitext(file_one)[0])
+            basename = basename[:len(basename) - 2]
             file_two = ""
-            for filename in filenames:
-                if basename in filename:
-                    file_two = filename
+            for j in filenames_unique_forward:
+                if basename in filenames_unique_forward:
+                    file_two = j
                     break
             if file_two == "":
                 print("you are missing the the reverse strand for " + basename)
-            fastq_files = file_one + " " + file_two
-        else:
-            fastq_files = file_one
-        os.mkdir("my_experiments/" + experiment)
-        os.mkdir("my_experiments/" + experiment + "/alignment_reports") # raise error if already exists
-        filename_base = basename
+            else:
+                fastq_files = file_one + " " + file_two
+                combined_filenames.append(fastq_files)
+        if len(combined_filenames) == 0:
+            print("the system couldnt find any forward reverse matches. Please check your given directory or continue with single-end analysis.")
+            sys.exit()
+    else:
+        combined_filenames = filenames
 
+    for filename in combined_filenames:
+        basename = os.path.basename(os.path.splitext(filename)[0])
+        basename = basename[:len(basename) - 2]
+        filename_base = basename
         result = "temp/" + filename_base + ".vdjca"
         subprocess.run(["java",
                         "-jar",
                         path_to_mixcr,
                         "align",
-                        "-p milab-human-tcr-dna-multiplex-cdr3",
-                        fastq_files,
+                        "-p " + method,
+                        filename,
                         result,
                         "-r" + "my_experiments/" + experiment + "/alignment_reports/" + filename_base + "_AlignmentReport.txt"])
 
@@ -133,6 +143,9 @@ def process_mixcr(experiment):
             os.remove("temp/" + file)
 
     sequencing_report.to_csv("my_experiments/" + experiment + "/sequencing_report.txt")
-    data["last_experiment"] = path_to_mixcr
-    f = open(ROOT + 'global_vars.txt' 'w')
-    f.write(str(experiment))
+    data["last_experiment"] = experiment
+    with open("global_vars.txt", "w") as f:
+        f.write(str(experiment))
+    unique_experiments = sequencing_report["Experiments"].unique()
+    with open("my_experiments/" + experiment + "/unique_experiments.txt", "w") as f:
+        f.write(unique_experiments)
