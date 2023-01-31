@@ -9,10 +9,8 @@ def clusterSeq(ax, sequencing_report, sample, batch_size):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     sample_report = sample_report.head(batch_size)
     G, degree_sequence = cleaning(sample_report)
-
     # Create a gridspec for adding subplots of different sizes
-    clone_counts = sample_report["cloneCount"]
-
+    clone_counts = sample_report["readCount"]
     G_deg = G.degree()
     to_remove = [n for (n, deg) in G_deg if deg == 0]
     G.remove_nodes_from(to_remove)
@@ -68,7 +66,7 @@ def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experim
         to_remove = [n for (n, deg) in G_deg if deg == 0]
         G.remove_nodes_from(to_remove)
         nodesize = []
-        clone_counts = mix["cloneCount"]
+        clone_counts = mix["readCount"]
         color_values = []
         for i in mix.index:
             for g in G:
@@ -124,7 +122,7 @@ def cluster_antigens(sequencing_report, sample, antigens, batch_size):
     for antigen in antigens:
         ax = fig.add_subplot(Rows, Cols, Position[plot_number])
         nodesize = []
-        clone_counts = mix.cloneCount
+        clone_counts = mix.readCount
         color_values = []
 
         for i in range(mix.shape[0]):

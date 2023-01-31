@@ -1,4 +1,1 @@
-{
-"mixcr_path": "",
-"last_experiment": "",
-}
+{'mixcr_path': 'C:/Users/nilsh/OneDrive/Desktop/DTU/NGS_pipeline/mixcr-4.2.0/mixcr.jar', 'last_experiment': 'my_new_test'}

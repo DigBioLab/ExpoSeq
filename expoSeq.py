@@ -21,7 +21,11 @@ class PlotManager:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
-
+            self.add_binding = input("Do you have binding Data? Y/n")
+            if self.add_binding.lower() in ["Y", "y"]:
+                self.binding_data = collect_binding_data()
+            else:
+                self.binding_data = self.add_binding
         else:
             with open("test_data/sequencing_report.txt", "rb") as f:
                 self.sequencing_report = pd.read_table(f, sep = ",")
@@ -30,6 +34,8 @@ class PlotManager:
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+            self.binding_data = pd.read_table("test_data/binding_data.txt", sep=",")
+            self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
         with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
@@ -38,14 +44,14 @@ class PlotManager:
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0
         self.batch_size = 300
-        self.add_binding = input("Do you have binding Data? Y/n")
         self.fig = plt.figure(1)
         self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax)
-        if self.add_binding.lower() in ["Y", "y"]:
-            self.binding_data = collect_binding_data()
-        else:
-            self.binding_data = self.add_binding
+        self.plot_type = "multi"
+        self.style = PlotStyle(self.ax, self.plot_type)
+
+
+    def print_antigens(self):
+        print(self.binding_data.columns.to_list()[1:-1])
     def print_samples(self):
         print(self.unique_experiments)
     def save(self):
@@ -53,8 +59,8 @@ class PlotManager:
     def close(self):
         plt.close()
 
-    def change_experiment_names(self, specific = False):
-        if specific == False:
+    def change_experiment_names(self, specific = None):
+        if specific == None:
             for key in self.unique_experiments:
                 print(f"Current value for {key}: {self.unique_experiments[key]}")
                 new_value = input("Enter a new value or press any key to skip")
@@ -68,6 +74,11 @@ class PlotManager:
 
 
     def usqPlot(self, library):
+        """
+
+        :param library: you insert a string which is a substring of a sample family
+        :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
+        """
         self.fig.clear()
         self.ax = self.fig.gca()
         plot_USQ(fig = self.fig,
@@ -84,6 +95,14 @@ class PlotManager:
                         highlight_specific_pos = False,
                         highlight_pos_range = False,
                         chosen_seq_length = 16):
+        """
+
+        :param sample: insert the sample name
+        :param highlight_specific_pos: optional. you can highlight a specific position
+        :param highlight_pos_range: optional. you can highlight a position range
+        :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like to.
+        :return: A logo Plot which shows you the composition of aminoacids per position
+        """
         self.fig.clear()
         plot_logo_single(self.ax,
                          self.sequencing_report,
@@ -99,6 +118,12 @@ class PlotManager:
     def logoPlot_multi(self,
                  samples = "all",
                  chosen_seq_length = 16):
+        """
+
+        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like
+        :return: Gives you in one figure one logoPlot per sample.
+        """
         self.fig.clear()
         plot_logo_multi(self.fig,
                   self.sequencing_report,
@@ -111,14 +136,19 @@ class PlotManager:
         self.ax= self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
     def lengthDistribution_multi(self, samples = "all"):
+        """
+        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :return: Outputs one figurewith one subplot per sample which shows you the distribution of sequence length
+        """
         self.fig.clear()
-        length_distribution(self.fig,
+        length_distribution_multi(self.fig,
                             self.sequencing_report,
                             samples,
                             font_settings=self.font_settings)
 
 
     def basic_cluster(self, sample):
+
         self.fig.clear()
         self.ax = self.fig.gca()
         clusterSeq(
