@@ -7,7 +7,7 @@ from os.path import dirname, abspath
 from ast import literal_eval
 import pickle
 import pandas as pd
-
+from python_scripts.augment_data.trimming import trimming
 
 def add_fastq_files():
     filenames = []
@@ -32,27 +32,32 @@ def add_fastq_files():
 def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
-
-
     with open('global_vars.txt') as f:
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]
     if path_to_mixcr == "":
-        print("choose the mixcr java file with the file chooser")
-        path_to_mixcr = filedialog.askopenfilename()
-        data["mixcr_path"] = path_to_mixcr
-        with open("global_vars.txt", "w") as f:
-            f.write(str(data))
-
+        while True:
+            print("choose the mixcr java file with the file chooser")
+            path_to_mixcr = filedialog.askopenfilename()
+            confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
+            if confirmation.lower() in ["Y", "y"]:
+                data["mixcr_path"] = path_to_mixcr
+                with open("global_vars.txt", "w") as f:
+                    f.write(str(data))
+                break
     else:
         pass
-
     #kAligner2_4.0
     #nebnext-human-bcr-cdr3
     #milab-human-tcr-dna-multiplex-cdr3
-    os.mkdir("my_experiments/" + experiment)
-    os.mkdir("my_experiments/" + experiment + "/alignment_reports")  # raise error if already exists
+    while True:
+        if not os.path.isdir("my_experiments/" + experiment):
+            os.mkdir("my_experiments/" + experiment)
+            os.mkdir("my_experiments/" + experiment + "/alignment_reports")  # raise error if already exists
+            break
+        else:
+            experiment = input("The given experiment name already exists. Please type another one.")
 
     sequencing_report = pd.DataFrame([])
     if paired_end_sequencing == True:
@@ -136,8 +141,9 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
         clones_sample = clones_sample.sort_values(by="cloneId")
         clones_sample = clones_sample.reset_index()
         clones_sample = clones_sample.drop(columns = ["readFraction_y", "index"])
-        clones_sample = clones_sample.rename(columns={"readFraction_x": "clonesFraction"})
+        clones_sample = clones_sample.rename(columns={"readFraction_x": "cloneFraction"})
         clones_sample["Experiment"] = filename_base
+        clones_sample = trimming(clones_sample, divisible_by = 3, min_count = 3, new_fraction = "clonesFraction")
         sequencing_report = pd.concat([sequencing_report, clones_sample])
         files_to_remove = os.listdir("temp")
         for file in files_to_remove:

@@ -3,7 +3,6 @@ from ast import literal_eval
 import os
 from python_scripts.augment_data.load_data import collectFiles
 from python_scripts.augment_data.loop_collect_reports import load_mixed_files, load_alignment_reports
-from python_scripts.tidy_data.trimming import trimming
 import pandas as pd
 from glob import glob
 from python_scripts.augment_data.check_reports import check_completeness

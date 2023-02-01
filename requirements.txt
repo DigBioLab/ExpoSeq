@@ -7,7 +7,7 @@ scipy
 seaborn
 logomaker
 editdistance
-networkx
+networkx==2.6.3
 PyQt5
 sgt
 scikit-learn
