@@ -11,7 +11,7 @@ def saveFig():
         directory = askdirectory()
         save_settings["fname"] = directory
         with open("save_settings.txt", "w") as f:
-            f.write(save_settings)
+            f.write(str(save_settings))
     else: pass
     filepath = save_settings['fname']
     format = save_settings['format']

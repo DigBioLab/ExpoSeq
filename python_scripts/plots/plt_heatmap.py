@@ -28,13 +28,14 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments =
                                                                                          protein=protein,
                                                                                         specific_experiments = specific_experiments)
 
+
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5Agg')
     sns.heatmap(matrix,
                 ax = ax)
-    plt.xticks(rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
-    plt.yticks(va='top', size=5)
+    plt.xticks(ticks = range(0, unique_experiments.shape[0], 1), labels = unique_experiments, rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
+    plt.yticks(ticks = range(0, unique_experiments.shape[0], 1),labels = unique_experiments, va='top', size=5)
     savefig = ""
    # while savefig != "Y" or "n":
     #    savefig = input("Do you want to save the figure? Y/n" )

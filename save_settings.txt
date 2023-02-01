@@ -2,6 +2,6 @@
 "fname": "",
 "format": "png",
 "dpi": "300",
-"facecolor"="auto",
-"edgecolor" ="auto"
+"facecolor":"auto",
+"edgecolor":"auto"
 }
