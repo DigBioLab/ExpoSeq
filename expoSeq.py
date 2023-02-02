@@ -1,26 +1,23 @@
 from python_scripts.plots.usq_plot import plot_USQ
 from python_scripts.plots.plt_heatmap import plot_heatmap
 from python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
-from python_scripts.plots.length_distribution import length_distribution_multi, length_distribution_single
+from python_scripts.plots.length_distribution import length_distribution_multi
 from python_scripts.augment_data.binding_data import collect_binding_data
-from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG, cluster_antigens
+from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
 from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
 from python_scripts.plots.cluster_embedding import show_difference
 from python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from uploader import upload
-from tkinter import filedialog
 from ast import literal_eval
-from python_scripts.plots.barplot import barplot
-from plot_styler import PlotStyle
+from settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
 import chat_bot
 import os
-import inspect
+from settings.change_save_settings import Change_save_settings
 class PlotManager:
     def __init__(self, test_version = False):
-
         if os.path.isdir("my_experiments"):
             pass
         else:
@@ -62,11 +59,10 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
-
+        self.settings_saver = Change_save_settings()
 
     def askMe(self):
         """
-
         :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
         """
         chat_bot.askMe(self.global_params)
@@ -77,7 +73,6 @@ class PlotManager:
         print(self.binding_data.columns.to_list()[1:-1])
     def print_samples(self):
         """
-
         :return: prints the names of your samples, so you can insert them in lists or similar for the analysis with some plots
         """
         print(self.unique_experiments.keys())
@@ -91,7 +86,6 @@ class PlotManager:
 
     def change_experiment_names(self, specific = None):
         """
-
         :param specific: optional parameter. You can use this function to change the names of the samples.
         :return:
         """
@@ -130,7 +124,6 @@ class PlotManager:
                         highlight_pos_range = False,
                         chosen_seq_length = 16):
         """
-
         :param sample: insert the sample name
         :param highlight_specific_pos: optional. you can highlight a specific position
         :param highlight_pos_range: optional. you can highlight a position range
@@ -153,7 +146,6 @@ class PlotManager:
                  samples = "all",
                  chosen_seq_length = 16):
         """
-
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like
         :return: Gives you in one figure one logoPlot per sample.
@@ -225,7 +217,6 @@ class PlotManager:
         #self.zero = 1
     def tsne_cluster_AG(self, sample, toxins, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
         """
-
         :param sample: the sample you would like to analyze
         :param toxins: the toxins you would like to cluster
         :param pca_components: optional. Default is 70
@@ -248,7 +239,6 @@ class PlotManager:
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-
     def embedding_tsne(self,
                        samples,
                        strands = True,
@@ -296,7 +286,6 @@ class PlotManager:
 
     def jaccard(self, specific_samples = False):
         """
-
         :param specific_experiments: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Jaccard Index
         """
@@ -313,7 +302,6 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def sorensen(self, specific_samples = False):
         """
-
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Sorensen Dice Index
         """
@@ -330,7 +318,6 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def relative(self, specific_samples = False):
         """
-
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the proportion of identical sequences
         """
@@ -345,7 +332,6 @@ class PlotManager:
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-
 
 
 
