@@ -32,7 +32,7 @@ def add_fastq_files():
 def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
-    with open('settings/global_vars.txt') as f:
+    with open('../../settings/global_vars.txt') as f:
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]
@@ -43,7 +43,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
             confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
             if confirmation.lower() in ["Y", "y"]:
                 data["mixcr_path"] = path_to_mixcr
-                with open("settings/global_vars.txt", "w") as f:
+                with open("../../settings/global_vars.txt", "w") as f:
                     f.write(str(data))
                 break
     else:
@@ -145,13 +145,13 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
         clones_sample["Experiment"] = filename_base
         clones_sample = trimming(clones_sample, divisible_by = 3, min_count = 3, new_fraction = "clonesFraction")
         sequencing_report = pd.concat([sequencing_report, clones_sample])
-        files_to_remove = os.listdir("temp")
+        files_to_remove = os.listdir("../../temp")
         for file in files_to_remove:
             os.remove("temp/" + file)
 
     sequencing_report.to_csv("my_experiments/" + experiment + "/sequencing_report.txt")
     data["last_experiment"] = experiment
-    with open("settings/global_vars.txt", "w") as f:
+    with open("../../settings/global_vars.txt", "w") as f:
         f.write(str(data))
     unique_experiments = sequencing_report["Experiment"].unique()
     experiment_dic = {item: item for item in list(unique_experiments)}
