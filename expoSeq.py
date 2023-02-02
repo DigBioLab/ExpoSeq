@@ -8,12 +8,12 @@ from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
 from python_scripts.plots.cluster_embedding import show_difference
 from python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
-from uploader import upload
+from python_scripts.augment_data.uploader import upload
 from ast import literal_eval
 from settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
-import chat_bot
+from python_scripts import chat_bot
 import os
 from settings.change_save_settings import Change_save_settings
 class PlotManager:
@@ -39,7 +39,7 @@ class PlotManager:
         else:
             with open("test_data/sequencing_report.csv", "rb") as f:
                 self.sequencing_report = pd.read_csv(f, sep = ",")
-            with open("global_vars.txt", "r") as f:
+            with open("settings/global_vars.txt", "r") as f:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
@@ -47,10 +47,10 @@ class PlotManager:
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.binding_data = pd.read_table("test_data/binding_data.txt", sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
-        with open('font_settings.txt', "r") as f:
+        with open('settings/font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open('legend_settings.txt', "r") as f:
+        with open('settings/legend_settings.txt', "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0

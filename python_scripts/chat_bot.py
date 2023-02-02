@@ -9,7 +9,7 @@ def askMe(global_params):
     if openai.api_key == "":
         api = input("enter your api key from openai. Therefore visit: https://openai.com/")
         global_params["api_gpt3"] = api
-        with open("global_vars.txt", "w") as f:
+        with open("../settings/global_vars.txt", "w") as f:
             f.write(str(global_params))
         openai.api_key = api
     else:

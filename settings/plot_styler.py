@@ -4,10 +4,10 @@ from ast import literal_eval
 class PlotStyle:
     def __init__(self, ax, plot_type):
         self.ax = ax
-        with open('../font_settings.txt', "r") as f:
+        with open('font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open('../legend_settings.txt', "r") as f:
+        with open('legend_settings.txt', "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.plot_type = plot_type
