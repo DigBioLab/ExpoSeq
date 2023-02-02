@@ -17,8 +17,10 @@ import pandas as pd
 import pickle
 import chat_bot
 import os
+import inspect
 class PlotManager:
     def __init__(self, test_version = False):
+
         if os.path.isdir("my_experiments"):
             pass
         else:
@@ -61,18 +63,38 @@ class PlotManager:
         self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
 
+
     def askMe(self):
+        """
+
+        :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
+        """
         chat_bot.askMe(self.global_params)
     def print_antigens(self):
+        """
+        :return: prints the antigens (columns) of your binding data
+        """
         print(self.binding_data.columns.to_list()[1:-1])
     def print_samples(self):
+        """
+
+        :return: prints the names of your samples, so you can insert them in lists or similar for the analysis with some plots
+        """
         print(self.unique_experiments.keys())
     def save(self):
+        """
+        :return: can be used to save your plots. It will ask you automatically for the directory where you want to save it
+        """
         saveFig()
     def close(self):
         plt.close()
 
     def change_experiment_names(self, specific = None):
+        """
+
+        :param specific: optional parameter. You can use this function to change the names of the samples.
+        :return:
+        """
         if specific == None:
             for key in self.unique_experiments:
                 print(f"Current value for {key}: {self.unique_experiments[key]}")
@@ -88,7 +110,6 @@ class PlotManager:
 
     def usqPlot(self, library):
         """
-
         :param library: you insert a string which is a substring of a sample family
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
         """
@@ -235,7 +256,6 @@ class PlotManager:
                        perplexity = 30,
                        iterations_tsne = 2500):
         """
-
         :param samples: the samples you would like to compare towards their sequences
         :param strands: Default is True. It means that you will plot a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
@@ -268,7 +288,7 @@ class PlotManager:
                      True,
                      "morosita_horn",
                      self.ax,
-                     specific_experiments = specific_experiments,
+                     specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
         self.ax = self.fig.gca()
