@@ -8,17 +8,7 @@ import matplotlib.pyplot as plt
 from python_scripts.plots.plot_params.open_txtfiles import openParams
 
 
-experiment = sequencing_report_all["Experiment"].map(Library_2_to_panning)
-sequencing_report_all["Experiment"] = experiment
-tidy_data.sequencing_report = mapFunc(sequencing_report = tidy_data.sequencing_report,
-                                      column='nSeqCDR3',
-                                      func=genetic_dogma,
-                                      column_name='peptide_seq')
 
-
-tidy_data.summarize_duplicates(column_to_sum="cloneCount",
-                               duplicate_column="aaSeqCDR3",
-                               group=['Experiment'])  # group has to be list
 sequencing_report = tidy_data.sequencing_report
 third_round = ['EDE_K', 'ABA_K', 'ACA_K', 'FGF_L']
 second_round = ['ED-_K', 'AB-_K', 'AC-_K', 'FG-_L']

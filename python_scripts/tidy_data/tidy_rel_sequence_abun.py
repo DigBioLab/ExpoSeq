@@ -5,9 +5,9 @@ import pandas as pd
 
 
 # display the summarized dataframe
-def tidy_levenshtein_fractions(sequencing_report,max_levenshtein_distance,experiments, length_filter, batch = 3000):
+def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter, batch = 3000):
     data = {}
-    for sample in experiments:
+    for sample in samples:
         report = sequencing_report[sequencing_report["Experiment"] == sample]
         report = report[report['aaSeqCDR3'].str.len() >= length_filter]
         sequences = report["aaSeqCDR3"].head(batch).to_list()

@@ -5,7 +5,9 @@ from python_scripts.plots.length_distribution import length_distribution_multi
 from python_scripts.augment_data.binding_data import collect_binding_data
 from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
 from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
+from python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
 from python_scripts.plots.cluster_embedding import show_difference
+from python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
 from python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from python_scripts.augment_data.uploader import upload
@@ -102,6 +104,25 @@ class PlotManager:
             self.unique_experiments[specific] = new_value
         self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
 
+    def aa_distribution(self, sample, region, protein = True):
+        """
+        :param sample: The sample you would like to analyze
+        :param region: the region you would like to analyze
+        :param protein: Default True. If you would like to analyze nucleotide sequences, set it to False
+        :return: Returns a plot which shows the amino acid distribution in the given sequence range.
+        """
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        stacked_aa_distr(self.ax,
+                         self.sequencing_report,
+                         sample,
+                         region,
+                         protein,
+                         self.font_settings,
+                         self.legend_settings)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
     def usqPlot(self, library):
         """
         :param library: you insert a string which is a substring of a sample family
@@ -175,6 +196,27 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
+    def rel_seq_abundance(self, samples, max_levenshtein_distance = 0, length_filter = 0, batch = 3000):
+        """
+
+        :param samples: For a qualitative analysis choose samples from the same panning experiment
+        :param max_levenshtein_distance: Default is 0. You can change it to see increased fraction with increased variability of certain sequences
+        :param length_filter: Default is 0. You should change it if you change the levenshtein distance. Otherwise your results will be biased.
+        :param batch: Default is 3000. The size of the sample which is chosen. The higher it is, the more computational intense.
+        :return: Shows you a Bar Plot of the frequences of the most abundant sequences. You can introduce the levenshtein distance to see how the frequency changes with higher variability of the sequences.
+        """
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        relative_sequence_abundance(self.ax,
+                                    self.sequencing_report,
+                                    samples,
+                                    max_levenshtein_distance,
+                                    length_filter,
+                                    batch,
+                                    self.font_settings)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
 
     def basic_cluster(self, sample):
         """

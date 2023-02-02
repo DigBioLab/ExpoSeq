@@ -1,5 +1,5 @@
-# oriented on tije.co/post/seqlogo/from_multiple_sequence_alignment/
 import pandas as pd
+
 
 def cleaning(sample_name, report, chosen_seq_length):
     sample = report[report["Experiment"] == sample_name]
