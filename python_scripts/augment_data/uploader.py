@@ -1,4 +1,4 @@
-from mixcr_nils import process_mixcr
+from python_scripts.augment_data.mixcr_nils import process_mixcr
 from ast import literal_eval
 import os
 from python_scripts.augment_data.load_data import collectFiles

@@ -204,17 +204,7 @@ class PlotManager:
         self.plot_type = "multi"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-   # def cluster_multiple_AG(self, sample, antigens):
-    #    self.fig.clear()
-     #   self.ax = self.fig.gca()
-      #  cluster_antigens(self.sequencing_report,
-       #                  sample,
-        #                 antigens,
-         #                self.batch_size)
-        #self.plot_type = "multi"
-        #self.ax = self.fig.gca()
-        #self.style = PlotStyle(self.ax, self.plot_type)
-        #self.zero = 1
+
     def tsne_cluster_AG(self, sample, toxins, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
         """
         :param sample: the sample you would like to analyze
