@@ -19,7 +19,7 @@ The PlotManager is the main interface for creating various plots using your FAST
 ```plot = PlotManager()```
 To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you have called the PlotManager. In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
 ![relative_path_to_image](workflow_ExpoSeq.png)
-If you just want to test the pipeline and see its functions you can call: ```plotting = PlotManager(test_version = True)```
+If you just want to test the pipeline and see its functions you can call: ```plot = PlotManager(test_version = True)```
 
 Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as an identity plot based on the jaccard similarity. Here is an example of how to create this type of plot:
 ```plot.jaccard()```
