@@ -16,13 +16,13 @@ To access the plotting tool, you will need to import it into your console by run
 ## Using the PlotManager
 
 The PlotManager is the main interface for creating various plots using your FASTQ data. You can create an instance of the PlotManager by running the following command:
-```plotting = PlotManager()```
-To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you start call the PlotManager.
+```plot = PlotManager()```
+To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you start call the PlotManager. In the following you can obtain an insight in the worklow which follows after you have called the class. There the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
 ![relative_path_to_image](workflow_ExpoSeq.png)
-If you just want to test the pipeline and see its function you can call: ```plotting = PlotManager(test_version = True)```
+If you just want to test the pipeline and see its functions you can call: ```plotting = PlotManager(test_version = True)```
 
-Once your data is uploaded, you can use the PlotManager to create a variety of plots, such as a Morosita-Horn plot. Here is an example of how to create this type of plot:
-```plotting.morosita_horn()```
+Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as a Morosita-Horn plot. Here is an example of how to create this type of plot:
+```plot.morosita_horn()```
 If you want to change the style of the plot you can use the class. If you have called it plotting you can do for instance the following: ```plotting.style.title_xaxis("your_title")``` 
 If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
 ```import matplotlib.pyplot as plt```
