@@ -23,7 +23,7 @@ If you just want to test the pipeline and see its functions you can call: ```plo
 
 Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as a Morosita-Horn plot. Here is an example of how to create this type of plot:
 ```plot.morosita_horn()```
-If you want to change the style of the plot you can use the class. If you have called it plotting you can do for instance the following: ```plotting.style.title_xaxis("your_title")``` 
+If you want to change the style of the plot you can use the class. If you have called it plotting you can do for instance the following: ```plot.style.title_xaxis("your_title")``` 
 If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
 ```import matplotlib.pyplot as plt```
 ```plt.xlabel("your_title")```
