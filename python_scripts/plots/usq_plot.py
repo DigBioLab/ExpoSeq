@@ -13,13 +13,13 @@ def plot_USQ(fig, sequencing_report, library, font_settings, legend_settings):
     x_axis = []
     y_axis = []
     for sample in range(len(sub_table)):
-        sequences = list(sub_table.iloc[sample].nSeqCDR3)
-        fraction = list(sub_table.iloc[sample].clonefrac)
+        sequences = list(sub_table.iloc[sample]["nSeqCDR3"])
+        fraction = list(sub_table.iloc[sample]["clonesFraction"])
         counter = 0
         temp_list = []
         unique_list = []
         total_list = []
-        mean_count = (sum(sub_table.iloc[sample]["cloneCount"]) / 100)
+        mean_count = (sum(sub_table.iloc[sample]["readCount"]) / 100)
         while counter < 100:
             temp = random.choices(sequences, weights=fraction, k = int(mean_count))  # randomly sample 100th of the sequences with the recalculated clonefractions as probablities
             temp_list.extend(temp)  ## extend the temp_list with the samples from each 'pull-out' of the 100 'pull-outs'

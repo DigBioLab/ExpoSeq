@@ -88,8 +88,8 @@ class PlotManager:
 
     def change_experiment_names(self, specific = None):
         """
-        :param specific: optional parameter. You can use this function to change the names of the samples.
-        :return:
+        :param specific: optional parameter. You can use this function to change the names of a specific sample.
+        :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
         if specific == None:
             for key in self.unique_experiments:
@@ -247,10 +247,11 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
-    def tsne_cluster_AG(self, sample, toxins, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
+    def tsne_cluster_AG(self, sample, toxins,toxin_names = True, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
         """
         :param sample: the sample you would like to analyze
         :param toxins: the toxins you would like to cluster
+        :param toxin_names: Default is True. Prints the name of the toxin for the corresponding embedded sequence in the plot
         :param pca_components: optional. Default is 70
         :param perplexity: optional. Default 25
         :param iterations_tsne: optional. Default is 2500
@@ -265,6 +266,7 @@ class PlotManager:
                             toxins,
                             self.binding_data,
                             self.font_settings,
+                            toxin_names,
                             pca_components,
                             perplexity,
                             iterations_tsne)
@@ -283,7 +285,7 @@ class PlotManager:
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
-        :return:
+        :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -294,7 +296,8 @@ class PlotManager:
                         pca_components,
                         perplexity,
                         iterations_tsne,
-                        self.ax)
+                        self.ax,
+                        self.legend_settings)
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
