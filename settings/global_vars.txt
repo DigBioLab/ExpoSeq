@@ -1,1 +1,1 @@
-{'mixcr_path': 'C:/Users/nilsh/OneDrive/Desktop/DTU/NGS_pipeline/mixcr-4.2.0/mixcr.jar', 'last_experiment': 'trimmng_test', 'api_gpt3': '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'}
+{'mixcr_path': '', 'last_experiment': '', 'api_gpt3': ''}

@@ -213,7 +213,8 @@ class PlotManager:
                                     max_levenshtein_distance,
                                     length_filter,
                                     batch,
-                                    self.font_settings)
+                                    self.font_settings,
+                                    self.legend_settings)
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)

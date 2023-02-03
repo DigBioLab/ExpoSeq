@@ -39,8 +39,8 @@ def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter,
         data[sample] = intermediate_df
     all_samples = pd.concat(data, axis=1)
     all_samples = all_samples.fillna(0)
-    all_samples = all_samples.rename(columns={col: col[0].replace('/0', "") for col in all_samples.columns})
-
+    all_samples = all_samples.rename(columns={col: col[0].replace('/sample', "") for col in all_samples.columns})
+    all_samples.columns = samples
     return all_samples
 
 
