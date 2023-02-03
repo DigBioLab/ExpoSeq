@@ -17,7 +17,9 @@ To access the plotting tool, you will need to import it into your console by run
 
 The PlotManager is the main interface for creating various plots using your FASTQ data. You can create an instance of the PlotManager by running the following command:
 ```plotting = PlotManager()```
-To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you start call the PlotManager. If you just want to test the pipeline and see its function you can call: ```plotting = PlotManager(test_version = True)```
+To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you start call the PlotManager.
+![alt text](ExpoSeq/workflow ExpoSeq.png)
+If you just want to test the pipeline and see its function you can call: ```plotting = PlotManager(test_version = True)```
 
 Once your data is uploaded, you can use the PlotManager to create a variety of plots, such as a Morosita-Horn plot. Here is an example of how to create this type of plot:
 ```plotting.morosita_horn()```
