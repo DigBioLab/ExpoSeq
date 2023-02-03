@@ -28,11 +28,8 @@ If you want to implement further plot change you can also refer to the matplotli
 ```import matplotlib.pyplot as plt```
 ```plt.xlabel("your_title")```
 If you need further help you can also ask the chatpot which is trained on gpt3. Therefore call: ```plot.askMe()``` . Yet it is not trained on the package but you can use it to customize your graphs. 
-If you would like to have details about the input and function of the plot functions call for instance: ```help(plot.usqPlot)```
+If you would like to have details about the inputs and functions of the PlotManager call: ```help(plot)``` . You can also call ```help(plot.jaccard)
 
-
-
-## For Collaborators
 
 
 
