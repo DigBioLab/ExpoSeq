@@ -8,6 +8,7 @@ from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
 from python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
 from python_scripts.plots.cluster_embedding import show_difference
 from python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
+from python_scripts.plots.barplot import barplot
 from python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from python_scripts.augment_data.uploader import upload
@@ -46,6 +47,8 @@ class PlotManager:
             self.global_params = literal_eval(self.global_params)
             with open("test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
+            with open("test_data/all_alignment_reports.pickle", "rb") as f:
+                self.alignment_report = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.binding_data = pd.read_table("test_data/binding_data.txt", sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
@@ -86,6 +89,8 @@ class PlotManager:
     def close(self):
         plt.close()
 
+
+
     def change_experiment_names(self, specific = None, change_whole_dic = False):
         """
         :param specific: optional parameter. You can use this function to change the names of a specific sample.
@@ -109,6 +114,18 @@ class PlotManager:
             with open("test_data" + "/experiment_names.pickle", "wb") as f:
                 pickle.dump(change_whole_dic, f)
 
+    def alignment_quality(self, log_transformation = False):
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        barplot(self.alignment_report,
+                self.sequencing_report,
+                self.font_settings,
+                self.legend_settings,
+                apply_log = log_transformation)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
+
     def aa_distribution(self, sample, region, protein = True):
         """
         :param sample: The sample you would like to analyze
@@ -128,7 +145,7 @@ class PlotManager:
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
-    def usqPlot(self, library):
+    def usqPlot(self, samples):
         """
         :param library: you insert a string which is a substring of a sample family
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
@@ -137,7 +154,7 @@ class PlotManager:
         self.ax = self.fig.gca()
         plot_USQ(fig = self.fig,
                 sequencing_report = self.sequencing_report,
-                 library = library,
+                 samples = samples,
                  font_settings = self.font_settings,
                  legend_settings = self.legend_settings)
         self.plot_type = "single"
@@ -243,12 +260,13 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def cluster_one_AG(self, antigen, specific_experiments=False):
         self.fig.clear()
-        self.ax = self.fig.gca()
-        cluster_single_AG(self.sequencing_report,
+        cluster_single_AG(self.fig,
+                          self.sequencing_report,
                           antigen,
                           self.binding_data,
+                          self.batch_size,
                           specific_experiments,
-                          self.batch_size)
+                          )
         self.plot_type = "multi"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)

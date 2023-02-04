@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from python_scripts.tidy_data.barplot import cleaning_data
 import numpy as np
 import matplotlib
-def barplot(all_alignment_reports, sequencing_report_all,font_settings, legend_settings, apply_log = True):
+def barplot(all_alignment_reports, sequencing_report_all,font_settings, legend_settings, apply_log):
     matplotlib.use("Qt5Agg")
     boxplot_data_frame = cleaning_data(all_alignment_reports,
                                        sequencing_report_all)

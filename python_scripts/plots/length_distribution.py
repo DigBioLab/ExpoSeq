@@ -9,7 +9,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
     max_length = np.max(unique_length)
 
     ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
-    ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
+    #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
     ax.title.set_text(sample)
     ax.title.set_size(10)
 
@@ -54,7 +54,7 @@ def length_distribution_multi(fig, sequencing_report, samples, font_settings):
             # add every single subplot to the figure with a for loop
         ax = fig.add_subplot(Rows, Cols, Position[n])
         ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
-        ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
+       # ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
         ax.title.set_text(experiment)
         ax.title.set_size(10)
 

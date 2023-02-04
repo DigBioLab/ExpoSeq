@@ -6,9 +6,9 @@ import warnings
 import matplotlib
 matplotlib.use('Qt5Agg')
 
-def plot_USQ(fig, sequencing_report, library, font_settings, legend_settings):
+def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
-                              lib_name = library)
+                              samples = samples)
 
     x_axis = []
     y_axis = []

@@ -37,7 +37,7 @@ def clusterSeq(ax, sequencing_report, sample, batch_size):
     ax2.set_ylabel("# of Nodes")
 
 
-def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experiments = False, batch_size = 300):
+def cluster_single_AG(fig, sequencing_report, antigen, binding_data,batch_size, specific_experiments = False, ):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     if specific_experiments != False:
         report_batch = report_batch[report_batch['Experiment'].isin(specific_experiments)]
@@ -52,8 +52,7 @@ def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experim
     # Create a Position index
     Position = range(1, Tot + 1)
     plot_number = 0
-    fig = plt.figure(1,
-                     constrained_layout = True)
+
     for experiment in experiments:
         ax = fig.add_subplot(Rows, Cols, Position[plot_number])
         batch = report_batch[report_batch["Experiment"] == experiment]
