@@ -26,7 +26,7 @@ def clusterSeq(ax, sequencing_report, sample, batch_size):
         if n == 0:
             nodesize[y] = 50
     networkx.draw_networkx(G, arrows = True, with_labels = False,ax = ax)
-    networkx.draw_networkx_nodes(G, pos=networkx.spring_layout(G), node_size = nodesize)
+
     ax.set_title("Connected components of " + sample)
     ax.set_axis_off()
     fig2 = plt.figure()
