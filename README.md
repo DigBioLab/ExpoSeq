@@ -1,6 +1,6 @@
 # Welcome to ExpoSeq
 
-ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from sequencing phage Display panning samples. By using the pipeline you can receive your plots in only 2 steps. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Furthermore you can add binding data to relate the clusters to affinity. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble from high-throughput sequencing data. ![overview](expoSeq_overview.png)
+ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from sequencing phage Display panning samples.It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  ![overview](expoSeq_overview.png)
 
 ## Installation
 
