@@ -9,7 +9,7 @@ def cleaning_data(sequencing_report, protein = True, specific_experiments = Fals
         sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:
         pass
-    new_column = sequencing_report['clonesCount'] / sequencing_report.groupby('Experiment')['clonesCount'].transform('sum')
+    new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
     sequencing_report[new_fraction] = np.array(new_column)
     if protein == True:
    #     sequencing_report = mapFunc(sequencing_report = sequencing_report,
