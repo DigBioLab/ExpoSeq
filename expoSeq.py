@@ -77,7 +77,7 @@ class PlotManager:
         """
         :return: prints the names of your samples, so you can insert them in lists or similar for the analysis with some plots
         """
-        print(self.unique_experiments.keys())
+        print(self.unique_experiments.values())
     def save(self):
         """
         :return: can be used to save your plots. It will ask you automatically for the directory where you want to save it
@@ -86,23 +86,28 @@ class PlotManager:
     def close(self):
         plt.close()
 
-    def change_experiment_names(self, specific = None):
+    def change_experiment_names(self, specific = None, change_whole_dic = False):
         """
         :param specific: optional parameter. You can use this function to change the names of a specific sample.
+        :param change_whole_dic: optional Parameter. In general the renaming is done be using a dictionary and map it to the labels. You can change the whole dictionary for all your original labels by adding the new dictionary for this parameter.
         :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
-        if specific == None:
-            for key in self.unique_experiments:
-                print(f"Current value for {key}: {self.unique_experiments[key]}")
-                new_value = input("Enter a new value or press any key to skip")
-                if len(new_value) > 1:
-                    self.unique_experiments[key] = new_value
-                else:
-                    pass
+        if change_whole_dic == False:
+            if specific == None:
+                for key in self.unique_experiments:
+                    print(f"Current value for {key}: {self.unique_experiments[key]}")
+                    new_value = input("Enter a new value or press any key to skip")
+                    if len(new_value) > 1:
+                        self.unique_experiments[key] = new_value
+                    else:
+                        pass
+            else:
+                new_value = input("Enter the new name for " + specific)
+                self.unique_experiments[specific] = new_value
+            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
         else:
-            new_value = input("Enter the new name for " + specific)
-            self.unique_experiments[specific] = new_value
-        self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
+            with open("test_data" + "/experiment_names.pickle", "wb") as f:
+                pickle.dump(change_whole_dic, f)
 
     def aa_distribution(self, sample, region, protein = True):
         """

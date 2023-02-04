@@ -35,7 +35,6 @@ def clusterSeq(ax, sequencing_report, sample, batch_size):
     ax2.set_title(sample + ' Histogram')
     ax2.set_xlabel("Degree")
     ax2.set_ylabel("# of Nodes")
-    plt.savefig(sample + '.png', dpi=300)
 
 
 def cluster_single_AG(sequencing_report, antigen, binding_data, specific_experiments = False, batch_size = 300):
