@@ -5,10 +5,10 @@ import networkx
 import math
 import pandas as pd
 
-def clusterSeq(ax, sequencing_report, sample, batch_size):
+def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     sample_report = sample_report.head(batch_size)
-    G, degree_sequence = cleaning(sample_report)
+    G, degree_sequence = cleaning(sample_report, max_ld, min_ld)
     # Create a gridspec for adding subplots of different sizes
     clone_counts = sample_report["readCount"]
     G_deg = G.degree()
@@ -37,7 +37,7 @@ def clusterSeq(ax, sequencing_report, sample, batch_size):
     ax2.set_ylabel("# of Nodes")
 
 
-def cluster_single_AG(fig, sequencing_report, antigen, binding_data,batch_size, specific_experiments = False, ):
+def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size, specific_experiments = False, ):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     if specific_experiments != False:
         report_batch = report_batch[report_batch['Experiment'].isin(specific_experiments)]
@@ -59,7 +59,7 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data,batch_size, 
         mix = pd.concat([batch, binding_data])
         mix = mix.fillna(0)
         mix = mix.reset_index()
-        G, degree_sequence = cleaning(mix)
+        G, degree_sequence = cleaning(mix, max_ld, min_ld)
         G_deg = G.degree()
         to_remove = [n for (n, deg) in G_deg if deg == 0]
         G.remove_nodes_from(to_remove)

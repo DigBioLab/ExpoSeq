@@ -147,7 +147,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def usqPlot(self, samples):
         """
-        :param library: you insert a string which is a substring of a sample family
+        :param sample: you insert a list with the samples you would like to analyze
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
         """
         self.fig.clear()
@@ -241,11 +241,13 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
-    def basic_cluster(self, sample):
+    def basic_cluster(self, sample, max_ld = 2, min_ld = 0):
         """
 
         :param sample: type in a sample name you want to analyze
-        :return:
+        :param max_ld: Default 2. The maximum levenshtein distance between two sequences which is allowed to draw a connection between them
+        :param min_ld: Default 0. The minimum levenshtein distance between two sequences which is allowed to draw a connection between them
+        :return: Shows you a cluster map of your sequences within the batch (default 300). Each Cluster describes a certain positionwise relationship between the sequences based on the Levenshtein Distance
         """
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -253,17 +255,29 @@ class PlotManager:
                    self.ax,
                    self.sequencing_report,
                    sample,
+                    max_ld,
+                    min_ld,
                    self.batch_size)
         self.zero = 1
         self.ax = self.fig.gca()
         self.plot_type = "single"
         self.style = PlotStyle(self.ax, self.plot_type)
-    def cluster_one_AG(self, antigen, specific_experiments=False):
+    def cluster_one_AG(self, antigen,max_ld = 2, min_ld = 0, specific_experiments=False):
+        """
+
+        :param antigen: The antigen you would like to analyze
+        :param max_ld: Default 2. The maximum levenshtein distance between two sequences which is allowed to draw a connection between them
+        :param min_ld: Default 0. The minimum levenshtein distance between two sequences which is allowed to draw a connection between them
+        :param specific_experiments: Default is all samples. Give a list of specific experiments you would like to analyze.
+        :return: Introduces the given antigen in the clustering algorithm. It returns a map of clusters where within each cluster the sequences are position specifically clustered based on the given Levenshtein Distance range.
+        """
         self.fig.clear()
         cluster_single_AG(self.fig,
                           self.sequencing_report,
                           antigen,
                           self.binding_data,
+                          max_ld,
+                          min_ld,
                           self.batch_size,
                           specific_experiments,
                           )
