@@ -1,7 +1,5 @@
-#import re
-#from python_scripts.tidy_data.tidy_alignment_reports import collect_boxplot_data
+
 from pandas import DataFrame
-#from python_scripts.test_data.rename_labels import Library_2_to_panning
 
 def cleaning_data(all_alignment_reports, sequencing_report_all):
     all_alignment_reports = all_alignment_reports.sort_values("Input file(s)").reset_index(drop=True)
