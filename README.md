@@ -4,7 +4,7 @@ ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from seq
 
 ## Installation
 
-open a new project and pull the repository (link in browser) to your IDE. If you have Git installed you can also do: ```git clone https://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@github.com/nilshof01/ExpoSeq.git     ``` . Then, install the libraries with ```pip install -r requirements.txt```
+open a new project and pull the repository (link in browser) to your IDE. If you have Git installed you can also do: ```git clone https://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@github.com/nilshof01/ExpoSeq.git     ``` . Then, install the libraries with ```pip install -r ExpoSeq/requirements.txt```
 
 To get started, please download and follow the instructions for MiXCR under the following link: https://docs.milaboratories.com/mixcr/getting-started/installation/ 
 You can also only use the test version without installing it.
