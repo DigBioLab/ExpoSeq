@@ -1,6 +1,7 @@
 import pandas as pd
 from tkinter import filedialog
 
+
 def collect_binding_data():
     binding_data = pd.DataFrame([])
     while True:

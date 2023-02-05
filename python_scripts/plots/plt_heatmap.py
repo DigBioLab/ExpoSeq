@@ -1,10 +1,9 @@
-import seaborn as sns
-from os.path import dirname, abspath
-from ast import literal_eval
 import matplotlib
 import matplotlib.pyplot as plt
-from python_scripts.tidy_data import heatmaps
+import seaborn as sns
+
 from python_scripts.tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
+
 
 def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments = False):
 

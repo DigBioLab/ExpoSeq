@@ -3,6 +3,7 @@ from tkinter import filedialog
 from glob import glob
 
 
+
 def collectFiles(filetypes = ('.txt', '.fastq_AlignmentReport')):
     filenames = []
     data_folder = filedialog.askdirectory()

@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 def length_distribution_single(fig,ax, sequencing_report, sample, font_settings):
     batch = sequencing_report[sequencing_report["Experiment"] == sample]

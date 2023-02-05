@@ -1,6 +1,5 @@
-# USQ = unique sequences quality
-from python_scripts.tidy_data.interpret_data import add_fraction
-from test_data.rename_labels import Library_2_to_panning
+from ..tidy_data.interpret_data import add_fraction
+
 
 def cleaning_data(sequencing_report, samples):
     sub_table = sequencing_report.loc[sequencing_report["Experiment"].isin(samples)]

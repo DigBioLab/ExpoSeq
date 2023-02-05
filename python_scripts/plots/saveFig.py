@@ -1,6 +1,7 @@
 from matplotlib.pyplot import savefig
 from tkinter.filedialog import askdirectory
 from ast import literal_eval
+
 def saveFig():
     with open("settings/save_settings.txt", "r") as f:
         save_settings = f.read()

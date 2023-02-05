@@ -1,4 +1,3 @@
-from python_scripts.tidy_data.read_extract_data import read_intermediate_reports
 from numpy import array
 def trimming(sequencing_report, divisible_by = 3, min_count = 3, new_fraction = "cloneFraction"):
     sequencing_report = sequencing_report[(sequencing_report["lengthOfCDR3"] % divisible_by) == 0]

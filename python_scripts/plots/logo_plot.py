@@ -1,7 +1,8 @@
-import logomaker
-import numpy as np
+import seaborn as sns
+import matplotlib
 import matplotlib.pyplot as plt
-from python_scripts.tidy_data.tidy_seqlogoPlot import cleaning
+from ..tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
+
 
 def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
     aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,

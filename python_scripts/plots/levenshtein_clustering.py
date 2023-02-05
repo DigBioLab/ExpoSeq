@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 from numpy import unique
-from python_scripts.tidy_data.clustering import cleaning
+from ..tidy_data.clustering import cleaning
 import networkx
 import math
 import pandas as pd
+
 
 def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found

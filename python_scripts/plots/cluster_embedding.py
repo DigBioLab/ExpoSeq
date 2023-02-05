@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from python_scripts.tidy_data.tidy_cluster_embedding import tidy_embed
-
+from ..tidy_data.tidy_cluster_embedding import tidy_embed
 
 
 def show_difference(sequencing_report, list_experiments,strands, batch_size, pca_components, perplexity, iterations_tsne, ax, legend_settings):

@@ -1,13 +1,14 @@
-from python_scripts.augment_data.mixcr_nils import process_mixcr
+from .mixcr_nils import process_mixcr
 from ast import literal_eval
 import os
-from python_scripts.augment_data.load_data import collectFiles
-from python_scripts.augment_data.loop_collect_reports import load_mixed_files, load_alignment_reports
+from .load_data import collectFiles
+from .loop_collect_reports import load_mixed_files, load_alignment_reports
 import pandas as pd
 from glob import glob
-from python_scripts.augment_data.check_reports import check_completeness
+from .check_reports import check_completeness
 import sys
 import pickle
+
 
 def upload():
     with open('../../settings/global_vars.txt', "r") as f:

@@ -1,7 +1,3 @@
-import pandas as pd
-
-
-
 def calcFraction(df,x, target_column):
     return df[target_column] / df[target_column].sum()
 

@@ -3,8 +3,6 @@ import pandas as pd
 from difflib import SequenceMatcher
 import itertools
 
-
-
 def create_batch_on_length(batch_size, sequencing_report_all, lib = "Library_1_F2_2"):
     report_lib = sequencing_report_all[sequencing_report_all["Experiment"] == "Library_1_F2_2"]
     #number_positions = report_lib["lengthOfCDR3"].max()/3

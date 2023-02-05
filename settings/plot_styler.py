@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 from ast import literal_eval
-
+import os
 class PlotStyle:
     def __init__(self, ax, plot_type):
+        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq")) + "\\ExpoSeq"
         self.ax = ax
-        with open('settings/font_settings.txt', "r") as f:
+        with open(self.module_dir + "\\" + 'settings/font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open('settings/legend_settings.txt', "r") as f:
+        with open(self.module_dir + "\\" + 'settings/legend_settings.txt', "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.plot_type = plot_type

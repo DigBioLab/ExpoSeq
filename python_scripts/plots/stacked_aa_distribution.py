@@ -1,5 +1,6 @@
-from python_scripts.tidy_data.tidy_stacked_aa_distr import cleaning
+from ..tidy_data.tidy_stacked_aa_distr import cleaning
 import matplotlib.pyplot as plt
+
 def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settings, legend_settings):
     aa_distribution = cleaning(sequencing_report, sample, region, protein)
     aa_distribution.plot(kind='bar', stacked=True, ax = ax)

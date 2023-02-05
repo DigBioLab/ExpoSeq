@@ -1,8 +1,10 @@
+import numpy as np
+import pandas as pd
 from sgt.SGT import SGT
 from sklearn.decomposition import PCA
-import numpy as np
 from sklearn.manifold import TSNE
-import pandas as pd
+
+
 def tidy_embed(sequencing_report, batch_size, list_experiments, pca_components, perplexity ,iterations_tsne):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     selected_rows = report_batch.loc[report_batch["Experiment"].isin(list_experiments)]

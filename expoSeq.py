@@ -1,26 +1,27 @@
-from python_scripts.plots.usq_plot import plot_USQ
-from python_scripts.plots.plt_heatmap import plot_heatmap
-from python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
-from python_scripts.plots.length_distribution import length_distribution_multi
-from python_scripts.augment_data.binding_data import collect_binding_data
-from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
-from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
-from python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
-from python_scripts.plots.cluster_embedding import show_difference
-from python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
-from python_scripts.plots.barplot import barplot
-from python_scripts.plots.saveFig import saveFig
+from .python_scripts.plots.usq_plot import plot_USQ
+from .python_scripts.plots.plt_heatmap import plot_heatmap
+from .python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
+from .python_scripts.plots.length_distribution import length_distribution_multi
+from .python_scripts.augment_data.binding_data import collect_binding_data
+from .python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
+from .python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
+from .python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
+from .python_scripts.plots.cluster_embedding import show_difference
+from .python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
+from .python_scripts.plots.barplot import barplot
+from .python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
-from python_scripts.augment_data.uploader import upload
+from .python_scripts.augment_data.uploader import upload
 from ast import literal_eval
-from settings.plot_styler import PlotStyle
+from .settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
-from python_scripts import chat_bot
+from .python_scripts import chat_bot
 import os
-from settings.change_save_settings import Change_save_settings
+from .settings.change_save_settings import Change_save_settings
 class PlotManager:
     def __init__(self, test_version = False):
+        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq")) + "\\ExpoSeq"
         if os.path.isdir("my_experiments"):
             pass
         else:
@@ -31,7 +32,7 @@ class PlotManager:
             os.mkdir("temp")
         if test_version == False:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
-            with open("my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
+            with open(self.module_dir + "\\" + "my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.add_binding = input("Do you have binding Data? Y/n")
@@ -40,22 +41,24 @@ class PlotManager:
             else:
                 self.binding_data = self.add_binding
         else:
-            with open("test_data/sequencing_report.csv", "rb") as f:
-                self.sequencing_report = pd.read_csv(f, sep = ",")
-            with open("settings/global_vars.txt", "r") as f:
+            with open(self.module_dir + "\\" + "test_data/sequencing_report.csv", "rb") as f:
+                self.sequencing_report = pd.read_csv(f, sep=",")
+           # with open("test_data/sequencing_report.csv", "rb") as f:
+            #    self.sequencing_report = pd.read_csv(f, sep = ",")
+            with open(self.module_dir + "\\" + "settings/global_vars.txt", "r") as f:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
-            with open("test_data/experiment_names.pickle", "rb") as f:
+            with open(self.module_dir + "\\" + "test_data/experiment_names.pickle", "rb") as f:
                 self.unique_experiments = pickle.load(f)
-            with open("test_data/all_alignment_reports.pickle", "rb") as f:
+            with open(self.module_dir + "\\" + "test_data/all_alignment_reports.pickle", "rb") as f:
                 self.alignment_report = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
-            self.binding_data = pd.read_table("test_data/binding_data.txt", sep=",")
+            self.binding_data = pd.read_table(self.module_dir + "\\" + "test_data/binding_data.txt", sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
-        with open('settings/font_settings.txt', "r") as f:
+        with open(self.module_dir + "\\" + 'settings/font_settings.txt', "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open('settings/legend_settings.txt', "r") as f:
+        with open(self.module_dir + "\\" + 'settings/legend_settings.txt', "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0
@@ -147,7 +150,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def usqPlot(self, samples):
         """
-        :param sample: you insert a list with the samples you would like to analyze
+        :param library: you insert a string which is a substring of a sample family
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
         """
         self.fig.clear()
@@ -241,13 +244,11 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
-    def basic_cluster(self, sample, max_ld = 2, min_ld = 0):
+    def basic_cluster(self, sample):
         """
 
         :param sample: type in a sample name you want to analyze
-        :param max_ld: Default 2. The maximum levenshtein distance between two sequences which is allowed to draw a connection between them
-        :param min_ld: Default 0. The minimum levenshtein distance between two sequences which is allowed to draw a connection between them
-        :return: Shows you a cluster map of your sequences within the batch (default 300). Each Cluster describes a certain positionwise relationship between the sequences based on the Levenshtein Distance
+        :return:
         """
         self.fig.clear()
         self.ax = self.fig.gca()
@@ -255,29 +256,17 @@ class PlotManager:
                    self.ax,
                    self.sequencing_report,
                    sample,
-                    max_ld,
-                    min_ld,
                    self.batch_size)
         self.zero = 1
         self.ax = self.fig.gca()
         self.plot_type = "single"
         self.style = PlotStyle(self.ax, self.plot_type)
-    def cluster_one_AG(self, antigen,max_ld = 2, min_ld = 0, specific_experiments=False):
-        """
-
-        :param antigen: The antigen you would like to analyze
-        :param max_ld: Default 2. The maximum levenshtein distance between two sequences which is allowed to draw a connection between them
-        :param min_ld: Default 0. The minimum levenshtein distance between two sequences which is allowed to draw a connection between them
-        :param specific_experiments: Default is all samples. Give a list of specific experiments you would like to analyze.
-        :return: Introduces the given antigen in the clustering algorithm. It returns a map of clusters where within each cluster the sequences are position specifically clustered based on the given Levenshtein Distance range.
-        """
+    def cluster_one_AG(self, antigen, specific_experiments=False):
         self.fig.clear()
         cluster_single_AG(self.fig,
                           self.sequencing_report,
                           antigen,
                           self.binding_data,
-                          max_ld,
-                          min_ld,
                           self.batch_size,
                           specific_experiments,
                           )

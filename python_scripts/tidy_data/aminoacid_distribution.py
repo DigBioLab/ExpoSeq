@@ -1,13 +1,9 @@
-import numpy as np
-from python_scripts.tidy_data.interpret_data import mapFunc
-from python_scripts.genetic_dogma import genetic_dogma
-from test_data.rename_labels import Library_2_to_panning
 from collections import Counter
-from pandas import DataFrame, concat
+
 import matplotlib.pyplot as plt
+import numpy as np
+from pandas import DataFrame, concat
 from python_scripts.plots.plot_params.open_txtfiles import openParams
-
-
 
 sequencing_report = tidy_data.sequencing_report
 third_round = ['EDE_K', 'ABA_K', 'ACA_K', 'FGF_L']

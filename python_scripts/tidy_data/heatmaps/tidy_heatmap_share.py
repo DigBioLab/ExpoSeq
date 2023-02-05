@@ -1,5 +1,5 @@
 import numpy as np
-from python_scripts.tidy_data.heatmaps.bool_sequences_matrix import find_seq_matches
+from .bool_sequences_matrix import find_seq_matches
 import pandas as pd
 
 def heatmap_share(sequencing_report, protein, specific_experiments):

@@ -1,11 +1,10 @@
-from python_scripts.tidy_data.tidy_USQ_plot_ import cleaning_data
+from ..tidy_data.tidy_USQ_plot_ import cleaning_data
 import matplotlib.pyplot as plt
 import random
 from collections import Counter
 import warnings
 import matplotlib
 matplotlib.use('Qt5Agg')
-
 def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               samples = samples)

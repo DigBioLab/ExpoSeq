@@ -1,6 +1,4 @@
 import pandas as pd
-import re
-from python_scripts.augment_data.structure_files import find_exp_name
 
 
 def load_mixed_files(filenames):

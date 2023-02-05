@@ -1,5 +1,5 @@
 import pandas as pd
-from python_scripts.tidy_data.heatmaps.bool_sequences_matrix import find_seq_matches
+from .bool_sequences_matrix import find_seq_matches
 import numpy as np
 
 #sequencing_report = pd.read_table(r"C:\Users\nilsh\PycharmProjects\ExpoSeq\python_scripts\test_data\sequencing_report.txt", sep = ",")

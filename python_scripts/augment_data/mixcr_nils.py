@@ -7,7 +7,9 @@ from os.path import dirname, abspath
 from ast import literal_eval
 import pickle
 import pandas as pd
-from python_scripts.augment_data.trimming import trimming
+from .trimming import trimming
+
+
 
 def add_fastq_files():
     filenames = []

@@ -1,7 +1,9 @@
-import pandas as pd
 import re
+
 import numpy as np
-from python_scripts.tidy_data.tidy_library import mapping_funcs
+import pandas as pd
+
+
 # output == number of aligned reads
 # input == number of total sequencing reads
 
