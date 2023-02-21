@@ -1,64 +1,92 @@
-from python_scripts.plots.usq_plot import plot_USQ
-from python_scripts.plots.plt_heatmap import plot_heatmap
-from python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
-from python_scripts.plots.length_distribution import length_distribution_multi
-from python_scripts.augment_data.binding_data import collect_binding_data
-from python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
-from python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
-from python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
-from python_scripts.plots.cluster_embedding import show_difference
-from python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
-from python_scripts.plots.barplot import barplot
-from python_scripts.plots.saveFig import saveFig
+from .python_scripts.plots.usq_plot import plot_USQ
+from .python_scripts.plots.plt_heatmap import plot_heatmap
+from .python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
+from .python_scripts.plots.length_distribution import length_distribution_multi
+from .python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
+from .python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
+from .python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
+from .python_scripts.plots.cluster_embedding import show_difference
+from .python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
+from .python_scripts.plots.barplot import barplot
+from .python_scripts.plots.saveFig import saveFig
 import matplotlib.pyplot as plt
+import python_scripts.augment_data.uploader as upload
+import python_scripts.augment_data.binding_data as bind_data_prep
 from python_scripts.augment_data.uploader import upload
 from ast import literal_eval
 from settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
-from python_scripts import chat_bot
+import python_scripts.chat_bot as bot
 import os
-from settings.change_save_settings import Change_save_settings
+import settings.change_save_settings as save_set
 class PlotManager:
     def __init__(self, test_version = False):
-        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq")) + "\\ExpoSeq"
-        if os.path.isdir("../my_experiments"):
+        self.module_dir = os.path.abspath("ExpoSeq")
+        if os.path.isdir("my_experiments"):
             pass
         else:
-            os.mkdir("../my_experiments")
-        if os.path.isdir("../temp"):
+            os.mkdir("my_experiments")
+        if os.path.isdir("temp"):
             pass
         else:
-            os.mkdir("../temp")
+            os.mkdir("temp")
         if test_version == False:
-            self.sequencing_report, self.alignment_report, self.experiment = upload()
-            with open(self.module_dir + "\\" + "my_experiments/" + self.experiment + "/experiment_names.pickle", "rb") as f:
+
+            self.sequencing_report, self.alignment_report, self.experiment = upload.upload()
+            experiment_path = os.path.join(self.module_dir,
+                                           "my_experiments",
+                                           self.experiment,
+                                           "experiment_names.pickle")
+            with open(experiment_path, "rb") as f:
                 self.unique_experiments = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.add_binding = input("Do you have binding Data? Y/n")
             if self.add_binding.lower() in ["Y", "y"]:
-                self.binding_data = collect_binding_data()
+                self.binding_data = bind_data_prep.collect_binding_data()
             else:
                 self.binding_data = self.add_binding
         else:
-            with open(self.module_dir + "/" + "test_data/sequencing_report.csv", "rb") as f:
+            report_path = os.path.join(self.module_dir,
+                                       "test_data",
+                                       "sequencing_report.csv")
+            with open(report_path, "rb") as f:
                 self.sequencing_report = pd.read_csv(f, sep=",")
            # with open("test_data/sequencing_report.csv", "rb") as f:
             #    self.sequencing_report = pd.read_csv(f, sep = ",")
-            with open(self.module_dir + "/" + "settings/global_vars.txt", "r") as f:
+            common_vars_path = os.path.join(self.module_dir,
+                                            "settings",
+                                            "global_vars.txt")
+            with open(common_vars_path, "r") as f:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
-            with open(self.module_dir + "/" + "test_data/experiment_names.pickle", "rb") as f:
+            experiment_names_path = os.path.join(self.module_dir,
+                                                 "test_dir"
+                                                 , "experiment_names.pickle")
+            with open(experiment_names_path, "rb") as f:
                 self.unique_experiments = pickle.load(f)
-            with open(self.module_dir + "/" + "test_data/all_alignment_reports.pickle", "rb") as f:
+            alignments_repos_path = os.path.join(self.module_dir,
+                                                 "test_data",
+                                                 "all_alignment_reports.pickle")
+            with open(alignments_repos_path, "rb") as f:
                 self.alignment_report = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
-            self.binding_data = pd.read_table(self.module_dir + "\\" + "test_data/binding_data.txt", sep=",")
+            binding_data_path = os.path.join(self.module_dir,
+                                             "test_data",
+                                             "bining_data.txt")
+            self.binding_data = pd.read_table(binding_data_path, sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
-        with open(self.module_dir + "/" + 'settings/font_settings.txt', "r") as f:
+
+        font_settings_path = os.path.join(self.module_dir,
+                                          "settings",
+                                          "font_settings.txt")
+        with open(font_settings_path, "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open(self.module_dir + "/" + 'settings/legend_settings.txt', "r") as f:
+        legend_settings_path = os.path.join(self.module_dir,
+                                            "settings",
+                                            "legend_settings.txt")
+        with open(legend_settings_path, "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0
@@ -67,13 +95,13 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
-        self.settings_saver = Change_save_settings()
+        self.settings_saver = save_set.Change_save_settings()
 
     def askMe(self):
         """
         :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
         """
-        chat_bot.askMe(self.global_params)
+        bot.askMe(self.global_params)
     def print_antigens(self):
         """
         :return: prints the antigens (columns) of your binding data
@@ -88,6 +116,7 @@ class PlotManager:
         """
         :return: can be used to save your plots. It will ask you automatically for the directory where you want to save it
         """
+
         saveFig()
     def close(self):
         plt.close()
@@ -244,7 +273,7 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
 
-    def basic_cluster(self, sample):
+    def basic_cluster(self, sample,max_ld = 1, min_ld = 0):
         """
 
         :param sample: type in a sample name you want to analyze
@@ -256,17 +285,21 @@ class PlotManager:
                    self.ax,
                    self.sequencing_report,
                    sample,
+                    max_ld,
+                    min_ld,
                    self.batch_size)
         self.zero = 1
         self.ax = self.fig.gca()
         self.plot_type = "single"
         self.style = PlotStyle(self.ax, self.plot_type)
-    def cluster_one_AG(self, antigen, specific_experiments=False):
+    def cluster_one_AG(self, antigen,max_ld = 1, min_ld = 0, specific_experiments=False):
         self.fig.clear()
         cluster_single_AG(self.fig,
                           self.sequencing_report,
                           antigen,
                           self.binding_data,
+                          max_ld,
+                          min_ld,
                           self.batch_size,
                           specific_experiments,
                           )

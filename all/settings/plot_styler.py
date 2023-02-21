@@ -3,12 +3,18 @@ from ast import literal_eval
 import os
 class PlotStyle:
     def __init__(self, ax, plot_type):
-        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq")) + "\\ExpoSeq"
+        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq"))
         self.ax = ax
-        with open(self.module_dir + "\\" + 'settings/font_settings.txt', "r") as f:
+        font_settings_path = os.path.join(self.module_dir,
+                                          "settings",
+                                          "font_settings.txt")
+        with open(font_settings_path, "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        with open(self.module_dir + "\\" + 'settings/legend_settings.txt', "r") as f:
+        legend_settings_path = os.path.join(self.module_dir,
+                                            "settings",
+                                            "legend_settings.txt")
+        with open(legend_settings_path, "r") as f:
             legend_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.plot_type = plot_type

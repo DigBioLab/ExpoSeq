@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import pandas as pd
 from ..tidy_data.tidy_cluster_embedding import tidy_embed
 

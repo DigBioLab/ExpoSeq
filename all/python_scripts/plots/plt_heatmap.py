@@ -9,22 +9,22 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments =
 
     if heatmap == "morosita_horn":
         unique_sequences, unique_experiments = tidy_morosita_horn.cleaning_data(sequencing_report,
-                                                             protein = protein,
-                                                             specific_experiments = specific_experiments)
+                                                                                protein = protein,
+                                                                                specific_experiments = specific_experiments)
         matrix, unique_sequences, unique_experiments = tidy_morosita_horn.morosita_horn_matrix(unique_sequences,
-                                                                                                  unique_experiments)
+                                                                                               unique_experiments)
     if heatmap == "jaccard":
         matrix, unique_sequences, unique_experiments = tidy_jaccard.cleaning_jaccard(sequencing_report,
-                                                                                    protein=protein,
+                                                                                     protein=protein,
                                                                                      specific_experiments = specific_experiments)
 
     if heatmap == "sorensen":
         matrix, unique_sequences, unique_experiments = tidy_sorensen.heatmap_sorensen(sequencing_report,
-                                                                              protein = protein,
+                                                                                      protein = protein,
                                                                                       specific_experiments = specific_experiments)
     if heatmap == "relative":
         matrix, unique_sequences, unique_experiments = tidy_heatmap_share.heatmap_share(sequencing_report,
-                                                                                         protein=protein,
+                                                                                        protein=protein,
                                                                                         specific_experiments = specific_experiments)
 
     unique_experiments = list(unique_experiments)

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from python_scripts.tidy_data.read_extract_data import read_alignment_report
+from all.python_scripts.tidy_data.read_extract_data import read_alignment_report
 
 
 def collect_boxplot_data(report_filename, local_pattern):

@@ -3,7 +3,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame, concat
-from python_scripts.plots.plot_params.open_txtfiles import openParams
+from all.python_scripts.plots import openParams
 
 sequencing_report = tidy_data.sequencing_report
 third_round = ['EDE_K', 'ABA_K', 'ACA_K', 'FGF_L']
