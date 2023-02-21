@@ -4,7 +4,7 @@ ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from seq
 
 ## Installation
 
-open a new project and pull the repository (link in browser) to your IDE. If you have Git installed you can also do: ```git clone https://github.com/YOUR_USERNAME/ExpoSeq``` . Then, install the libraries with ```pip install -r requirements.txt```
+open a new project and pull the repository (link in browser) to your IDE. If you have Git installed you can also do: ```git clone https://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@github.com/nilshof01/ExpoSeq.git     ``` . Then, install the libraries with ```pip install -r ExpoSeq/requirements.txt```
 
 To get started, please download and follow the instructions for MiXCR under the following link: https://docs.milaboratories.com/mixcr/getting-started/installation/ 
 You can also only use the test version without installing it.
@@ -12,7 +12,7 @@ You can also only use the test version without installing it.
 ## Importing the Plotting Tool
 
 To access the plotting tool, you will need to import it into your console by running the following command:
-```from expoSeq import PlotManager```
+```from ExpoSeq.expoSeq import PlotManager```
 ## Using the PlotManager
 
 The PlotManager is the main interface for creating various plots using your FASTQ data. You can create an instance of the PlotManager by running the following command:

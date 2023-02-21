@@ -1,4 +1,4 @@
-from python_scripts.tidy_data.tidy_rel_sequence_abun import cleaning
+from ..tidy_data.tidy_rel_sequence_abun import cleaning
 
 def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_distance,length_filter,batch, font_settings, legend_settings):
     all_samples = cleaning(sequencing_report,
