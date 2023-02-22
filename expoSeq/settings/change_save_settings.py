@@ -3,7 +3,7 @@ from ast import literal_eval
 from tkinter.filedialog import askopenfilename
 class Change_save_settings():
     def __init__(self):
-        self.module_dir = os.path.abspath("ExpoSeq")
+        self.module_dir = os.path.abspath("expoSeq")
         self.save_settings_path = os.path.join(self.module_dir,
                                           "settings",
                                           "save_settings.txt")

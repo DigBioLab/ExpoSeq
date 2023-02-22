@@ -10,12 +10,16 @@ import sys
 import pickle
 
 def upload():
-    with open('../settings/global_vars.txt', "r") as f:
+    module_dir = os.path.abspath("expoSeq")
+    glob_vars = os.path.join(module_dir, "settings", "global_vars.txt")
+    with open(glob_vars, "r") as f:
         data = f.read()
     data = literal_eval(data)
 
     last_experiment = data["last_experiment"]
-    if os.path.isfile("my_experiments/" + last_experiment + "/" + "sequencing_report.txt"):
+    repo_path = os.path.join(module_dir, "my_experiments", "last_experiment", "sequencing_report.txt")
+
+    if os.path.isfile(repo_path):
         continue_analysis = input("Do you want to continue to analyze with " + last_experiment + "? Y/n")
         if continue_analysis.lower() in ["n", "N"]:
             next_step = input("If you want to upload a new experiment press 1. If you want to choose another experiment press 2")
@@ -36,10 +40,16 @@ def upload():
                     process_mixcr(experiment,
                                     method = method,
                                     paired_end_sequencing = paired_end)
-                    with open("my_experiments/" + experiment + "/sequencing_report.txt", "rb") as f:
+
+                    with open(repo_path, "rb") as f:
                         sequencing_report = pd.read_table(f, sep=",")
                     try:
-                        alignment_reports = glob("my_experiments/" + experiment + "/alignment_reports/*")
+                        align_repo_path = os.path.join(module_dir,
+                                                       "my_experiemnts",
+                                                       experiment,
+                                                       "alignment_reports",
+                                                       "*")
+                        alignment_reports = glob(align_repo_path)
                         all_alignment_reports = load_alignment_reports(alignment_reports)
                     except:
                         all_alignment_reports = pd.DataFrame([])
@@ -65,31 +75,43 @@ def upload():
                             "No Alignment Reports were uploaded. You will continue the analysis without being able to analyze the Alignment Quality.")
                     else:
                         all_alignment_reports = check_completeness(all_alignment_reports, sequencing_report)
+                    exp_name_path = os.path.join(module_dir, "my_experiments", experiment, "experiment_names.pickle")
                     try:
                         unique_experiments = sequencing_report["Experiment"].unique()
                         experiment_dic = {item: item for item in list(unique_experiments)}
-                        with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+
+                        with open(exp_name_path, "wb") as f:
                             pickle.dump(experiment_dic, f)
                     except:
                         col_name = input("Please type in the exact column name which contains the name of the samples")
                         unique_experiments = sequencing_report[col_name].unique()
                         experiment_dic = {item: item for item in list(unique_experiments)}
-                        with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+                        with open(exp_name_path, "wb") as f:
                             pickle.dump(experiment_dic, f)
             if next_step == "2":
                 while True:
                     user_input = input("Enter the name of the experiment you want to analyze")
 
                     user_input = user_input  # Try to convert the input to an integer
-                    if os.path.isdir("my_experiments/" + user_input):  # Check if the input is in the correct range
+                    spec_exp_name_path = os.path.join(module_dir, "my_experiments", user_input)
+                    if os.path.isdir(spec_exp_name_path):  # Check if the input is in the correct range
                         break  # If the input is valid, break out of the loop
                     else:
                         print("The experiment name does not exist in my_experiments. Please enter the correct name")
                 experiment = user_input
-                with open("my_experiments/" + experiment + "/sequencing_report.txt", "rb") as f:
+                seq_report_path = os.path.join(module_dir,
+                                               "my_experiments",
+                                               experiment,
+                                               "sequencing_report.txt")
+                with open(seq_report_path, "rb") as f:
                     sequencing_report = pd.read_table(f, sep=",")
                 try:
-                    alignment_reports = glob("my_experiments/" + experiment + "/alignment_reports/*")
+                    align_repo_path = os.path.join(module_dir,
+                                                   "my_experiments",
+                                                   experiment,
+                                                   "alignment_reports",
+                                                   "*")
+                    alignment_reports = glob(align_repo_path)
                     all_alignment_reports = load_alignment_reports(alignment_reports)
                 except:
                     all_alignment_reports = pd.DataFrame([])
@@ -100,10 +122,19 @@ def upload():
                 pass
         else:
             experiment = last_experiment
-            with open("my_experiments/" + experiment + "/sequencing_report.txt", "rb") as f:
+            seq_report_path = os.path.join(module_dir,
+                                           "my_experiments",
+                                           experiment,
+                                           "sequencing_report.txt")
+            with open(seq_report_path, "rb") as f:
                 sequencing_report = pd.read_table(f, sep=",")
             try:
-                alignment_reports = glob("my_experiments/" + experiment + "/alignment_reports/*")
+                align_repo_path = os.path.join(module_dir,
+                                               "my_experiments",
+                                               experiment,
+                                               "alignment_reports",
+                                               "*")
+                alignment_reports = glob(align_repo_path)
                 all_alignment_reports = load_alignment_reports(alignment_reports)
             except:
                 all_alignment_reports = pd.DataFrame([])
@@ -129,10 +160,19 @@ def upload():
             process_mixcr(experiment,
                           method=method,
                           paired_end_sequencing=paired_end)
-            with open("my_experiments/" + experiment + "/sequencing_report.txt", "rb") as f:
+            seq_report_path = os.path.join(module_dir,
+                                           "my_experiments",
+                                           experiment,
+                                           "sequencing_report.txt")
+            with open(seq_report_path, "rb") as f:
                 sequencing_report = pd.read_table(f, sep=",")
             try:
-                alignment_reports = glob("my_experiments/" + experiment + "/alignment_reports/*")
+                align_repo_path = os.path.join(module_dir,
+                                               "my_experiments",
+                                               experiment,
+                                               "alignment_reports",
+                                               "*")
+                alignment_reports = glob(align_repo_path)
                 all_alignment_reports = load_alignment_reports(alignment_reports)
             except:
                 all_alignment_reports = pd.DataFrame([])
@@ -161,16 +201,18 @@ def upload():
                     "No Alignment Reports were uploaded. You will continue the analysis without being able to analyze the Alignment Quality.")
             else:
                 all_alignment_reports = check_completeness(all_alignment_reports, sequencing_report)
+            exp_name_path = os.path.join(module_dir, "my_experiments", experiment, "experiment_names.pickle")
             try:
                 unique_experiments = sequencing_report["Experiment"].unique()
                 experiment_dic = {item: item for item in list(unique_experiments)}
-                with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+
+                with open(exp_name_path, "wb") as f:
                     pickle.dump(experiment_dic, f)
             except:
                 col_name = input("Please type in the exact column name which contains the name of the samples")
                 unique_experiments = sequencing_report[col_name].unique()
                 experiment_dic = {item: item for item in list(unique_experiments)}
-                with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+                with open(exp_name_path, "wb") as f:
                     pickle.dump(experiment_dic, f)
         else:
             pass

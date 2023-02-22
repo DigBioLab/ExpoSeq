@@ -1,8 +1,6 @@
 import openai
 
 
-#"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"
-
 
 def askMe(global_params):
     openai.api_key = global_params["api_gpt3"]

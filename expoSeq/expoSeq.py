@@ -21,15 +21,15 @@ import os
 from .settings.change_save_settings import Change_save_settings
 class PlotManager:
     def __init__(self, test_version = False):
-        self.module_dir = os.path.abspath("ExpoSeq")
+        self.module_dir = os.path.abspath("expoSeq")
         if os.path.isdir("my_experiments"):
             pass
         else:
             os.mkdir("my_experiments")
-        if os.path.isdir("temp"):
+        if os.path.isdir(os.path.join(self.module_dir, "temp")):
             pass
         else:
-            os.mkdir("temp")
+            os.mkdir(os.path.join(self.module_dir, "temp"))
         if test_version == False:
 
             self.sequencing_report, self.alignment_report, self.experiment = upload()

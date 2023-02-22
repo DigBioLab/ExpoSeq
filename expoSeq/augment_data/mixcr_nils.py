@@ -15,7 +15,8 @@ def add_fastq_files():
 
     while True:
         path_to_files = filedialog.askdirectory()
-        filenames.extend(glob(path_to_files + "/*.fastq"))
+
+        filenames.extend(glob(os.path.join(path_to_files, "*.fastq")))
         print("These are the files you chose:")
         for i in filenames:
             print(os.path.basename(i))
@@ -33,7 +34,9 @@ def add_fastq_files():
 def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
-    with open('settings/global_vars.txt') as f:
+    module_dir = os.path.relpath("expoSeq")
+    settings_dir = os.path.join(module_dir, "settings", "global_vars.txt")
+    with open(settings_dir) as f:
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]
@@ -44,7 +47,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
             confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
             if confirmation.lower() in ["Y", "y"]:
                 data["mixcr_path"] = path_to_mixcr
-                with open("settings/global_vars.txt", "w") as f:
+                with open(settings_dir, "w") as f:
                     f.write(str(data))
                 break
     else:
@@ -54,8 +57,9 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     #milab-human-tcr-dna-multiplex-cdr3
     while True:
         if not os.path.isdir("my_experiments/" + experiment):
-            os.mkdir("my_experiments/" + experiment)
-            os.mkdir("my_experiments/" + experiment + "/alignment_reports")  # raise error if already exists
+
+            os.mkdir(os.path.join(module_dir, "my_experiments", experiment))
+            os.mkdir(os.path.join(module_dir, "my_experiments", experiment, "alignment_reports"))  # raise error if already exists
             break
         else:
             experiment = input("The given experiment name already exists. Please type another one.")
@@ -89,17 +93,22 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
         basename = os.path.basename(os.path.splitext(filename)[0])
         basename = basename[:len(basename) - 2]
         filename_base = basename
-        result = "temp/" + filename_base + ".vdjca"
+        result = os.path.join(module_dir, "temp", filename_base + ".vdjca")
+        clones = os.path.join(module_dir, "temp", basename + "clones.clns")
         subprocess.run(["java",
                         "-jar",
                         path_to_mixcr,
                         "align",
                         "-p " + method,
-                        filename,
+                        os.path.normpath(filename),
                         result,
-                        "-r" + "my_experiments/" + experiment + "/alignment_reports/" + filename_base + "_AlignmentReport.txt"])
+                        "--report " + os.path.normpath(os.path.join(module_dir,
+                                           "my_experiments",
+                                           experiment,
+                                           "alignment_reports",
+                                           filename_base + "_AlignmentReport.txt"))
+                        ])
 
-        clones = "temp/" + basename + "clones.clns"
         subprocess.run(["java",
                         "-jar",
                         path_to_mixcr,
@@ -108,7 +117,8 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
                         "-OseparateByV=true",
                         "-OseparateByJ=true",
                         result,
-                        "temp/" + basename + "clones.clns"])
+                        clones
+                        ])
 
         subprocess.run(["java",
                         "-jar",
@@ -122,10 +132,10 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
                         "-aaFeature CDR3",
                         "-avrgFeatureQuality CDR3",
                         clones,
-                        "temp/" + basename + ".tsv"
+                        os.path.join(module_dir, "temp", basename + ".tsv")
                         ])
 
-        clones_sample = pd.read_table(r"temp/" + basename + "_IGH.tsv")
+        clones_sample = pd.read_table(os.path.join(module_dir, "temp", basename + "_IGH.tsv"))
         clones_sample = clones_sample[["cloneId",
                                         "readCount",
                                         "readFraction",
@@ -144,17 +154,30 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
         clones_sample = clones_sample.drop(columns = ["readFraction_y", "index"])
         clones_sample = clones_sample.rename(columns={"readFraction_x": "cloneFraction"})
         clones_sample["Experiment"] = filename_base
-        clones_sample = trimming(clones_sample, divisible_by = 3, min_count = 3, new_fraction = "clonesFraction")
+        clones_sample = trimming(clones_sample,
+                                 divisible_by = 3,
+                                 min_count = 3,
+                                 new_fraction = "clonesFraction")
         sequencing_report = pd.concat([sequencing_report, clones_sample])
-        files_to_remove = os.listdir("temp")
+        files_to_remove = os.listdir(os.path.join(module_dir, "temp"))
         for file in files_to_remove:
-            os.remove("temp/" + file)
-
-    sequencing_report.to_csv("my_experiments/" + experiment + "/sequencing_report.txt")
+            os.remove(os.path.join(module_dir, "temp", file))
+    report_dir = os.path.join(module_dir,
+                              "my_experiments",
+                              experiment,
+                              "sequencing_report.txt")
+    sequencing_report.to_csv(report_dir)
     data["last_experiment"] = experiment
-    with open("settings/global_vars.txt", "w") as f:
+    glob_vars_dir = os.path.join(module_dir,
+                                 "settings",
+                                 "global_vars.txt")
+    with open(glob_vars_dir, "w") as f:
         f.write(str(data))
     unique_experiments = sequencing_report["Experiment"].unique()
     experiment_dic = {item: item for item in list(unique_experiments)}
-    with open("my_experiments/" + experiment + "/experiment_names.pickle", "wb") as f:
+    exp_names_dir = os.path.join(module_dir,
+                                 "my_experiments",
+                                 experiment,
+                                 "experiment_names.pickle")
+    with open(exp_names_dir, "wb") as f:
         pickle.dump(experiment_dic, f)

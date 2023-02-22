@@ -3,7 +3,7 @@ from ast import literal_eval
 import os
 class PlotStyle:
     def __init__(self, ax, plot_type):
-        self.module_dir = os.path.dirname(os.path.abspath("ExpoSeq"))
+        self.module_dir = os.path.abspath("expoSeq")
         self.ax = ax
         font_settings_path = os.path.join(self.module_dir,
                                           "settings",
