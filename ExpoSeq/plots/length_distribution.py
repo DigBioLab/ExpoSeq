@@ -23,7 +23,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
 
 
 def length_distribution_multi(fig, sequencing_report, samples, font_settings):
-    if samples == True:
+    if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
     else:

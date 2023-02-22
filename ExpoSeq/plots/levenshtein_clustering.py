@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 from numpy import unique
-from ..tidy_data.clustering import cleaning
 import networkx
 import math
 import pandas as pd
+from ..tidy_data.clustering import cleaning
 
 
 def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size):

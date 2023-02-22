@@ -1,8 +1,8 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 from ..tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
+
 
 
 def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments = False):

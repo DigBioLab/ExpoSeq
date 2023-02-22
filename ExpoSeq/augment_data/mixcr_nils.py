@@ -10,7 +10,6 @@ import pandas as pd
 from .trimming import trimming
 
 
-
 def add_fastq_files():
     filenames = []
 

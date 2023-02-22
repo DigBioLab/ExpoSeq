@@ -1,8 +1,6 @@
 import re
-
 import numpy as np
 import pandas as pd
-
 
 # output == number of aligned reads
 # input == number of total sequencing reads

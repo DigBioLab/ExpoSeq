@@ -1,5 +1,4 @@
 import os.path
-
 from matplotlib.pyplot import savefig
 from tkinter.filedialog import askdirectory
 from ast import literal_eval

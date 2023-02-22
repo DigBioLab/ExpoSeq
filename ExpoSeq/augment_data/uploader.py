@@ -9,9 +9,8 @@ from .check_reports import check_completeness
 import sys
 import pickle
 
-
 def upload():
-    with open('../../settings/global_vars.txt', "r") as f:
+    with open('../settings/global_vars.txt', "r") as f:
         data = f.read()
     data = literal_eval(data)
 

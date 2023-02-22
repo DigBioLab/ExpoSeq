@@ -1,25 +1,24 @@
-from .python_scripts.plots.usq_plot import plot_USQ
-from .python_scripts.plots.plt_heatmap import plot_heatmap
-from .python_scripts.plots.logo_plot import plot_logo_multi, plot_logo_single
-from .python_scripts.plots.length_distribution import length_distribution_multi
-from .python_scripts.plots.levenshtein_clustering import clusterSeq, cluster_single_AG
-from .python_scripts.plots.embedding_with_binding import cluster_toxins_tsne
-from .python_scripts.plots.relative_sequence_abundance import relative_sequence_abundance
-from .python_scripts.plots.cluster_embedding import show_difference
-from .python_scripts.plots.stacked_aa_distribution import stacked_aa_distr
-from .python_scripts.plots.barplot import barplot
-from .python_scripts.plots.saveFig import saveFig
+from .plots.usq_plot import plot_USQ
+from .plots.plt_heatmap import plot_heatmap
+from .plots.logo_plot import plot_logo_multi, plot_logo_single
+from .plots.length_distribution import length_distribution_single, length_distribution_multi
+from .plots.levenshtein_clustering import clusterSeq, cluster_single_AG
+from .plots.embedding_with_binding import cluster_toxins_tsne
+from .plots.relative_sequence_abundance import relative_sequence_abundance
+from .plots.cluster_embedding import show_difference
+from .plots.stacked_aa_distribution import stacked_aa_distr
+from .plots.barplot import barplot
+from .plots.saveFig import saveFig
 import matplotlib.pyplot as plt
-import python_scripts.augment_data.uploader as upload
-import python_scripts.augment_data.binding_data as bind_data_prep
-from python_scripts.augment_data.uploader import upload
+from .augment_data.binding_data import collect_binding_data
+from .augment_data.uploader import upload
 from ast import literal_eval
-from settings.plot_styler import PlotStyle
+from .settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
-import python_scripts.chat_bot as bot
+from .try_outs.chat_bot import askMe
 import os
-import settings.change_save_settings as save_set
+from .settings.change_save_settings import Change_save_settings
 class PlotManager:
     def __init__(self, test_version = False):
         self.module_dir = os.path.abspath("ExpoSeq")
@@ -33,7 +32,7 @@ class PlotManager:
             os.mkdir("temp")
         if test_version == False:
 
-            self.sequencing_report, self.alignment_report, self.experiment = upload.upload()
+            self.sequencing_report, self.alignment_report, self.experiment = upload()
             experiment_path = os.path.join(self.module_dir,
                                            "my_experiments",
                                            self.experiment,
@@ -43,7 +42,7 @@ class PlotManager:
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.add_binding = input("Do you have binding Data? Y/n")
             if self.add_binding.lower() in ["Y", "y"]:
-                self.binding_data = bind_data_prep.collect_binding_data()
+                self.binding_data = collect_binding_data()
             else:
                 self.binding_data = self.add_binding
         else:
@@ -61,7 +60,7 @@ class PlotManager:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
             experiment_names_path = os.path.join(self.module_dir,
-                                                 "test_dir"
+                                                 "test_data"
                                                  , "experiment_names.pickle")
             with open(experiment_names_path, "rb") as f:
                 self.unique_experiments = pickle.load(f)
@@ -73,7 +72,7 @@ class PlotManager:
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             binding_data_path = os.path.join(self.module_dir,
                                              "test_data",
-                                             "bining_data.txt")
+                                             "binding_data.txt")
             self.binding_data = pd.read_table(binding_data_path, sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)
 
@@ -95,13 +94,13 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
-        self.settings_saver = save_set.Change_save_settings()
+        self.settings_saver = Change_save_settings()
 
     def askMe(self):
         """
         :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
         """
-        bot.askMe(self.global_params)
+        askMe(self.global_params)
     def print_antigens(self):
         """
         :return: prints the antigens (columns) of your binding data
@@ -126,7 +125,7 @@ class PlotManager:
     def change_experiment_names(self, specific = None, change_whole_dic = False):
         """
         :param specific: optional parameter. You can use this function to change the names of a specific sample.
-        :param change_whole_dic: optional Parameter. In general the renaming is done be using a dictionary and map it to the labels. You can change the whole dictionary for all your original labels by adding the new dictionary for this parameter.
+        :param change_whole_dic: optional Parameter. In general the renaming is done be using a dictionary and map it to the labels. You can change the whole dictionary for ExpoSeq your original labels by adding the new dictionary for this parameter.
         :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
         if change_whole_dic == False:
@@ -221,7 +220,7 @@ class PlotManager:
                  samples = "all",
                  chosen_seq_length = 16):
         """
-        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :param samples: You analyze ExpoSeq samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like
         :return: Gives you in one figure one logoPlot per sample.
         """
@@ -238,7 +237,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
     def lengthDistribution_multi(self, samples = "all"):
         """
-        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :param samples: You analyze ExpoSeq samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :return: Outputs one figurewith one subplot per sample which shows you the distribution of sequence length
         """
         self.fig.clear()

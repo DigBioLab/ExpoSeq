@@ -1,4 +1,4 @@
-from ..tidy_data.interpret_data import add_fraction
+from .interpret_data import add_fraction
 
 
 def cleaning_data(sequencing_report, samples):
