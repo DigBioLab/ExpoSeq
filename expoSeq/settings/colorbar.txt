@@ -1,6 +1,6 @@
 {
 "cmap": "inferno",
 "orientation": "vertical",
-"spacing": "5",
+"spacing": "proportional",
 "extend": "neither"
 }

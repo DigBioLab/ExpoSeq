@@ -9,7 +9,8 @@ def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settin
         ax.set_ylabel('Relatvie Proportion of Amino Acid', **font_settings)
     else:
         ax.set_ylabel('Relatvie Proportion of Nucleotide', **font_settings)
-    ax.set_xticks(rotation = 360)
+
+#    ax.set_xticks(rotation = 360)
     plt.legend(**legend_settings)
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22

@@ -2,18 +2,17 @@ import os
 import sys
 from glob import glob
 import subprocess
-from os.path import dirname, abspath
 from ast import literal_eval
 import pickle
 import pandas as pd
-from .trimming import trimming
-import easygui
+from expoSeq.augment_data.trimming import trimming
+from expoSeq.augment_data.filechooser import get_file_path, get_directory_path
 
 def add_fastq_files():
     filenames = []
 
     while True:
-        path_to_files = easygui.diropenbox()
+        path_to_files = get_directory_path()
 
         filenames.extend(glob(os.path.join(path_to_files, "*.fastq")))
         print("These are the files you chose:")
@@ -34,7 +33,9 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
     module_dir = os.path.relpath("expoSeq")
-    settings_dir = os.path.join(module_dir, "settings", "global_vars.txt")
+    settings_dir = os.path.join(module_dir,
+                                "settings",
+                                "global_vars.txt")
     with open(settings_dir) as f:
         data = f.read()
     data = literal_eval(data)
@@ -42,7 +43,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     if path_to_mixcr == "":
         while True:
             print("choose the mixcr java file with the file chooser")
-            path_to_mixcr = easygui.fileopenbox()
+            path_to_mixcr = get_file_path()
             confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
             if confirmation.lower() in ["Y", "y"]:
                 data["mixcr_path"] = path_to_mixcr
@@ -131,10 +132,14 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
                         "-aaFeature CDR3",
                         "-avrgFeatureQuality CDR3",
                         clones,
-                        os.path.join(module_dir, "temp", basename + ".tsv")
+                        os.path.join(module_dir,
+                                     "temp",
+                                     basename + ".tsv")
                         ])
 
-        clones_sample = pd.read_table(os.path.join(module_dir, "temp", basename + "_IGH.tsv"))
+        clones_sample = pd.read_table(os.path.join(module_dir,
+                                                   "temp",
+                                                   basename + "_IGH.tsv"))
         clones_sample = clones_sample[["cloneId",
                                         "readCount",
                                         "readFraction",
@@ -160,7 +165,9 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
         sequencing_report = pd.concat([sequencing_report, clones_sample])
         files_to_remove = os.listdir(os.path.join(module_dir, "temp"))
         for file in files_to_remove:
-            os.remove(os.path.join(module_dir, "temp", file))
+            os.remove(os.path.join(module_dir,
+                                   "temp",
+                                   file))
     report_dir = os.path.join(module_dir,
                               "my_experiments",
                               experiment,

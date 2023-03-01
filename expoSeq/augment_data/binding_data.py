@@ -1,5 +1,5 @@
 import pandas as pd
-import easygui
+from expoSeq.augment_data.filechooser import get_file_path
 
 
 def collect_binding_data():
@@ -7,7 +7,7 @@ def collect_binding_data():
     while True:
         # prompt the user to add a file
         print("add your excel sheet with the binding data with the file chooser")
-        binding_file = easygui.fileopenbox()
+        binding_file = get_file_path()
         binding_data = pd.concat([binding_data, binding_file])
         response = input("Do you want to continue adding files? (Y/n) ")
         if response.lower() == "n":

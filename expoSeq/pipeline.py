@@ -92,6 +92,7 @@ class PlotManager:
                                      "colorbar.txt")
         with open(colorbar_path, "r") as f:
             self.colorbar_settings = f.read()
+        self.colorbar_settings = literal_eval(self.colorbar_settings)
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0
         self.batch_size = 300

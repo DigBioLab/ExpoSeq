@@ -1,20 +1,16 @@
+import shutil
 import os
-def remove_files_and_directories(directory):
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
-        try:
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                os.rmdir(file_path)
-        except Exception as e:
-            print(f"Failed to remove {file_path}: {e}")
+
+def remove_directories(directory_path):
+    # Iterate over all items in the directory
+    for item in os.listdir(directory_path):
+        shutil.rmtree(item)
+
 def original_settings():
-    module_dir = os.path.abspath("")
+    module_dir = os.path.abspath("expoSeq")
     experiments_dir = os.path.join(module_dir,
-                                   "expoSeq",
                                    "my_experiments")
-    remove_files_and_directories(experiments_dir)
+    remove_directories(experiments_dir)
     common_vars_path = os.path.join(module_dir,
                                     "settings",
                                     "global_vars.txt")
@@ -22,6 +18,7 @@ def original_settings():
         global_params = f.read()
     global_params["mixcr_path"] = ""
     global_params['last_experiment'] = ""
+
 
 
 

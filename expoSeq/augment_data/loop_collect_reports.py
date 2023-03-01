@@ -14,7 +14,7 @@ def load_mixed_files(filenames):
             all_alignment_reports = pd.concat([all_alignment_reports, transposed_report])
         else:
             try:
-                local_intermediate_report = pd.read_table(file)
+                local_intermediate_report = pd.read_table(i)
                 sequencing_report = pd.concat([sequencing_report, local_intermediate_report])
             except:
                 print(i + "could not be read.")

@@ -6,7 +6,7 @@ setup(
     url = "https://github.com/nilshof01/ExpoSeq",
     author = "Nils Hofmann",
     author_email = "s220672@dtu.dk",
-    install_requires = ["tk",
+    install_requires = [
                         "numpy",
                         "pandas>=1.5.3",
                         "matplotlib>=3.6.3",

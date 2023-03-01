@@ -31,11 +31,11 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, colorbar_settings, fon
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5Agg')
-    colorbar_settings = {**colorbar_settings,
+    colorbar_sets = {**colorbar_settings,
                          **{'label': "Degree of Identity"}}
     sns.heatmap(matrix,
                 ax = ax,
-                cbar_kws = colorbar_settings)
+                cbar_kws = colorbar_sets)
     plt.xticks(ticks = range(0, len(unique_experiments), 1),
                labels = unique_experiments,
                rotation = 45,
