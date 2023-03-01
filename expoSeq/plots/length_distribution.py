@@ -14,9 +14,9 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
     ax.title.set_size(10)
 
     ax.set_ylabel("Read Count",
-                      **font_settings)  # Y label
+                    **font_settings)  # Y label
     ax.set_xlabel('Read Length',
-                      **font_settings)  # X label
+                **font_settings)  # X label
 
     fig.suptitle('Distribution of number of sequences with certain length')
 

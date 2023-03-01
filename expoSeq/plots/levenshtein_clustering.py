@@ -6,7 +6,7 @@ import pandas as pd
 from ..tidy_data.clustering import cleaning
 
 
-def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size):
+def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size, font_settings):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     sample_report = sample_report.head(batch_size)
     G, degree_sequence = cleaning(sample_report, max_ld, min_ld)
@@ -27,15 +27,20 @@ def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size):
         if n == 0:
             nodesize[y] = 50
     networkx.draw_networkx(G, arrows = True, with_labels = False,ax = ax)
-
-    ax.set_title("Connected components of " + sample)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    ax.set_title("Connected components of " + sample, **font_settings)
+    font_settings["fontsize"] = original_fontsize
     ax.set_axis_off()
     fig2 = plt.figure()
     ax2 = fig2.gca()
     ax2.bar(*unique(degree_sequence, return_counts=True))
-    ax2.set_title(sample + ' Histogram')
-    ax2.set_xlabel("Degree")
-    ax2.set_ylabel("# of Nodes")
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    ax2.set_title(sample + ' Histogram', **font_settings)
+    font_settings["fontsize"] = original_fontsize
+    ax2.set_xlabel("Degree", **font_settings)
+    ax2.set_ylabel("# of Nodes", font_settings)
 
 
 def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size, specific_experiments = False, ):
@@ -81,7 +86,14 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
         cm = plt.get_cmap("Blues")
         vmin = min(color_values)
         vmax = max(color_values)
-        network_plot = networkx.draw_networkx(G, node_size = nodesize, node_color = color_values, cmap = cm, with_labels = False, arrows = True, edgecolors = "Black", ax = ax)
+        network_plot = networkx.draw_networkx(G,
+                                              node_size = nodesize,
+                                              node_color = color_values,
+                                              cmap = cm,
+                                              with_labels = False,
+                                              arrows = True,
+                                              edgecolors = "Black",
+                                              ax = ax)
      #   net = networkx.draw_networkx(G, node_size=nodesize, node_color = color_values, cmap = cm,with_labels=False, edgecolors = "Black", ax = ax)
        # network_plot = networkx.draw_networkx_nodes(G, pos=networkx.spring_layout(G), node_size=nodesize, node_color = color_values, cmap = cm,edgecolors = "Black", vmin = vmin, vmax = vmax)
         ax.set_title(experiment)
@@ -94,6 +106,10 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
 antigens = ['Ecarpholin_S_DDEL_5ug/mL', 'Myotoxin_II_DDEL_5ug/mL',
            'PLA2_n.naja(Uniprot:P15445)_DDEL_5ug/mL', 'Ecarpholin_S_CDEL_100nM',
            'Myotoxin_II_CDEL_100nM',]
+
+
+
+### is not in use
 def cluster_antigens(sequencing_report, sample, antigens, batch_size):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     Tot = len(antigens)

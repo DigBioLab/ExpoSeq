@@ -1,6 +1,6 @@
 {
 "fontfamily": "serif",
-"fontsize": "medium",
+"fontsize": "14",
 "fontstyle": "normal",
 "fontweight": "bold",
 #rotation

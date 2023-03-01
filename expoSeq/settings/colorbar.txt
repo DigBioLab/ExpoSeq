@@ -1,0 +1,6 @@
+{
+"cmap": "inferno",
+"orientation": "vertical",
+"spacing": "5",
+"extend": "neither"
+}

@@ -87,6 +87,11 @@ class PlotManager:
                                             "legend_settings.txt")
         with open(legend_settings_path, "r") as f:
             legend_settings = f.read()
+        colorbar_path = os.path.join(self.module_dir,
+                                     "settings",
+                                     "colorbar.txt")
+        with open(colorbar_path, "r") as f:
+            self.colorbar_settings = f.read()
         self.legend_settings = literal_eval(legend_settings)
         self.zero = 0
         self.batch_size = 300
@@ -120,8 +125,6 @@ class PlotManager:
     def close(self):
         plt.close()
 
-
-
     def change_experiment_names(self, specific = None, change_whole_dic = False):
         """
         :param specific: optional parameter. You can use this function to change the names of a specific sample.
@@ -148,7 +151,8 @@ class PlotManager:
     def alignment_quality(self, log_transformation = False):
         self.fig.clear()
         self.ax = self.fig.gca()
-        barplot(self.alignment_report,
+        barplot(self.ax,
+                self.alignment_report,
                 self.sequencing_report,
                 self.font_settings,
                 self.legend_settings,
@@ -286,11 +290,13 @@ class PlotManager:
                    sample,
                     max_ld,
                     min_ld,
-                   self.batch_size)
+                   self.batch_size,
+                    self.font_settings)
         self.zero = 1
         self.ax = self.fig.gca()
         self.plot_type = "single"
-        self.style = PlotStyle(self.ax, self.plot_type)
+        self.style = PlotStyle(self.ax,
+                               self.plot_type)
     def cluster_one_AG(self, antigen,max_ld = 1, min_ld = 0, specific_experiments=False):
         self.fig.clear()
         cluster_single_AG(self.fig,
@@ -324,11 +330,12 @@ class PlotManager:
                             sample,
                             toxins,
                             self.binding_data,
-                            self.font_settings,
                             toxin_names,
                             pca_components,
                             perplexity,
-                            iterations_tsne)
+                            iterations_tsne,
+                            self.font_settings,
+                            self.colorbar_settings)
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
@@ -356,7 +363,8 @@ class PlotManager:
                         perplexity,
                         iterations_tsne,
                         self.ax,
-                        self.legend_settings)
+                        self.legend_settings,
+                        self.font_settings)
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
@@ -372,6 +380,8 @@ class PlotManager:
                      True,
                      "morosita_horn",
                      self.ax,
+                     self.colorbar_settings,
+                     self.font_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
@@ -389,6 +399,7 @@ class PlotManager:
                      True,
                      "jaccard",
                      self.ax,
+                     self.colorbar_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
@@ -405,6 +416,7 @@ class PlotManager:
                      True,
                      "sorensen",
                      self.ax,
+                     self.colorbar_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
@@ -421,6 +433,7 @@ class PlotManager:
                      True,
                      "relative",
                      self.ax,
+                     self.colorbar_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"

@@ -41,5 +41,10 @@ def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
    #     plt.plot(x_axis[i], y_axis[i], **params_plot)
     plt.legend(sub_table.Experiment, title = "Sample Names", **legend_settings)
     plt.xlabel("Total sampled sequences", **font_settings)
-    plt.ylabel("Found Unique Sequences", **font_settings)
+    plt.ylabel("Total Unique Sequences", **font_settings)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    plt.title("Sequencing depth of the given samples ", **font_settings)
+    font_settings["fontsize"] = original_fontsize
+    fig.tight_layout()
 

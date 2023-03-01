@@ -20,6 +20,12 @@ def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_d
                   x_vals,
                   rotation = 45,
                   ha = "right")
-    ax.set_ylabel("Frequency in samples with Levenshtein Distance " + str(max_levenshtein_distance), **font_settings)
-    ax.set_ylabel("Sequences", **font_settings)
+    ax.set_ylabel("Frequency in samples with Levenshtein Distance " + str(max_levenshtein_distance),
+                  **font_settings)
+    ax.set_ylabel("Sequences",
+                  **font_settings)
     ax.legend(**legend_settings)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    ax.set_title("Sequence Abundance of given samples", **font_settings)
+    font_settings["fontsize"] = original_fontsize

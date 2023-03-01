@@ -5,7 +5,7 @@ from ..tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn
 
 
 
-def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments = False):
+def plot_heatmap(sequencing_report, protein, heatmap, ax, colorbar_settings, font_settings, specific_experiments = False):
 
     if heatmap == "morosita_horn":
         unique_sequences, unique_experiments = tidy_morosita_horn.cleaning_data(sequencing_report,
@@ -31,21 +31,25 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, specific_experiments =
     matrix = matrix.sort_index(axis=1)
     matrix = matrix.sort_index(axis = 0)
     matplotlib.use('Qt5Agg')
+    colorbar_settings = {**colorbar_settings,
+                         **{'label': "Degree of Identity"}}
     sns.heatmap(matrix,
-                ax = ax)
-    plt.xticks(ticks = range(0, len(unique_experiments), 1), labels = unique_experiments, rotation = 45, ha = 'right', size = 5) # create a function which finds the perfect size based on counts of xlabels
-    plt.yticks(ticks = range(0, len(unique_experiments), 1),labels = unique_experiments, va='top', size=5)
-    savefig = ""
-   # while savefig != "Y" or "n":
-    #    savefig = input("Do you want to save the figure? Y/n" )
-     #   if savefig != "Y" or "n":
-      #      raise Exception("Sorry, your input was neither Y or n. Try Again, please.")
+                ax = ax,
+                cbar_kws = colorbar_settings)
+    plt.xticks(ticks = range(0, len(unique_experiments), 1),
+               labels = unique_experiments,
+               rotation = 45,
+               ha = 'right',
+               size = 5) # create a function which finds the perfect size based on counts of xlabels
+    plt.yticks(ticks = range(0, len(unique_experiments), 1),
+               labels = unique_experiments,
+               va='center',
+               size=5)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    ax.set_title("Identity between samples based on Morosita Horn Index", **font_settings)
+    font_settings["fontsize"] = original_fontsize
 
-   # if savefig == "Y":
-    #    plt.savefig("morosita_horn_matrix_dna.png", dpi=300)
-    #else:
-     #   pass
-    # close figure
 
 
 

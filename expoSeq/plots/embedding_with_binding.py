@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.manifold import TSNE
 
 
-def cluster_toxins_tsne(fig, ax,sequencing_report,sample, toxins, binding_data,font_settings, toxin_names, pca_components, perplexity, iterations_tsne, ):
+def cluster_toxins_tsne(fig, ax,sequencing_report,sample, toxins, binding_data, toxin_names, pca_components, perplexity, iterations_tsne, font_settings, colorbar_settings):
     sequencing_report = sequencing_report[sequencing_report["Experiment"] == sample]
     batch = sequencing_report.groupby("Experiment").head(1000)
     mix = batch.merge(binding_data, on = "aaSeqCDR3", how = "left")
@@ -29,28 +29,33 @@ def cluster_toxins_tsne(fig, ax,sequencing_report,sample, toxins, binding_data,f
                 perplexity=perplexity,
                 n_iter=iterations_tsne)
     tsne_results = tsne.fit_transform(X)
-    tsne_results = pd.DataFrame(tsne_results, columns = [["tsne1", "tsne2"]])
-
+    tsne_results = pd.DataFrame(tsne_results,
+                                columns = [["tsne1", "tsne2"]])
     x_cor = list(tsne_results.tsne1.iloc[:, 0])
     y_cor = list(tsne_results.tsne2.iloc[:, 0])
 
     tsne_results = pd.DataFrame(tsne_results,
-                            columns=[["tsne1", "tsne2"]])
+                                columns=[["tsne1", "tsne2"]])
     aminoacids = mix["aaSeqCDR3"].to_list()
     experiments_batch = mix["Experiment"]
     unique_experiments_num = pd.factorize(experiments_batch)[0]
     tsne_results["experiments_factorized"] = list(unique_experiments_num)
     tsne_results["experiments_string"] = list(experiments_batch)
     tsne_results["binding"] = list(kds)
-    tsne_plot = ax.scatter(tsne_results.tsne1, tsne_results.tsne2,c = tsne_results.binding)
+    tsne_plot = ax.scatter(tsne_results.tsne1,
+                           tsne_results.tsne2,
+                           c = tsne_results.binding)
     if toxin_names == True:
         for i, txt in enumerate(list(ids)):
             if list(kds)[i] > 0:
                 ax.annotate(txt, (x_cor[i], y_cor[i]))
     else:
         pass
-    plt.colorbar(tsne_plot)
+    plt.colorbar(tsne_plot, **colorbar_settings)
     ax.set_xlabel("t-SNE1", **font_settings)
     ax.set_ylabel("t-SNE2", **font_settings)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
     ax.set_title("Sequence Embedding on t-SNE Space for Sample " + sample)
+    font_settings["fontsize"] = original_fontsize
     fig.tight_layout()
