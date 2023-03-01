@@ -1,12 +1,12 @@
 from os import path
-from tkinter import filedialog
+import easygui
 from glob import glob
 
 
 
 def collectFiles(filetypes = ('.txt', '.fastq_AlignmentReport')):
     filenames = []
-    data_folder = filedialog.askdirectory()
+    data_folder = easygui.diropenbox()
     data_folder = path.abspath(data_folder) + '\\*'
         # maybe create user input who can choose which filetypes he/she wants to include
     for files in filetypes:

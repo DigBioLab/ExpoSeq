@@ -8,7 +8,6 @@ matplotlib.use('Qt5Agg')
 def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               samples = samples)
-
     x_axis = []
     y_axis = []
     for sample in range(len(sub_table)):

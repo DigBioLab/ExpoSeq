@@ -11,7 +11,9 @@ import pickle
 
 def upload():
     module_dir = os.path.abspath("expoSeq")
-    glob_vars = os.path.join(module_dir, "settings", "global_vars.txt")
+    glob_vars = os.path.join(module_dir,
+                             "settings",
+                             "global_vars.txt")
     with open(glob_vars, "r") as f:
         data = f.read()
     data = literal_eval(data)

@@ -1,20 +1,19 @@
 import os
 import sys
 from glob import glob
-from tkinter import filedialog
 import subprocess
 from os.path import dirname, abspath
 from ast import literal_eval
 import pickle
 import pandas as pd
 from .trimming import trimming
-
+import easygui
 
 def add_fastq_files():
     filenames = []
 
     while True:
-        path_to_files = filedialog.askdirectory()
+        path_to_files = easygui.diropenbox()
 
         filenames.extend(glob(os.path.join(path_to_files, "*.fastq")))
         print("These are the files you chose:")
@@ -43,7 +42,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     if path_to_mixcr == "":
         while True:
             print("choose the mixcr java file with the file chooser")
-            path_to_mixcr = filedialog.askopenfilename()
+            path_to_mixcr = easygui.fileopenbox()
             confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
             if confirmation.lower() in ["Y", "y"]:
                 data["mixcr_path"] = path_to_mixcr

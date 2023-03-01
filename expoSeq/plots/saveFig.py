@@ -1,6 +1,6 @@
 import os.path
 from matplotlib.pyplot import savefig
-from tkinter.filedialog import askdirectory
+import easygui
 from ast import literal_eval
 
 def saveFig():
@@ -11,7 +11,7 @@ def saveFig():
     filename = input("how do you want to call the plot?")
     if save_settings["fname"] == "":
         print("Please choose a directory where you want to store your files")
-        directory = askdirectory()
+        directory = easygui.diropenbox()
         save_settings["fname"] = directory
         with open(os.path.abspath("settings/save_settings.txt"), "w") as f:
             f.write(str(save_settings))
