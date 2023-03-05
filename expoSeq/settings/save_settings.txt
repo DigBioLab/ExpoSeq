@@ -1,1 +1,1 @@
-{'fname': '', 'format': 'png', 'dpi': 300}
+{'fname': 'C:\\Users\\nilsh\\OneDrive\\Desktop\\TPL\\work', 'format': 'png', 'dpi': 300}

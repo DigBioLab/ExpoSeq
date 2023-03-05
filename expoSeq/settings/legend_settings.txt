@@ -1,7 +1,7 @@
 {"loc": "upper right", #'upper left', 'upper right', 'lower left', 'lower right'
 "bbox_to_anchor": (1, 1),
 "ncols": 1,
-"fontsize": "small", #'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'
+"fontsize": "medium", #'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'
 "frameon": True,
 "framealpha": 1,
 "facecolor": "white", #background color

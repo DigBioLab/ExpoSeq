@@ -102,6 +102,9 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         self.settings_saver = Change_save_settings()
 
+    def discard_samples(self, samples_to_discard):
+        self.sequencing_report = self.sequencing_report[~self.sequencing_report['Experiment'].isin(samples_to_discard)]
+
     def askMe(self):
         """
         :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
@@ -326,7 +329,6 @@ class PlotManager:
         self.fig.clear()
         self.ax = self.fig.gca()
         cluster_toxins_tsne(self.fig,
-                            self.ax,
                             self.sequencing_report,
                             sample,
                             toxins,
@@ -336,8 +338,9 @@ class PlotManager:
                             perplexity,
                             iterations_tsne,
                             self.font_settings,
-                            self.colorbar_settings)
-        self.plot_type = "single"
+                            self.colorbar_settings,
+                            extra_figure = False)
+        self.plot_type = "multi"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
     def embedding_tsne(self,
@@ -401,6 +404,7 @@ class PlotManager:
                      "jaccard",
                      self.ax,
                      self.colorbar_settings,
+                     self.font_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
@@ -418,6 +422,7 @@ class PlotManager:
                      "sorensen",
                      self.ax,
                      self.colorbar_settings,
+                     self.font_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"
@@ -435,6 +440,7 @@ class PlotManager:
                      "relative",
                      self.ax,
                      self.colorbar_settings,
+                     self.font_settings,
                      specific_experiments = specific_samples,
                      )
         self.plot_type = "single"

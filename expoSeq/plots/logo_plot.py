@@ -82,5 +82,5 @@ def plot_logo_multi(fig, sequencing_report, samples,font_settings, chosen_seq_le
     font_settings["fontsize"] = 22
     fig.suptitle("Logo Plots for sequence Length " + str(chosen_seq_length), **font_settings)
     font_settings["fontsize"] = original_fontsize
-
+    plt.tight_layout()
 

@@ -15,16 +15,20 @@ def barplot(ax, all_alignment_reports, sequencing_report_all,font_settings, lege
             np.array(boxplot_data_frame.Aligned_Reads).astype(np.float32),
             label="Aligned Reads",
             color="royalblue")
-    ax.xticks(rotation=45, ha = 'right', size=5)
+    plt.xticks(rotation=45,
+              ha = 'right',
+              size=12)
+
     ax.legend(**legend_settings)
-    ax.ylabel("Reads Count", **font_settings)
-    ax.xlabel("Sample", **font_settings)
+    plt.ylabel("Reads Count", **font_settings)
+    plt.xlabel("Sample", **font_settings)
+
     if apply_log == True:
         plt.yscale("log")
     plt.tight_layout()
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title("Alignment Quality of the analyzed samples", **font_settings)
+    ax.set_title("Alignment Quality of the analyzed samples",pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize
 
 

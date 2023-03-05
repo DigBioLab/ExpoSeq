@@ -27,5 +27,5 @@ def show_difference(sequencing_report, list_experiments,strands, batch_size, pca
                         )
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title("Sequence Embedding for given Samples", **font_settings)
+    ax.set_title("Sequence Embedding for given Samples", pad= 12, **font_settings)
     font_settings["fontsize"] = original_fontsize

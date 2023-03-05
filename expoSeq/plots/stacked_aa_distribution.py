@@ -15,7 +15,7 @@ def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settin
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
     if protein == True:
-        ax.set_title("Distribution of Aminoacids per Position for your sequences", **font_settings)
+        ax.set_title("Distribution of Aminoacids per Position for your sequences",pad = 12, **font_settings)
     else:
-        ax.set_title("Distribution of Nucleotides per Position for your sequences", **font_settings)
+        ax.set_title("Distribution of Nucleotides per Position for your sequences",pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize

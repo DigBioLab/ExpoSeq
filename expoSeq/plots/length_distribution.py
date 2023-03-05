@@ -12,13 +12,12 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
     #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
     ax.title.set_text(sample)
     ax.title.set_size(10)
-
     ax.set_ylabel("Read Count",
                     **font_settings)  # Y label
     ax.set_xlabel('Read Length',
                 **font_settings)  # X label
 
-    fig.suptitle('Distribution of number of sequences with certain length')
+    fig.suptitle('Distribution of number of sequences with certain length', pad = 12,)
 
 
 
@@ -66,7 +65,7 @@ def length_distribution_multi(fig, sequencing_report, samples, font_settings):
                       **font_settings)  # X label
 
         n += 1
-    fig.suptitle('Distribution of number of sequences with certain length')
+    fig.suptitle('Distribution of number of sequences with length' + ch)
 
 
 

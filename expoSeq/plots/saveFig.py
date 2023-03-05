@@ -1,6 +1,6 @@
 import os.path
 from matplotlib.pyplot import savefig
-import easygui
+from ..augment_data.filechooser import get_directory_path
 from ast import literal_eval
 
 def saveFig():
@@ -12,7 +12,7 @@ def saveFig():
     filename = input("how do you want to call the plot?")
     if save_settings["fname"] == "":
         print("Please choose a directory where you want to store your files")
-        directory = easygui.diropenbox()
+        directory = get_directory_path()
         save_settings["fname"] = directory
         with open(save_settings_file, "w") as f:
             f.write(str(save_settings))
