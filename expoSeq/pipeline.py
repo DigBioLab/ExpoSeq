@@ -25,7 +25,7 @@ class PlotManager:
         if os.path.isdir("my_experiments"):
             pass
         else:
-            os.mkdir("my_experiments")
+            os.mkdir(os.path.join(self.module_dir, "my_experiments"))
         if os.path.isdir(os.path.join(self.module_dir, "temp")):
             pass
         else:
@@ -47,7 +47,7 @@ class PlotManager:
                 self.binding_data = self.add_binding
         else:
             report_path = os.path.join(self.module_dir,
-                                       "test_data",
+                                       "../test_data",
                                        "sequencing_report.csv")
             with open(report_path, "rb") as f:
                 self.sequencing_report = pd.read_csv(f, sep=",")
@@ -60,18 +60,18 @@ class PlotManager:
                 self.global_params = f.read()
             self.global_params = literal_eval(self.global_params)
             experiment_names_path = os.path.join(self.module_dir,
-                                                 "test_data"
+                                                 "../test_data"
                                                  , "experiment_names.pickle")
             with open(experiment_names_path, "rb") as f:
                 self.unique_experiments = pickle.load(f)
             alignments_repos_path = os.path.join(self.module_dir,
-                                                 "test_data",
+                                                 "../test_data",
                                                  "all_alignment_reports.pickle")
             with open(alignments_repos_path, "rb") as f:
                 self.alignment_report = pickle.load(f)
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             binding_data_path = os.path.join(self.module_dir,
-                                             "test_data",
+                                             "../test_data",
                                              "binding_data.txt")
             self.binding_data = pd.read_table(binding_data_path, sep=",")
             self.binding_data.drop(self.binding_data.columns[0], axis=1, inplace=True)

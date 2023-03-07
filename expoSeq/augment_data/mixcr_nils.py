@@ -5,7 +5,8 @@ import subprocess
 from ast import literal_eval
 import pickle
 import pandas as pd
-from expoSeq.augment_data.trimming import trimming
+from ..augment_data.trimming import trimming
+
 import tkinter as tk
 from tkinter import filedialog
 def add_fastq_files():
