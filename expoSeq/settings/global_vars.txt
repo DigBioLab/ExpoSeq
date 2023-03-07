@@ -1,1 +1,1 @@
-{'mixcr_path': 'C:/Users/nilsh/OneDrive/Desktop/DTU/NGS_pipeline/mixcr-4.2.0/mixcr.jar', 'last_experiment': 'wscfe', 'api_gpt3': ''}
+{'mixcr_path': '', 'last_experiment': '', 'api_gpt3': ''}

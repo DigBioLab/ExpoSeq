@@ -124,7 +124,6 @@ class PlotManager:
         """
         :return: can be used to save your plots. It will ask you automatically for the directory where you want to save it
         """
-
         saveFig()
     def close(self):
         plt.close()
@@ -213,6 +212,7 @@ class PlotManager:
         :return: A logo Plot which shows you the composition of aminoacids per position
         """
         self.fig.clear()
+        self.ax = self.fig.gca()
         plot_logo_single(self.ax,
                          self.sequencing_report,
                          sample,
@@ -242,6 +242,22 @@ class PlotManager:
 
         self.plot_type = "multi"
         self.ax= self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
+    def lengthDistribution_single(self, sample):
+        """
+
+        :param sample: name of the sample from which you would like to see the length distribution
+        :return: Shows you the length Distribution of your sequences of the given sample
+        """
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        length_distribution_single(self.fig,
+                                   self.ax,
+                                   self.sequencing_report,
+                                   sample,
+                                   self.font_settings)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
     def lengthDistribution_multi(self, samples = "all"):
         """

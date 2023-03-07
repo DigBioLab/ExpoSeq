@@ -1,6 +1,7 @@
 import os
 from ast import literal_eval
-from expoSeq.augment_data.filechooser import get_file_path
+import tkinter as tk
+from tkinter import filedialog
 class Change_save_settings():
     def __init__(self):
         self.module_dir = os.path.abspath("expoSeq")
@@ -16,7 +17,7 @@ class Change_save_settings():
             f.write(str(self.save_settings))
     def change_save_path(self, path = None, filechooser = True):
         if filechooser == True:
-            self.save_settings["fname"] = get_file_path()
+            self.save_settings["fname"] = filedialog.askopenfilename()
         else:
             self.save_settings["fname"] = path
         with open(self.save_settings_path, "w") as f:

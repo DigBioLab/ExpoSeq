@@ -1,7 +1,11 @@
 import os.path
 from matplotlib.pyplot import savefig
-from ..augment_data.filechooser import get_directory_path
+
 from ast import literal_eval
+import tkinter as tk
+from tkinter import filedialog
+import time
+
 
 def saveFig():
     module_dir = os.path.abspath("expoSeq")
@@ -11,15 +15,17 @@ def saveFig():
     save_settings = literal_eval(save_settings)
     filename = input("how do you want to call the plot?")
     if save_settings["fname"] == "":
-        print("Please choose a directory where you want to store your files")
-        directory = get_directory_path()
-        save_settings["fname"] = directory
+    #    print("Please choose a directory where you want to store your files")
+        save_dir = filedialog.askdirectory()
+        save_dir = os.path.abspath(save_dir)
+        save_settings["fname"] = save_dir
         with open(save_settings_file, "w") as f:
             f.write(str(save_settings))
-    else: pass
+    else:
+        pass
     filepath = save_settings['fname']
-    format = save_settings['format']
-    path = os.path.join(filepath, filename + "." + format)
+    form = save_settings['format']
+    path = os.path.join(filepath, filename + "." + form)
     del save_settings['fname']
     savefig(path,
             **save_settings)

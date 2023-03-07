@@ -6,19 +6,26 @@ from ast import literal_eval
 import pickle
 import pandas as pd
 from expoSeq.augment_data.trimming import trimming
-from expoSeq.augment_data.filechooser import get_file_path, get_directory_path
-
+import tkinter as tk
+from tkinter import filedialog
 def add_fastq_files():
     filenames = []
 
     while True:
-        path_to_files = get_directory_path()
-
+        path_to_files = filedialog.askdirectory()
+        path_to_files = os.path.abspath(path_to_files)
         filenames.extend(glob(os.path.join(path_to_files, "*.fastq")))
-        print("These are the files you chose:")
-        for i in filenames:
-            print(os.path.basename(i))
-        read_more_files = input("do you want to add another folder? (Y/n)")
+        if len(filenames) == 0:
+            user_choice = input("You have not chosen a directory with fastq files. If you want to try again press 1. If you want to cancel the analysis press 2")
+            if user_choice == str(1):
+                read_more_files = "Y"
+            else:
+                read_more_files = "N"
+        else:
+            print("These are the files you chose:")
+            for i in filenames:
+                print(os.path.basename(i))
+            read_more_files = input("do you want to add another folder? (Y/n)")
 
         if read_more_files == "Y" or read_more_files == "y":
             continue
@@ -32,6 +39,9 @@ def add_fastq_files():
 def process_mixcr(experiment,method, paired_end_sequencing = False):
     print("Choose the directory where you store your fastq files")
     filenames = add_fastq_files()
+    if len(filenames) == 0:
+        print("You have not added any fastq files the preprocessing is cancelled now.")
+        return
     module_dir = os.path.relpath("expoSeq")
     settings_dir = os.path.join(module_dir,
                                 "settings",
@@ -43,9 +53,19 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
     if path_to_mixcr == "":
         while True:
             print("choose the mixcr java file with the file chooser")
-            path_to_mixcr = get_file_path()
-            confirmation = input("Is this the right file? Please make sure that this is the right path." +path_to_mixcr + "Otherwise, you might face issues with conducting the further analysis. Type Y or n")
-            if confirmation.lower() in ["Y", "y"]:
+            path_to_mixcr = filedialog.askopenfilename()
+            try:
+                subprocess.run(["java",
+                                    "-jar",
+                                    path_to_mixcr,
+                                    "--version"
+                                    ])
+                confirmation = True
+            except:
+                print("Apparently you have not choosen the right path to the mixcr .jar file. Please try again")
+                confirmation = False
+            if confirmation == True:
+                path_to_mixcr = os.path.abspath(path_to_mixcr)
                 data["mixcr_path"] = path_to_mixcr
                 with open(settings_dir, "w") as f:
                     f.write(str(data))
@@ -85,7 +105,7 @@ def process_mixcr(experiment,method, paired_end_sequencing = False):
                 combined_filenames.append(fastq_files)
         if len(combined_filenames) == 0:
             print("the system couldnt find any forward reverse matches. Please check your given directory or continue with single-end analysis.")
-            sys.exit()
+            return
     else:
         combined_filenames = filenames
 

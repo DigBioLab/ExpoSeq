@@ -1,10 +1,1 @@
-{"loc": "upper right", #'upper left', 'upper right', 'lower left', 'lower right'
-"bbox_to_anchor": (1, 1),
-"ncols": 1,
-"fontsize": "medium", #'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'
-"frameon": True,
-"framealpha": 1,
-"facecolor": "white", #background color
-"mode": None,
-"title_fontsize": 'small',
-}
+{'loc': 'upper right', 'bbox_to_anchor': (1, 1), 'ncols': 1, 'fontsize': 'medium', 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}

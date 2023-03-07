@@ -1,5 +1,6 @@
 import pandas as pd
-from expoSeq.augment_data.filechooser import get_file_path
+import tkinter as tk
+from tkinter import filedialog
 
 
 def collect_binding_data():
@@ -7,7 +8,7 @@ def collect_binding_data():
     while True:
         # prompt the user to add a file
         print("add your excel sheet with the binding data with the file chooser")
-        binding_file = get_file_path()
+        binding_file = filedialog.askopenfilename()
         binding_data = pd.concat([binding_data, binding_file])
         response = input("Do you want to continue adding files? (Y/n) ")
         if response.lower() == "n":

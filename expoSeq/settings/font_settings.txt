@@ -1,7 +1,1 @@
-{
-"fontfamily": "serif",
-"fontsize": "14",
-"fontstyle": "normal",
-"fontweight": "bold",
-#rotation
-}
+{'fontfamily': 'serif', 'fontsize': '14', 'fontstyle': 'normal', 'fontweight': 'bold'}

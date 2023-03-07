@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def length_distribution_single(fig,ax, sequencing_report, sample, font_settings):
     batch = sequencing_report[sequencing_report["Experiment"] == sample]
@@ -17,7 +17,10 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
     ax.set_xlabel('Read Length',
                 **font_settings)  # X label
 
-    fig.suptitle('Distribution of number of sequences with certain length', pad = 12,)
+    original_fontsize = font_settings["fontsize"]
+    font_settings["fontsize"] = 22
+    plt.title("Length Distribution of " + sample, pad=12, **font_settings)
+    font_settings["fontsize"] = original_fontsize
 
 
 
@@ -65,7 +68,7 @@ def length_distribution_multi(fig, sequencing_report, samples, font_settings):
                       **font_settings)  # X label
 
         n += 1
-    fig.suptitle('Distribution of number of sequences with length' + ch)
+    fig.suptitle("Length Distribution of given Samples")
 
 
 

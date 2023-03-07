@@ -71,6 +71,7 @@ def upload():
                     #   else:
                     #      pass
                     except:
+
                         sys.exit()
                     if all_alignment_reports.shape[0] == 0:
                         print(

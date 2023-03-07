@@ -1,12 +1,13 @@
 from os import path
-from expoSeq.augment_data.filechooser import get_directory_path
+import tkinter as tk
+from tkinter import filedialog
 from glob import glob
 
 
 
 def collectFiles(filetypes = ('.txt', '.fastq_AlignmentReport')):
     filenames = []
-    data_folder = get_directory_path()
+    data_folder = filedialog.askdirectory()
     data_folder = path.abspath(data_folder) + '\\*'
         # maybe create user input who can choose which filetypes he/she wants to include
     for files in filetypes:
