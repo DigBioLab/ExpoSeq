@@ -1,0 +1,12 @@
+.vscode
+results
+desktop_app.py
+.ipynb_checkpoints/
+.idea
+try_outs
+results/Test
+results/Test/Quality/*
+src/ExpoSeq.egg-info
+build
+dist
+build/lib/*
