@@ -33,16 +33,26 @@ If you want to implement further plot change you can also refer to the matplotli
 If you would like to have details about the inputs and functions of the PlotManager call: ```help(plot)``` . You can also call ```help(plot.jaccard)```
 
 
-## Process fastq files with mixcr on a server
-If you would like to process your data on a server to make use of multithreading or process on a screen in a background you can use the scripts in the folder bash_processing. Copy the folder and the folder with the mixcr.jar file to the corresponding directory. You can use the script: run_mixcr.sh to generate a sequencing report which is the input of the pipeline. The script needs to inputs and you can give optional inputs such as the number of threads you want to use. The inputs are listed in the following:
---fastq_directory: directory to your fastq files
---path_to_mixcr: filepath with .jar ending to mixcr 
---save_dir: directory where you would like to store the sequencing report (optional: default is the working directory)
---paired_end_sequencing: Boolean whether you have paired end sequencing data or not (optional: default is False)
---threads: number of threads you would like to utilize (optional: default is 1)
---method: mixcr method to assemble and align your sequences (optional: default is milab-human-tcr-dna-multiplex-cdr3)
---trim_div_by: all sequences are trimmed which are divisble by the integer you input (optional: default is 3)
---trim_min_count: all sequences are trimmed which are shorter than the given integer (optional: default is 3)
+# Processing on a server with multithreading
+
+If you wish to process your data on a server to utilize multithreading, or to process on a screen in the background, use the scripts located in the `bash_processing` folder.
+
+Start by copying the folder and the directory with the `mixcr.jar` file to the corresponding directory. You can use the `run_mixcr.sh` script to generate a sequencing report, which is the input of the pipeline. The script requires certain inputs and can accept optional ones as well, such as the number of threads you wish to use. The inputs are listed below:
+
+### Required Inputs
+
+- `--fastq_directory`: Directory path to your fastq files.
+- `--path_to_mixcr`: Filepath (ending with .jar) to mixcr.
+
+### Optional Inputs
+
+- `--save_dir`: Directory where you would like to store the sequencing report (default is the working directory).
+- `--paired_end_sequencing`: Boolean indicating whether you have paired end sequencing data or not (default is `False`).
+- `--threads`: Number of threads you would like to utilize (default is `1`).
+- `--method`: Mixcr method to assemble and align your sequences (default is `milab-human-tcr-dna-multiplex-cdr3`).
+- `--trim_div_by`: Trims all sequences that are divisible by the integer you input (default is `3`).
+- `--trim_min_count`: Trims all sequences that are shorter than the given integer (default is `3`).
+
 
 
 ## References
