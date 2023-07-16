@@ -1,2 +1,0 @@
-recursive-exclude test_data *
-recursive-exclude try_outs
