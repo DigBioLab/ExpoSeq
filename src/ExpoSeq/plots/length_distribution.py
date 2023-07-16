@@ -16,7 +16,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
                 **font_settings)  # X label
 
     original_fontsize = font_settings["fontsize"]
-    font_settings["fontsize"] = 22
+    font_settings["fontsize"] = 20
     plt.title("Length Distribution of " + sample,
               pad=12,
               **font_settings)

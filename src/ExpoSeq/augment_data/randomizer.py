@@ -108,7 +108,7 @@ def create_binding_report(sequencing_report, num_antigen):
     for i in range(len(split_lists)):
         part_binding = split_lists[i][0]
         part_aaSeq = split_lists[i][1]
-        data = {"aaSeqCDR3": part_aaSeq, "Antibody " + str(i): part_binding}
+        data = {"aaSeqCDR3": part_aaSeq, "Epitope " + str(i): part_binding}
         intermediate_binding = pd.DataFrame(data)
         if i == 0:
             binding_data = intermediate_binding

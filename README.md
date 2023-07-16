@@ -1,13 +1,13 @@
 # Welcome to ExpoSeq
 
-ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from sequencing phage Display panning samples.It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  ![overview](pictures_gen/expoSeq_overview.png)
+ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from sequencing phage Display panning samples. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  ![overview](pictures_gen/expoSeq_overview.png)
 
 ## Installation
 
 Open a virtual environment and type ```pip install ExpoSeq```. Ensure that you have python > 3.11 installed.
 
 To get started, please download and follow the instructions for MiXCR under the following link: https://docs.milaboratories.com/mixcr/getting-started/installation/ 
-You can also only use the test version without installing it.
+You can also only use the test version of ExpoSeq without installing it.
 
 ## Importing the Plotting Tool
 
@@ -22,7 +22,7 @@ The PlotManager is the main interface for creating various plots using your FAST
 ```plot = PlotManager()```
 To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you have called the PlotManager. In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
 ![relative_path_to_image](pictures_gen/workflow_ExpoSeq.png)
-If you just want to test the pipeline and see its functions you can call: ```plot = PlotManager(test_version = True)```
+If you just want to test the pipeline and see its functions you can call: ```plot = PlotManager(test_version = True)```. Alternatively you can take a look in the '[Jupyter script](ExpoSeq_handsOn.ipynb)'
 
 Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as an identity plot based on the jaccard similarity. Here is an example of how to create this type of plot:
 ```plot.jaccard()```
@@ -32,8 +32,12 @@ If you want to implement further plot change you can also refer to the matplotli
 ```plt.xlabel("your_title")```
 If you would like to have details about the inputs and functions of the PlotManager call: ```help(plot)``` . You can also call ```help(plot.jaccard)```
 
+## Upload binding data 
 
-# Processing on a server with multithreading
+If you have conducted DELFIA or other techniques to receive binding data for certain sequences (usually sanger sequenced), you can upload these in a certain format and use these for clustering to potentially find other suitable sequences with high binding.  You need to import the data as csv file where the first column starts in the first row with the header: aaSeqCDR3 which are the sequences. It is very important to keep the header at this position. In the second column you can put the binding data for your epitope which you can name in the first row however you would like to. You can have a look in '[this csv file](src/ExpoSeq/test_data/test_files/binding_data.csv)' to see the general structure of the file. Also you can download it and import it in Excel. Therefore, open Excel and choose under Data in the Excel header "From Text/CSV". Then make sure to delete the first column which contains the row number. After that you can delete the random data in that excel sheet and add your own. Finally you can export the data as a csv and import it with the pipeline either in the initial uploading process which will be prompted or with the command 
+```plot.add_binding_data()```
+Note: If you decide to add more binding data to your analysis you can just use the same command and choose the new file with the filechooser and it will be added to the existing data.
+## Processing on a server with multithreading
 
 If you wish to process your data on a server to utilize multithreading, or to process on a screen in the background, use the scripts located in the `bash_processing` folder.
 

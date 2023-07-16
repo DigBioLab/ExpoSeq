@@ -18,7 +18,6 @@ src/ExpoSeq/augment_data/binding_data.py
 src/ExpoSeq/augment_data/check_reports.py
 src/ExpoSeq/augment_data/load_data.py
 src/ExpoSeq/augment_data/loop_collect_reports.py
-src/ExpoSeq/augment_data/mixcr_cl.py
 src/ExpoSeq/augment_data/mixcr_nils.py
 src/ExpoSeq/augment_data/randomizer.py
 src/ExpoSeq/augment_data/read_raw_data.py

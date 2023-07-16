@@ -273,7 +273,6 @@ class PlotManager:
             figManager = plt.get_current_fig_manager()
             figManager.window.showMaximized()
 
-
     def logoPlot_single(self,
                         sample,
                         highlight_specific_pos = False,
@@ -511,7 +510,7 @@ class PlotManager:
         :param pca_components: optional. Default is 70
         :param perplexity: optional. Default 25
         :param iterations_tsne: optional. Default is 2500
-        :return: It first embeds the sequences in a vector space and then clusters them with PCA and TSNE. The sequences with the binding data are processed with the input sequences, to enable the plotting of the binding data.
+        :return: It first embeds the sequences in a vector space and then reduces the dimensions and clusters them with PCA and TSNE. The sequences with the binding data are processed with the input sequences, to enable the plotting of the binding data.
         """
         if not plt.fignum_exists(1):
             self.fig = plt.figure(1)
@@ -591,6 +590,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
+        
     def morosita_horn(self, specific_experiments = False):
         """
         :param specific_experiments: you can give a list with specific experiments

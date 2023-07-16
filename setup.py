@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = "ExpoSeq",
-    version = "1.1.13",
+    version = "1.1.17",
     description = "A pacakge which provides various ways to analyze NGS data from phage display campaigns",
     long_description=long_description,
     long_description_content_type = "text/markdown",

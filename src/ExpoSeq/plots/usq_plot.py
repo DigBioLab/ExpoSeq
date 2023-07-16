@@ -47,4 +47,3 @@ def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     plt.title("Sequencing depth of the given samples ",pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize
     fig.tight_layout()
-
