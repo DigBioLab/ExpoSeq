@@ -26,7 +26,9 @@ The PlotManager is the main interface for creating various plots using your FAST
 ```plot = PlotManager()```
 <br>
 To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you have called the PlotManager. In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
+<br>
 ![relative_path_to_image](pictures_gen/workflow_ExpoSeq.png)
+<br>
 If you just want to test the pipeline and see its functions you can call:
 <br>
  ```plot = PlotManager(test_version = True)```
@@ -37,7 +39,10 @@ Once you have called the test version or have finished the data processing, you 
 <br>
 ```plot.jaccard()```
 <br>
-If you want to change the style of the plot you can use the PlotManager. If you called it ```plot``` you can do for instance the following: ```plot.style.title_xaxis("your_title")``` 
+If you want to change the style of the plot you can use the PlotManager. If you called it ```plot``` you can do for instance the following:
+<br>
+ ```plot.style.title_xaxis("your_title")``` 
+ <br>
 If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
 <br>
 ```import matplotlib.pyplot as plt```
@@ -47,7 +52,7 @@ If you would like to have details about the inputs and functions of the PlotMana
 
 ## Upload binding data 
 
-If you have conducted DELFIA or other techniques to receive binding data for certain sequences (usually sanger sequenced), you can upload these in a certain format and use these for clustering to potentially find other suitable sequences with high binding.  You need to import the data as csv file where the first column starts in the first row with the header: aaSeqCDR3 which are the sequences. It is very important to keep the header at this position. In the second column you can put the binding data for your epitope which you can name in the first row however you would like to. You can have a look in [this csv file](src/ExpoSeq/test_data/test_files/binding_data.csv) to see the general structure of the file. Moreover, you can download it and import it in Excel. Therefore, open Excel and choose under "Data" in the Excel header "From Text/CSV". Then make sure to delete the first column which contains the row number. After that you can delete the random data in that excel sheet and add your own. Finally you can export the data as a csv and import it with the pipeline either in the initial uploading process which will be prompted or with the command 
+If you have conducted DELFIA or other techniques to receive binding data for certain sequences (usually sanger sequenced), you can upload these in a certain format and use these for clustering to potentially find other suitable sequences with high binding.  You need to import the data as csv file where the first column starts in the first row with the header: aaSeqCDR3 which are the sequences. It is very important to keep the header at this position. In the second column you can put the binding data for your epitope which you can name in the first row however you prefer. You can have a look in [this csv file](src/ExpoSeq/test_data/test_files/binding_data.csv) to see the general structure of the file. Moreover, you can download it and import it in Excel. Therefore, open Excel and choose under "Data" in the Excel header "From Text/CSV". Then make sure to delete the first column which contains the row number. After that you can delete the random data in that excel sheet and add your own. Finally you can export the data as a csv and import it with the pipeline either in the initial uploading process which will be prompted or with the command 
 <br>
 ```plot.add_binding_data()```
 <br>
