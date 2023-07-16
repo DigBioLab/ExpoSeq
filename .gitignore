@@ -10,3 +10,4 @@ src/ExpoSeq.egg-info
 build
 dist
 build/lib/*
+setup.py
