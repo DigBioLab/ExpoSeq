@@ -19,9 +19,9 @@ from ExpoSeq.pipeline import PlotManager
 <br>
 If you want to use the fast and easy version you can ignore the rest of the instructions and just import in your Console:
 <br>
-```python
+`python
 import ExpoSeq.run
-```
+`
 <br>
 ## Using the PlotManager
 
