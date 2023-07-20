@@ -37,35 +37,45 @@ To use the PlotManager to create plots, you will need to upload your FASTQ data 
 <br>
 If you just want to test the pipeline and see its functions you can call:
 <br>
- ```python
- plot = PlotManager(test_version = True)
- ```
- <br>
- Alternatively you can take a look in the [Jupyter script](ExpoSeq_handsOn.ipynb)
+```python
+plot = PlotManager(test_version = True)
+```
+<br>
+Alternatively you can take a look in the [Jupyter script](ExpoSeq_handsOn.ipynb)
 
- Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as an identity   plot based on the jaccard similarity. Here is an example of how to create this type of plot:
- <br>
- ```python
- plot.jaccard()
- ```
- <br>
- If you want to change the style of the plot you can use the PlotManager. If you called it plot you can do for instance the following:
- <br>
-  ```python
-  plot.style.title_xaxis("your_title")
-  ``` 
-  <br>
- If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
- <br>
- ```python
- import matplotlib.pyplot as plt
- ```
- <br>
- ```python
- plt.xlabel("your_title")
- ```
- <br>
- If you would like to have details about the inputs and functions of the PlotManager call: ```help(plot)``` . You can also call ```help(plot.jaccard)```
+Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as an identity   plot based on the jaccard similarity. Here is an example of how to create this type of plot:
+<br>
+```python
+plot.jaccard()
+```
+<br>
+If you want to change the style of the plot you can use the PlotManager. If you called it plot you can do for instance the following:
+<br>
+```python
+plot.style.title_xaxis("your_title")
+``` 
+<br>
+If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
+<br>
+```python
+import matplotlib.pyplot as plt
+```
+<br>
+```python
+plt.xlabel("your_title")
+```
+<br>
+If you would like to have details about the inputs and functions of the PlotManager call:
+<br>
+```python
+help(plot)
+``` 
+<br>
+You can also call
+<br>
+```python
+help(plot.jaccard)
+```
 
 ## Upload binding data 
 
