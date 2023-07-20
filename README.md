@@ -22,7 +22,7 @@ If you want to use the fast and easy version you can ignore the rest of the inst
 
 ```python
 import ExpoSeq.run
-
+```
 <br>
 ## Using the PlotManager
 
