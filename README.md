@@ -49,7 +49,7 @@ If you just want to test the pipeline and see its functions you can call:
  plot.jaccard()
  ```
  <br>
- If you want to change the style of the plot you can use the PlotManager. If you called it ```plot``` you can do for instance the following:
+ If you want to change the style of the plot you can use the PlotManager. If you called it plot you can do for instance the following:
  <br>
   ```python
   plot.style.title_xaxis("your_title")
