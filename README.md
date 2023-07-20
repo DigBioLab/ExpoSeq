@@ -23,7 +23,7 @@ If you want to use the fast and easy version you can ignore the rest of the inst
 ```python
 import ExpoSeq.run
 ```
-<br>
+
 ## Using the PlotManager
 
 The PlotManager is the main interface for creating various plots using your FASTQ data. You can create an instance of the PlotManager by running the following command:
