@@ -95,6 +95,7 @@ plot.add_binding_data()
 ```
 <br>
 Note: If you decide to add more binding data to your analysis you can just use the same command and choose the new file with the filechooser and it will be added to the existing data.
+
 ## Processing on a server with multithreading
 
 If you wish to process your data on a server to utilize multithreading, or to process on a screen in the background, use the scripts located in the `bash_processing` folder.
@@ -115,6 +116,10 @@ Start by copying the folder and the directory with the `mixcr.jar` file to the c
 - `--trim_div_by`: Trims all sequences that are divisible by the integer you input (default is `3`).
 - `--trim_min_count`: Trims all sequences that are shorter than the given integer (default is `3`).
 
+### Command
+```bash
+python -m mixcr_cl "~/directory/with_fastqfiles" "path_to_mixcr/mixcr.jar" --threads 3 
+```
 
 
 ## References
