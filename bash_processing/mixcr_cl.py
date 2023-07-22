@@ -192,7 +192,7 @@ parser = argparse.ArgumentParser(description='Processing')
 # Add arguments to the parser
 parser.add_argument('fastq_directory',type = str, help='Path to the directroy containg the fastq files')
 parser.add_argument('path_to_mixcr', type=float, help="Path to the mixcr jar file")
-parser.add_argument('--save_dir', default='', help='Path to the directory wherethe sequencing report should be saved')
+parser.add_argument('--save_dir', default='~', help='Path to the directory wherethe sequencing report should be saved')
 parser.add_argument('--paired_end_sequencing',default=False, default=32, help='sequencing technique you used')
 parser.add_argument('--threads', default=1, type=int, help='Number of threads to use')
 parser.add_argument("--method", default="milab-human-tcr-dna-multiplex-cdr3", type=str, help="Method to use for the alignment")
