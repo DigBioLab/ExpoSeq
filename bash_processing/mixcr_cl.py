@@ -9,6 +9,7 @@ from glob import glob
 import shutil
 from ExpoSeq.augment_data.trimming import trimming
 import sys
+import argparse
 #from .trimming import trimming
 
 #
@@ -183,15 +184,30 @@ def mixcr_(fastq_directory, path_to_mixcr, save_dir, paired_end_sequencing, thre
     else:
         print("The path to the mixcr jar file is not correct or you are missing the licence")
         
-fastq_directory=sys.argv[1]
-path_to_mixcr=sys.argv[2]
-save_dir = sys.argv[3]
-paired_end_sequencing = sys.argv[4]
-threads = int(sys.argv[5])
-method = str(sys.argv[6])
-trim_div_by = int(sys.argv[7])
-trim_min_count = int(sys.argv[8])
 
+
+
+parser = argparse.ArgumentParser(description='Processing')
+
+# Add arguments to the parser
+parser.add_argument('fastq_directory',type = str, help='Path to the directroy containg the fastq files')
+parser.add_argument('path_to_mixcr', type=float, help="Path to the mixcr jar file")
+parser.add_argument('--save_dir', default='', help='Path to the directory wherethe sequencing report should be saved')
+parser.add_argument('--paired_end_sequencing',default=False, default=32, help='sequencing technique you used')
+parser.add_argument('--threads', default=1, type=int, help='Number of threads to use')
+parser.add_argument("--method", default="milab-human-tcr-dna-multiplex-cdr3", type=str, help="Method to use for the alignment")
+parser.add_argument("--trim_div_by", default=3, type=int, help="Trim all sequences that are not divisible by this number")
+parser.add_argument("--trim_min_count", default=3, type=int, help="Trim all sequences that have a count lower than this number")
+args = parser.parse_args()
+
+fastq_directory = args.fastq_directory
+path_to_mixcr = args.path_to_mixcr
+save_dir = args.save_dir
+paired_end_sequencing = args.paired_end_sequencing
+threads = args.threads
+method = args.method
+trim_div_by = args.trim_div_by
+trim_min_count = args.trim_min_count
 
 # Call the function
 mixcr_(fastq_directory, path_to_mixcr, save_dir, paired_end_sequencing, threads, method, trim_div_by, trim_min_count)
