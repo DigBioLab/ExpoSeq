@@ -121,6 +121,9 @@ Start by copying the folder and the directory with the `mixcr.jar` file to the c
 python -m mixcr_cl "~/directory/with_fastqfiles" "path_to_mixcr/mixcr.jar" --threads 3 
 ```
 
+### Output
+After the processing the output will be saved (if not changed) in your working directory as sequencing_report.csv. This file is the input for the pipeline and you need to choose option two in the launching process to upload it.
+
 
 ## References
 [1] Dmitriy A. Bolotin, Stanislav Poslavsky, Igor Mitrophanov, Mikhail Shugay, Ilgar Z. Mamedov, Ekaterina V. Putintseva, and Dmitriy M. Chudakov. "MiXCR: software for comprehensive adaptive immunity profiling." Nature methods 12, no. 5 (2015): 380-381.
