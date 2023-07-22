@@ -68,8 +68,12 @@ class PlotManager:
                                             "my_experiments",
                                             self.experiment,
                                             "experiment_names.pickle")
-            with open(experiment_path, "rb") as f:
-                self.unique_experiments = pickle.load(f)
+            try:
+                with open(experiment_path, "rb") as f:
+                    self.unique_experiments = pickle.load(f)
+            except:
+                self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
+                self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
             self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.binding_data_dir = os.path.join(self.module_dir,
                     "my_experiments",
