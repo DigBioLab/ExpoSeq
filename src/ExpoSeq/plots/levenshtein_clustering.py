@@ -47,11 +47,13 @@ def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size, font_se
         return
 
 def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size, specific_experiments = False, ):
+    assert antigen in binding_data.columns, "it seems like your antigen does not exist in the binding data. Please enter the correct value"
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     if specific_experiments != False:
         report_batch = report_batch[report_batch['Experiment'].isin(specific_experiments)]
     else:
         pass
+
     experiments = report_batch["Experiment"].unique()
     Tot = experiments.shape[0]
     Cols = int(input("How many Columns for the Plots do you want?"))

@@ -173,7 +173,8 @@ class PlotManager:
         :param change_whole_dic: optional Parameter. The renaming can be done by using a dictionary and map it to the labels. You can change multiple or all labels by adding the new dictionary for this parameter.
         :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
-
+        self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
+        self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
         if specific != None:
             assert type(specific) == str, "You have to give a string (inside: "") as input for the specific sample you want to change"
         if change_whole_dic != False:
@@ -378,7 +379,7 @@ class PlotManager:
         """
         :param num_cols: number of columns you want to have in your figure.
         :param samples: You analyze ExpoSeq samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
-        :return: Outputs one figurewith one subplot per sample which shows you the distribution of sequence length
+        :return: Outputs one figure with one subplot per sample which shows you the distribution of the sequence length
         """
         if not plt.fignum_exists(1):
             self.fig = plt.figure(1)
@@ -409,7 +410,7 @@ class PlotManager:
         :param max_levenshtein_distance: Default is 0. You can change it to see increased fraction with increased variability of certain sequences
         :param length_filter: Default is 0. You should change it if you change the levenshtein distance. Otherwise your results will be biased.
         :param batch: Default is 3000. The size of the sample which is chosen. The higher it is, the more computational intense.
-        :return: Shows you a Bar Plot of the frequences of the most abundant sequences. You can introduce the levenshtein distance to see how the frequency changes with higher variability of the sequences.
+        :return: Shows you a bar plot of the frequencies of the most abundant sequences. You can introduce the levenshtein distance to see how the frequency changes with higher variability of the sequences.
         """
         if not plt.fignum_exists(1):
             self.fig = plt.figure(1)
@@ -440,6 +441,9 @@ class PlotManager:
     def basic_cluster(self, sample,max_ld = 1, min_ld = 0, second_figure = False):
         """
         :param sample: type in a sample name you want to analyze
+        :max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
+        :min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
+        :second_figure: optional Parameter. Default is False. If you want to see the a histogram with the levenshtein distances, set it to True
         :return:
         """
         if not plt.fignum_exists(1):
@@ -473,12 +477,13 @@ class PlotManager:
 
 
 
-    def cluster_one_AG(self, antigen,max_ld = 1, min_ld = 0, specific_experiments=False):
+    def cluster_one_AG(self, antigen,max_ld = 1, min_ld = 0,batch_size = 1000, specific_experiments=False):
         """
 
         :param antigen: is the name of the antigen you would like to analyze
         :param max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
         :param min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
+        :param batch_size: optional Parameter where its default is 1000. Is the batch size you want to use for the analysis
         :param specific_experiments: optional Parameter. You can give the names of specific samples in a list if you want
         :return: Creates a figure where sequences are clustered based on Levenshtein distance. Additionally the binding data of the sequences against a specific antigen is given.
         """
@@ -497,7 +502,7 @@ class PlotManager:
                           self.binding_data,
                           max_ld,
                           min_ld,
-                          self.batch_size,
+                          batch_size,
                           specific_experiments,
                           )
         self.plot_type = "multi"
@@ -558,13 +563,15 @@ class PlotManager:
                        strands = True,
                        pca_components = 80,
                        perplexity = 30,
-                       iterations_tsne = 2500):
+                       iterations_tsne = 2500,
+                       batch_size = 1000):
         """
         :param samples: the samples you would like to compare towards their sequences
         :param strands: Default is True. It means that you will plot a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
+        :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
         if not plt.fignum_exists(1):
@@ -582,7 +589,7 @@ class PlotManager:
         show_difference(self.sequencing_report,
                         samples,
                         strands,
-                        self.batch_size,
+                        batch_size,
                         pca_components,
                         perplexity,
                         iterations_tsne,

@@ -10,7 +10,7 @@ def cleaning(report, max_ld, min_ld):
     max_ld = max_ld
     min_ld = min_ld
     collect_coordinates = np.array([0, 0, 0]).reshape(1,3)
-    for i in range(len(string_index)):
+    for i in range(len(aa)):
         string1 = aa[i]
         index_1 = i
         for index in range(index_1):

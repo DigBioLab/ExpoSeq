@@ -69,10 +69,11 @@ def check_experiment(module_dir, testing):
                 else:
                     print("Please enter another name.")
             else:
+                replace = "n"
                 break
         if replace in ["Y", "y"]:
             shutil.rmtree(os.path.join(module_dir, "my_experiments", experiment))
-            os.mkdir(os.path.join(module_dir, "my_experiments", experiment))
+
     else: 
         experiment = get_random_string(10)
     
@@ -235,8 +236,19 @@ def method_three(module_dir, experiment, testing ):
         else:
             print("Sorry, but the filepath you entered is invalid.")
     all_alignment_reports = None
-
+    sequencing_report.to_csv(os.path.join(module_dir,
+                                         "my_experiments",
+                                         experiment,
+                                         "sequencing_report.csv"))
     return sequencing_report,all_alignment_reports, experiment
+
+
+def find_file_in_subdirectories(directory, filename):
+    for dirpath, dirnames, files in os.walk(directory):
+        if filename in files:
+            if os.path.basename(dirpath) != "test_directory":
+                return os.path.join(dirpath, filename)
+    return None
 
 def check_last_exp(pkg_path, module_dir, testing):
     if not testing:
@@ -249,11 +261,21 @@ def check_last_exp(pkg_path, module_dir, testing):
 
         last_experiment = data["last_experiment"]
         if last_experiment == "":
-            print("You have no experiments in your folder.")
-            repo_path = ""
+            if not bool(os.listdir(os.path.join(module_dir, "my_experiments"))):
+                repo_path = ""
+                print("You have no experiments in your folder.")
+            else:
+                subdirectory = find_file_in_subdirectories(os.path.join(module_dir, "my_experiments"), "sequencing_report.csv")
+                if subdirectory is not None:
+                    repo_path = subdirectory
+                    dirpath = os.path.dirname(subdirectory)
+                    last_experiment = os.path.basename(dirpath)
+                else:
+                    print("The experiments in my experiment do not contain the sequencing report. You need to upload a new experiment.")
+            
         else:
             repo_path = os.path.join(module_dir,
-                                    "my_experiments",
+                                   "my_experiments",
                                     last_experiment,
                                     "sequencing_report.csv")
     else:
@@ -263,6 +285,9 @@ def check_last_exp(pkg_path, module_dir, testing):
                                 "sequencing_report.csv")
         last_experiment = "test_directory"
     return repo_path, last_experiment
+
+
+
 def get_continue_analysis_input(last_experiment, testing=False, testing_value = None):
     if not testing:
         continue_input = input("Do you want to continue to analyze with " + last_experiment + "? Y/n")
@@ -279,7 +304,7 @@ def get_next_step_input(testing=False, testing_value = None):
 
 def get_choose_method_input(testing, testing_value = None):
     if not testing:
-        processing = input("If you want to process your fastq files with mixcr press 1. If you want to upload already processed txt files with unique clones, press 2. If you want to upload an already processed sequencing report in table format, press 3.")
+        processing = input("If you want to process your fastq files with mixcr press 1. If you want to upload an already processed sequencing report in table format, press 2.")
     else:
         processing = testing_value
     return processing
@@ -295,15 +320,20 @@ def upload_new_experiment(module_dir, repo_path, testing, testing_value, paired_
     experiment = check_experiment(module_dir, testing)
     choose_method = get_choose_method_input(testing, testing_value)
     
-    if choose_method == "1":
+    while True:
+        if choose_method in ["1", "2", "3"]:
+            if choose_method == "1":
+            
+                sequencing_report, all_alignment_reports = method_one(experiment, repo_path,module_dir,testing, paired_end_test )
+         #   elif choose_method == "2":
+          #      sequencing_report, all_alignment_reports = method_two(module_dir, experiment,testing, experiment_column)
+            elif choose_method == "2":
+                sequencing_report, all_alignment_reports, experiment = method_three(module_dir, experiment, testing)
+            break
+        else:
+            print("Please enter a correct value.")
+
         
-        sequencing_report, all_alignment_reports = method_one(experiment, repo_path,module_dir,testing, paired_end_test )
-    elif choose_method == "2":
-        sequencing_report, all_alignment_reports = method_two(module_dir, experiment,testing, experiment_column)
-    elif choose_method == "3":
-        sequencing_report, all_alignment_reports, experiment = method_three(module_dir, experiment, testing)
-    else:
-        raise ValueError("Invalid option")
 
     return sequencing_report, all_alignment_reports, experiment
 
@@ -332,18 +362,24 @@ def retrieve_reports(module_dir, experiment, testing):
     else:
         seq_report_path = os.path.join(module_dir, "my_experiments", "test_directory", "sequencing_report.csv")
         align_repo_path = os.path.join(module_dir, "tests", "test_directory", "all_alignment_reports.pickle")
-    with open(seq_report_path, "rb") as f:
-        sequencing_report = pd.read_table(f, sep=",")
-    try:
-        align_repo_path = os.path.join(module_dir,
-                                    "my_experiments",
-                                    experiment,
-                                    "alignment_reports", "*")
-        alignment_reports = glob(align_repo_path)
-        all_alignment_reports = load_alignment_reports(alignment_reports)
-    except:
-        all_alignment_reports = pd.DataFrame([])
-        print("No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
+    if os.path.isfile(seq_report_path):
+        with open(seq_report_path, "rb") as f:
+            sequencing_report = pd.read_table(f, sep=",")
+        try:
+            align_repo_path = os.path.join(module_dir,
+                                        "my_experiments",
+                                        experiment,
+                                        "alignment_reports", "*")
+            alignment_reports = glob(align_repo_path)
+            all_alignment_reports = load_alignment_reports(alignment_reports)
+        except:
+            all_alignment_reports = pd.DataFrame([])
+            print("No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
+    else:
+        print("The sequencing report could not be found in " + experiment + ". Please enter an experiment with an existing sequencing_report.csv file or upload new data.")
+        sequencing_report = None
+        all_alignment_reports = None
+        experiment = None
 
     return sequencing_report, all_alignment_reports, experiment
 
@@ -352,27 +388,67 @@ def process_data_with_last_experiment(module_dir, last_experiment, testing):
     sequencing_report, all_alignment_reports, experiment = retrieve_reports(module_dir, experiment, testing)
     return sequencing_report, all_alignment_reports, experiment
 
+
+
+def write_last_exp(pkg_path, experiment):
+    glob_vars = os.path.join(pkg_path,
+                             "settings",
+                             "global_vars.txt")
+    with open(glob_vars, "r") as f:
+        data = f.read()
+    data = literal_eval(data)
+    data["last_experiment"] = experiment
+    with open(glob_vars, "w") as f:
+        f.write(str(data))
+
 def upload(testing=False, continue_analysis = "n", upload_type = "2", choose_exp = '1', paired_end_test = 'n', experiment_column = '1'):
-   # module_dir = os.path.abspath("")
     module_dir = os.getcwd()
     pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
     repo_path, last_experiment = check_last_exp(pkg_path, module_dir, testing)
-
+    
     if os.path.isfile(repo_path):
-        continue_analysis = get_continue_analysis_input(last_experiment, testing,continue_analysis)
+        continue_analysis = get_continue_analysis_input(last_experiment,
+                                                        testing,
+                                                        continue_analysis)
         if continue_analysis.lower() in ["n", "no"]:
             next_step = get_next_step_input(testing, choose_exp)
-            if next_step == "1":
-                sequencing_report, all_alignment_reports, experiment = upload_new_experiment(module_dir,repo_path, testing, upload_type, paired_end_test, experiment_column)
-            elif next_step == "2":
-                experiment = choose_existing_experiment(module_dir, testing)
-                sequencing_report, all_alignment_reports, experiment = retrieve_reports(module_dir, experiment, testing)
-            else:
-                raise ValueError("Invalid option")
+            while True:
+                if next_step == "1":
+                    
+                    sequencing_report, all_alignment_reports, experiment = upload_new_experiment(module_dir,
+                                                                                                repo_path,
+                                                                                                testing,
+                                                                                                upload_type,
+                                                                                                paired_end_test,
+                                                                                                experiment_column)
+                elif next_step == "2":
+                    experiment = choose_existing_experiment(module_dir,
+                                                            testing)
+                    sequencing_report, all_alignment_reports, experiment = retrieve_reports(module_dir,
+                                                                                            experiment,
+                                                                                            testing)
+                if isinstance(sequencing_report, pd.DataFrame):
+                    break
+                else:
+                    print("Something went wrong. Please try again.")
+                    
+
         else:
-            sequencing_report, all_alignment_reports, experiment = process_data_with_last_experiment(module_dir, last_experiment, testing)
+            sequencing_report, all_alignment_reports, experiment = process_data_with_last_experiment(module_dir,
+                                                                                                     last_experiment,
+                                                                                                     testing)
     else:
-        sequencing_report, all_alignment_reports, experiment = upload_new_experiment(module_dir, repo_path, testing, upload_type, paired_end_test, experiment_column)
+        sequencing_report, all_alignment_reports, experiment = upload_new_experiment(module_dir,
+                                                                                     repo_path,
+                                                                                     testing,
+                                                                                     upload_type,
+                                                                                     paired_end_test,
+                                                                                     experiment_column)
     if testing and experiment != "test_directory":
-        shutil.rmtree(os.path.join(module_dir, "my_experiments", experiment))
-    return sequencing_report, all_alignment_reports, experiment
+        shutil.rmtree(os.path.join(module_dir,
+                                   "my_experiments",
+                                   experiment))
+    
+    if not testing and experiment != "test_directory":
+        write_last_exp(pkg_path, experiment)
+    return sequencing_report, all_alignment_reports, experiment 
