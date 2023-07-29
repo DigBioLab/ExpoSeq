@@ -1,0 +1,1 @@
+{'fname': '', 'format': 'png', 'dpi': 300}

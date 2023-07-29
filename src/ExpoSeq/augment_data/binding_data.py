@@ -8,13 +8,13 @@ except:
     pass
 
 def collect_binding_data(binding_data = None):
-    if binding_data == None:
+    if binding_data is None:
         binding_data = pd.DataFrame([])
     else:
         pass
     while True:
         # prompt the user to add a file
-        print("add your excel sheet with the binding data with the file chooser")
+        print("add your excel sheet as csv file with the binding data with the file chooser")
 
         try:
             binding_file = filedialog.askopenfilename()
@@ -29,6 +29,7 @@ def collect_binding_data(binding_data = None):
             binding_new = pd.read_excel(binding_file)
         elif binding_file.endswith(".csv"):
             binding_new = pd.read_csv(binding_file)
+        assert binding_new.columns.to_list()[0] == "aaSeqCDR3", "Please change the header of the first column in your csv file to aaSeqCDR3"
         binding_data = pd.concat([binding_data, binding_new])
         response = input("Do you want to continue adding files? (Y/n) ")
         if response.lower() == "n":
