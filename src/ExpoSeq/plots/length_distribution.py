@@ -9,7 +9,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
     ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
     #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
     ax.title.set_text(sample)
-    ax.title.set_size(10)
+    ax.title.set_size(18)
     ax.set_ylabel("Read Count",
                     **font_settings)  # Y label
     ax.set_xlabel('Read Length',
