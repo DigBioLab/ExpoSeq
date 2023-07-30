@@ -8,6 +8,7 @@ from .plots.relative_sequence_abundance import relative_sequence_abundance
 from .plots.cluster_embedding import show_difference
 from .plots.stacked_aa_distribution import stacked_aa_distr
 from .plots.barplot import barplot
+from .plots.hist_lvst_dist import levenshtein_hist
 from .plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -718,7 +719,28 @@ class PlotManager:
         
 
 
-
+    def levenshtein_histogram(self,sample, max_dist = 2, batch_size = 1000):
+        if not plt.fignum_exists(1):
+            self.fig = plt.figure(1)
+            print("Please do not close the window for the figure while the plot is loading")
+            
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        levenshtein_hist(self.ax,
+                         self.sequencing_report,
+                         sample,
+                         max_dist,
+                         batch_size, 
+                         self.font_settings
+                         )
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
+        figManager = plt.get_current_fig_manager()
+        figManager = plt.get_current_fig_manager()
+        figManager.window.showMaximized()
+        
+        
 
 
 
