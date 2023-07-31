@@ -1,2 +1,4 @@
 setup.py
 MANIFEST.in
+binding_data.csv
+my_experiments/*
