@@ -1,5 +1,5 @@
 setup.py
 MANIFEST.in
 binding_data.csv
-my_experiments/**/*
-```
+*.csv
+my_experiments/
