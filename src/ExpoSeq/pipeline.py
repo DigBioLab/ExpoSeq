@@ -8,7 +8,7 @@ from .plots.relative_sequence_abundance import relative_sequence_abundance
 from .plots.cluster_embedding import show_difference
 from .plots.stacked_aa_distribution import stacked_aa_distr
 from .plots.barplot import barplot
-from .plots.hist_lvst_dist import levenshtein_hist
+from .plots.hist_lvst_dist import levenshtein_dend, dendo_binding
 from .plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -21,6 +21,7 @@ import pkg_resources
 import os
 from ExpoSeq.settings.change_save_settings import Change_save_settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
+
 from ExpoSeq.reset import original_settings
 import shutil
 
@@ -719,32 +720,69 @@ class PlotManager:
         
 
 
-    def levenshtein_histogram(self,sample, max_dist = 2, batch_size = 1000):
+    def levenshtein_demdogram(self,sample, max_cluster_dist = 2, batch_size = 1000):
+        """
+        :params sample: the sample you would like to analyze
+        :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
+        :params batch_size: Default is 1000. The size of the sample which is chosen. 
+        """
         if not plt.fignum_exists(1):
             self.fig = plt.figure(1)
             print("Please do not close the window for the figure while the plot is loading")
             
         self.fig.clear()
         self.ax = self.fig.gca()
-        levenshtein_hist(self.ax,
+        levenshtein_dend(self.ax,
                          self.sequencing_report,
                          sample,
-                         max_dist,
-                         batch_size, 
-                         self.font_settings
+                         batch_size,
+                         max_cluster_dist, 
+                         self.font_settings,
                          )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
-        figManager = plt.get_current_fig_manager()
+
         figManager.window.showMaximized()
         
         
-
-
-
-
+    def levenshtein_binding_dendogram(self,sample, antigens, batch_size = 1000, max_cluster_dist = 2, scale_factor_lines = 1.0):
+        """
+        :param sample: the sample you would like to analyze
+        :params antigens: the antigens you would like to analyze. input format is a list and you find the names in the binding_data
+        :params batch_size: Default is 1000. The size of the sample which is chosen. 
+        :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
+        :scale_factor_lines: Default is 1.5. You can change the scale factor of the lines in the dendogram which indicates the value of your binding data. if you increase the scale factor high values become very clear.
+        """
+        assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        assert type(sample) == str, "You have to give a string as input for the sample"
+        assert type(antigens) == list, "You have to give a list with the antigens you want to analyze"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
+        assert type(max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
+        assert type(scale_factor_lines) == float, "You have to give a float as input for the scale factor of the lines"
+        assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
+        if not plt.fignum_exists(1):
+            self.fig = plt.figure(1)
+            print("Please do not close the window for the figure while the plot is loading")
+            
+        self.fig.clear()
+        self.ax = self.fig.gca()
+        dendo_binding(self.ax,
+                    self.sequencing_report,
+                    self.binding_data,
+                    sample,
+                    antigens,
+                    batch_size,
+                    max_cluster_dist,
+                    scale_factor_lines,
+                    self.font_settings)
+        self.plot_type = "single"
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
+        figManager = plt.get_current_fig_manager()
+        figManager.window.showMaximized()
+        plt.tight_layout()
 
 
 
