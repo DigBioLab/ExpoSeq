@@ -4,3 +4,4 @@ binding_data.csv
 *.csv
 my_experiments/
 build/
+.idea/
