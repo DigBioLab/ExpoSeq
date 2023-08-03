@@ -3,5 +3,9 @@ MANIFEST.in
 binding_data.csv
 *.csv
 my_experiments/
+<<<<<<< HEAD
 build/
 .idea/
+=======
+build/
+>>>>>>> cd0dbd24b7d52902f39087172931bc85d1062f9c
