@@ -272,6 +272,7 @@ def check_last_exp(pkg_path, module_dir, testing):
                     last_experiment = os.path.basename(dirpath)
                 else:
                     print("The experiments in my experiment do not contain the sequencing report. You need to upload a new experiment.")
+                    repo_path = ""
             
         else:
             repo_path = os.path.join(module_dir,

@@ -253,7 +253,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
-    def usqPlot(self, samples):
+    def rarefraction_curves(self, samples):
         """
         :param samples: you insert a list which contains the sample names
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
@@ -557,7 +557,7 @@ class PlotManager:
         save_embedding = input("Do you want to save the corresponding data as csv? (Y/n)?")
         if save_embedding.lower() in ["Y", "y"]:
             name_csv = input("How do you want to call the file")
-            path_save_embedding = os.path.join(save_embedding, name_csv + ".csv" )
+            path_save_embedding = os.path.join(name_csv + ".csv")
             tsne_results.to_csv(path_save_embedding, index=False)
 
     def embedding_tsne(self,
