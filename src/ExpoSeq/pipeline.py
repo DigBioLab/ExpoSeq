@@ -25,6 +25,25 @@ from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_bin
 from ExpoSeq.reset import original_settings
 import shutil
 
+
+def save_matrix(matrix):
+    while True:
+        save_matrix = input("Do you want to save the generated data? (Y/n)")
+        if save_matrix in ["Y", "y", "N", "n"]:
+            break
+        else:
+            print("Please enter Y or n")
+    if save_matrix.lower() in ["Y", "y"]:
+        while True:
+            filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
+            if not os.path.isfile(filename_matrix):
+                break
+            else:
+                print("This file already exists. Please choose another name.")
+            
+        matrix.to_excel(filename_matrix + ".xlsx")
+    
+
 class PlotManager:
     def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1):
         self.is_test = test_version
@@ -123,6 +142,7 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
+        
     def discard_samples(self, samples_to_discard):
         """
 
@@ -147,6 +167,13 @@ class PlotManager:
 
         self.binding_data.to_csv("binding_data.csv")
             
+    def merge_bind_seq_report(self):
+        """
+        :return: merges the binding data with the sequencing report.
+        """
+        assert self.binding_data != None, "You have not given binding data. Please use the add_binding_data function to add binding data."
+        merged_reports = pd.merge(self.sequencing_report, self.binding_data, on = "aaSeqCDR3")
+        return merged_reports
         
     def print_antigens(self):
         """
@@ -175,6 +202,7 @@ class PlotManager:
         :param change_whole_dic: optional Parameter. The renaming can be done by using a dictionary and map it to the labels. You can change multiple or all labels by adding the new dictionary for this parameter.
         :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
+        
         self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
         self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
         if specific != None:
@@ -183,6 +211,7 @@ class PlotManager:
             assert type(change_whole_dic) == dict, "You have to give a dictionary as input for the specific sample you want to change"
         if change_whole_dic == False:
             if specific == None:
+                print("You will no go through all your samples and you will be able to change their names. If you want to skip a samples, just press enter.")
                 for key in self.unique_experiments:
                     print(f"Current value for {key}: {self.unique_experiments[key]}")
                     new_value = input("Enter a new value or press any key to skip")
@@ -228,7 +257,7 @@ class PlotManager:
     def aa_distribution(self, sample, region, protein = True):
         """
         :param sample: The sample you would like to analyze
-        :param region: the region you would like to analyze
+        :param region: The input is a list and you can specify with the first value the beginning region and with the second value the end region within your sequences for which you want to know the amino acid composition. For instance: [3,7]
         :param protein: Default True. If you would like to analyze nucleotide sequences, set it to False
         :return: Returns a plot which shows the amino acid distribution in the given sequence range.
         """
@@ -287,7 +316,7 @@ class PlotManager:
                         chosen_seq_length = 16):
         """
         :param sample: insert the sample name
-        :param highlight_specific_pos: optional. you can highlight a specific position
+        :param highlight_specific_pos: optional. you can highlight a specific position. For instance if you want to highlight the 3rd position, you insert 3.
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like to.
         :return: A logo Plot which shows you the composition of aminoacids per position
         """
@@ -536,7 +565,6 @@ class PlotManager:
         assert type(antigen) == list, "You have to give a list with the antigens you want to analyze"
         
         self.fig.clear()
-        #self.ax = self.fig.gca()
         tsne_results = cluster_toxins_tsne(self.fig,
                             self.sequencing_report,
                             sample,
@@ -554,11 +582,8 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
-        save_embedding = input("Do you want to save the corresponding data as csv? (Y/n)?")
-        if save_embedding.lower() in ["Y", "y"]:
-            name_csv = input("How do you want to call the file")
-            path_save_embedding = os.path.join(name_csv + ".csv")
-            tsne_results.to_csv(path_save_embedding, index=False)
+        save_matrix(tsne_results)
+
 
     def embedding_tsne(self,
                        samples,
@@ -604,8 +629,9 @@ class PlotManager:
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
         
-    def morosita_horn(self, specific_experiments = False):
+    def morosita_horn(self,annotate_cells = False, specific_experiments = False):
         """
+        :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_experiments: you can give a list with specific experiments
         :return: Returns a matrix of the identity between your samples based on the Morosita Horn Index
         """
@@ -618,24 +644,26 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.fig.clear()
         self.ax = self.fig.gca()
-        plot_heatmap(self.sequencing_report,
-                     True,
-                     "morosita_horn",
-                     self.ax,
-                     self.colorbar_settings,
-                     self.font_settings,
-                     specific_experiments = specific_experiments,
-                     )
+        matrix = plot_heatmap(self.sequencing_report,
+                                True,
+                                "morosita_horn",
+                                self.ax,
+                                self.colorbar_settings,
+                                self.font_settings,
+                                annotate_cells,
+                                specific_experiments = specific_experiments,
+                                )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
-        return self.fig
+        save_matrix(matrix)
 
             
-    def jaccard(self, specific_experiments = False):
+    def jaccard(self,annotate_cells = False, specific_experiments = False):
         """
+        :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_experiments: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Jaccard Index
         """
@@ -648,22 +676,25 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.fig.clear()
         self.ax = self.fig.gca()
-        plot_heatmap(self.sequencing_report,
-                     True,
-                     "jaccard",
-                     self.ax,
-                     self.colorbar_settings,
-                     self.font_settings,
-                     specific_experiments = specific_experiments,
-                     )
+        matrix = plot_heatmap(self.sequencing_report,
+                                True,
+                                "jaccard",
+                                self.ax,
+                                self.colorbar_settings,
+                                self.font_settings,
+                                annotate_cells,
+                                specific_experiments = specific_experiments,
+                                )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
+        save_matrix(matrix)
 
-    def sorensen(self, specific_experiments = False):
+    def sorensen(self,annotate_cells = False, specific_experiments = False):
         """
+        :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Sorensen Dice Index
         """
@@ -676,22 +707,26 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.fig.clear()
         self.ax = self.fig.gca()
-        plot_heatmap(self.sequencing_report,
-                     True,
-                     "sorensen",
-                     self.ax,
-                     self.colorbar_settings,
-                     self.font_settings,
-                     specific_experiments = specific_experiments,
-                     )
+        matrix = plot_heatmap(self.sequencing_report,
+                                True,
+                                "sorensen",
+                                self.ax,
+                                self.colorbar_settings,
+                                self.font_settings,
+                                annotate_cells,
+                                specific_experiments = specific_experiments,
+                                )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
+        save_matrix(matrix)
 
-    def relative(self, specific_experiments = False):
+
+    def relative(self, annotate_cells = False, specific_experiments = False):
         """
+        :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the proportion of identical sequences
         """
@@ -704,22 +739,23 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.fig.clear()
         self.ax = self.fig.gca()
-        plot_heatmap(self.sequencing_report,
-                     True,
-                     "relative",
-                     self.ax,
-                     self.colorbar_settings,
-                     self.font_settings,
-                     specific_experiments = specific_experiments,
-                     )
+        matrix = plot_heatmap(self.sequencing_report,
+                            True,
+                            "relative",
+                            self.ax,
+                            self.colorbar_settings,
+                            self.font_settings,
+                            annotate_cells,
+                            specific_experiments = specific_experiments,
+                            )
         self.plot_type = "single"
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
+        save_matrix(matrix)
+    
         
-
-
     def levenshtein_demdogram(self,sample, max_cluster_dist = 2, batch_size = 1000):
         """
         :params sample: the sample you would like to analyze
@@ -743,7 +779,6 @@ class PlotManager:
         self.ax = self.fig.gca()
         self.style = PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
-
         figManager.window.showMaximized()
         
         

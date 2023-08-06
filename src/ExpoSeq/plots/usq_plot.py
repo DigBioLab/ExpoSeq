@@ -2,7 +2,6 @@ from ExpoSeq.tidy_data.tidy_USQ_plot_ import cleaning_data
 import matplotlib.pyplot as plt
 import random
 from collections import Counter
-import warnings
 import matplotlib
 matplotlib.use('Qt5Agg')
 def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
@@ -35,8 +34,7 @@ def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
         )
         x_axis.append(total_list)
         y_axis.append([len(x) for x in unique_list])
-    if len(sub_table) > 7:
-        warnings.warn("Risk of Overplotting: Many different colors are used. It may be hard to differ between the data")
+
   #  for i in range(len(x_axis)):
    #     plt.plot(x_axis[i], y_axis[i], **params_plot)
     plt.legend(sub_table.Experiment, title = "Sample Names", **legend_settings)

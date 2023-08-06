@@ -15,7 +15,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                                show_spines=False,
                                ax=ax,
                                )
-    logo_plot.style_xticks(anchor=0,
+    logo_plot.style_xticks(anchor=1,
                            spacing=1,
                            rotation=0)
     original_fontsize = font_settings["fontsize"]
@@ -24,6 +24,9 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
     font_settings["fontsize"] = 22
     plt.title("Logo Plot of " + sample + " with sequence length " + str(chosen_seq_length), **font_settings)
     font_settings["fontsize"] = original_fontsize
+    labels_true = list(range(0, chosen_seq_length))
+    numbers_true = list(range(1, chosen_seq_length + 1))
+    plt.xticks(labels_true, numbers_true)
     if highlight_specific_pos != False:
         logo_plot.highlight_position(p=5,
                                      color='gold',

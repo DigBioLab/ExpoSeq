@@ -79,25 +79,4 @@ def morosita_horn_matrix(unique_sequences, unique_experiments):
     return matrix, unique_sequences, unique_experiments
 
 
-def morosita_horn_matrix_two(unique_sequences, unique_experiments):
-    columns = len(unique_experiments)
-    morosita_horn_matrix = np.zeros((columns, columns))
-    column_names = list(unique_experiments)
-    unique_sequences = np.array(unique_sequences)
-    for index_sample_one in range(columns):
-        d1 = unique_sequences[index_sample_one, :]
-        start = 0
-        for index_sample_two in range(columns):
-            d2 = unique_sequences[index_sample_two, :]
-            product_d1_d2 = d1 * d2
-            d1_square = d1**2
-            d2_square = d2**2
-            MH = (2*np.sum(product_d1_d2)) /(np.sum(d1_square) + np.sum(d2_square))
-            morosita_horn_matrix[index_sample_one, index_sample_two] = MH
-            morosita_horn_matrix[index_sample_two, index_sample_one] = MH
-            start += 1
-    matrix = pd.DataFrame(morosita_horn_matrix,
-                          index = column_names,
-                          columns = column_names)
 
-    return morosita_horn_matrix, matrix

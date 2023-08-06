@@ -246,4 +246,5 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                      "experiment_names.pickle")
         with open(exp_names_dir, "wb") as f:
             pickle.dump(experiment_dic, f)
+    print("The output of your processing is a sequencing_report which contains the sequences and their sample names of all fastq files. Further, a folder with the alignment reports for each fastq file was created. You can have a look under ~/my_experiments/YOUR_EXPERIMENT_NAME")
 

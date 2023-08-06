@@ -3,6 +3,7 @@ MANIFEST.in
 binding_data.csv
 *.csv
 my_experiments/
+*.xlsx
 <<<<<<< HEAD
 build/
 .idea/
