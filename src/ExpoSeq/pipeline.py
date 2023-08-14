@@ -21,7 +21,7 @@ import pkg_resources
 import os
 from ExpoSeq.settings.change_save_settings import Change_save_settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
-
+from Bio.Seq import Seq
 from ExpoSeq.reset import original_settings
 import shutil
 
@@ -42,6 +42,82 @@ def save_matrix(matrix):
                 print("This file already exists. Please choose another name.")
             
         matrix.to_excel(filename_matrix + ".xlsx")
+        
+def upload_settings(pkg_path):
+    font_settings_path = os.path.join(self.pkg_path,
+                                        "settings",
+                                        "font_settings.txt")
+    assert os.path.isfile(font_settings_path), "The font settings file does not exist in the given filepath"
+    with open(font_settings_path, "r") as f:
+        font_settings = f.read()
+    font_settings = literal_eval(font_settings)
+    legend_settings_path = os.path.join(pkg_path,
+                                        "settings",
+                                        "legend_settings.txt")
+    assert os.path.isfile(legend_settings_path), "The legend settings file does not exist in the given filepath"
+    with open(legend_settings_path, "r") as f:
+        legend_settings = f.read()
+    colorbar_path = os.path.join(pkg_path,
+                                    "settings",
+                                    "colorbar.txt")
+    assert os.path.isfile(colorbar_path), "The colorbar file does not exist in the given filepath"
+    
+    with open(colorbar_path, "r") as f:
+        colorbar_settings = f.read()
+    return font_settings, legend_settings, colorbar_settings
+    
+class SequencingReport:
+    def __init__(self,sequencing_report, test):
+        self.origin_seq_report = sequencing_report.copy()
+
+        
+    def get_exp_names(self, experiment_path):
+        try:
+            with open(experiment_path, "rb") as f:
+                unique_experiments = pickle.load(f)
+        except:
+            unique_experiments = self.origin_seq_report["Experiment"].unique().tolist()
+            unique_experiments = dict(zip(unique_experiments, unique_experiments))
+        return unique_experiments
+            
+    def map_exp_names(self, unique_experiments):
+        self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(unique_experiments)
+
+    def is_divisible_by_three(seq):
+        return len(seq) % 3 == 0
+
+    def translate_sequence(seq):
+        return str(Seq(seq).translate())
+    
+    def filter_region(self, region_of_interest):
+        added_columns = ["minQual" + region_of_interest, "nSeq" + region_of_interest]
+        fixed_cols = ["cloneId", "readCount", "readFraction"]
+        cols_of_interest = fixed_cols + added_columns
+        sequencing_report = self.origin_seq_report[cols_of_interest]
+        filtered_nt = sequencing_report[sequencing_report['nSeq' + region_of_interest].apply(self.is_divisible_by_three)]
+        sequencing_report["aaSeq" + region_of_interest] = filtered_nt["nSeq" + region_of_interest].apply(self.translate_sequence)
+        return sequencing_report
+
+
+class BindingReport:
+    def __init__(self, module_dir, experiment):
+        self.binding_data_dir = os.path.join(module_dir,
+                                "my_experiments",
+                                experiment,
+                                "binding_data.csv")
+        
+    def ask_binding_data(self):
+        if not os.path.isfile(self.binding_data_dir):
+            add_binding = input("Do you have binding Data? Y/n")
+            if add_binding.lower() in ["Y", "y"]:
+                binding_data = collect_binding_data()
+
+                binding_data.to_csv("binding_data.csv")
+            else:
+                binding_data = None
+        else:
+            binding_data = pd.read_csv(self.binding_data_dir)
+        return binding_data
     
 
 class PlotManager:
@@ -62,78 +138,33 @@ class PlotManager:
         with open(common_vars_path, "r") as f:
             self.global_params = f.read()
         self.global_params = literal_eval(self.global_params)
-        if test_version == True:
-            if os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
-                pass
-            else:
-                os.mkdir(os.path.join(self.module_dir, "my_experiments"))
-            if os.path.isdir(os.path.join(self.module_dir, "temp")):
-                pass
-            else:
-                os.mkdir(os.path.join(self.module_dir, "temp"))
-                
+        if test_version == True:                
             self.experiment = "Test"
             self.sequencing_report = create_sequencing_report(num_experiments = test_exp_num,
                                                               panning_rounds = test_panrou_num,
                                                               )
-            self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
-            self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
             self.alignment_report = None
-            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
             self.binding_data = create_binding_report(self.sequencing_report,
                                                       num_antigen = test_panrou_num)
-            
+            self.region_of_interest = "CDR3"
         else:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
-            experiment_path = os.path.join(self.module_dir,
-                                            "my_experiments",
-                                            self.experiment,
-                                            "experiment_names.pickle")
-            try:
-                with open(experiment_path, "rb") as f:
-                    self.unique_experiments = pickle.load(f)
-            except:
-                self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
-                self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
-            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
-            self.binding_data_dir = os.path.join(self.module_dir,
-                    "my_experiments",
-                    self.experiment,
-                    "binding_data.csv")
-            if not os.path.isfile(self.binding_data_dir):
-                self.add_binding = input("Do you have binding Data? Y/n")
-                if self.add_binding.lower() in ["Y", "y"]:
-                    self.binding_data = collect_binding_data()
-
-                    self.binding_data.to_csv("binding_data.csv")
-                else:
-                    self.binding_data = None
-            else:
-                self.binding_data = pd.read_csv(self.binding_data_dir)
-                
-        font_settings_path = os.path.join(self.pkg_path,
-                                          "settings",
-                                          "font_settings.txt")
-        assert os.path.isfile(font_settings_path), "The font settings file does not exist in the given filepath"
-        with open(font_settings_path, "r") as f:
-            font_settings = f.read()
-        self.font_settings = literal_eval(font_settings)
-        legend_settings_path = os.path.join(self.pkg_path,
-                                            "settings",
-                                            "legend_settings.txt")
-        assert os.path.isfile(legend_settings_path), "The legend settings file does not exist in the given filepath"
-        with open(legend_settings_path, "r") as f:
-            legend_settings = f.read()
-        colorbar_path = os.path.join(self.pkg_path,
-                                     "settings",
-                                     "colorbar.txt")
-        assert os.path.isfile(colorbar_path), "The colorbar file does not exist in the given filepath"
+            self.region_of_interest = self.global_params["region_of_interest"]
+            binding_report = BindingReport(self.module_dir, self.experiment)
+            self.binding_data = binding_report.ask_binding_data()
+        report = SequencingReport(self.sequencing_report)
+        experiment_path = os.path.join(self.module_dir,
+                                        "my_experiments",
+                                        self.experiment,
+                                        "experiment_names.pickle")
+        self.unique_experiments = report.get_exp_names(experiment_path)
+        report.map_exp_names(self.unique_experiments)
+        self.sequencing_report = report.filter_region(self.region_of_interest)
         
-        with open(colorbar_path, "r") as f:
-            self.colorbar_settings = f.read()
+        self.font_settings, self.legend_settings, self.colorbar_settings = upload_settings(self.pkg_path)         
 
         self.colorbar_settings = literal_eval(self.colorbar_settings)
-        self.legend_settings = literal_eval(legend_settings)
+        self.legend_settings = literal_eval(self.legend_settings)
         self.zero = 0
         self.batch_size = 300
         self.fig = plt.figure(1)
@@ -142,6 +173,18 @@ class PlotManager:
         self.style = PlotStyle(self.ax, self.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
+        
+        
+        
+        
+        
+    def change_region(self):
+        """
+        :return: changes the region you want to plot
+        """
+        self.region_of_interest = input("Which region do you want to plot? The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
+        assert self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"], "The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'"
+        self.sequencing_report = SequencingReport(self.sequencing_report).filter_region(self.region_of_interest)
         
     def discard_samples(self, samples_to_discard):
         """
