@@ -25,12 +25,20 @@ def collect_binding_data(binding_data = None):
                     break
                 else:
                     print("Please enter a valid filepath. ")
-        assert binding_file.endswith(".xlsx") or binding_file.endswith(".csv"), "Please enter a valid filepath to a csv or xlsx file"
-        if binding_file.endswith(".xlsx"):
-            binding_new = pd.read_excel(binding_file)
-        elif binding_file.endswith(".csv"):
-            binding_new = pd.read_csv(binding_file)
-        assert binding_new.columns.to_list()[0] == "aaSeqCDR3", "Please change the header of the first column in your csv file to aaSeqCDR3"
+        while True:
+            if binding_file.endswith(".xlsx") or binding_file.endswith(".csv"):
+                if binding_file.endswith(".xlsx"):
+                    binding_new = pd.read_excel(binding_file)
+                elif binding_file.endswith(".csv"):
+                    binding_new = pd.read_csv(binding_file)
+                if binding_new.columns.to_list()[0] == "aaSeqCDR3":
+                    break
+                else:
+                    print("Please change the header of the first column in your csv file to aaSeqCDR3")
+            else:
+                print("Please enter a valid filepath to a csv or xlsx file")
+
+
         binding_data = pd.concat([binding_data, binding_new])
         response = input("Do you want to continue adding files? (Y/n) ")
         if response.lower() == "n":

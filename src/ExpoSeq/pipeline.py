@@ -72,34 +72,35 @@ def save_matrix(matrix):
 class SequencingReport:
     def __init__(self,sequencing_report):
         self.origin_seq_report = sequencing_report.copy()
+        self.sequencing_report = sequencing_report.copy()
 
-        
     def get_exp_names(self, experiment_path):
         try:
             with open(experiment_path, "rb") as f:
                 unique_experiments = pickle.load(f)
         except:
-            unique_experiments = self.origin_seq_report["Experiment"].unique().tolist()
+            unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
             unique_experiments = dict(zip(unique_experiments, unique_experiments))
         return unique_experiments
             
     def map_exp_names(self, unique_experiments):
         self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(unique_experiments)
 
-    def is_divisible_by_three(seq):
+
+    def is_divisible_by_three(self, seq):
         return len(seq) % 3 == 0
 
-    def translate_sequence(seq):
+    def translate_sequence(self, seq):
         return str(Seq(seq).translate())
     
     def filter_region(self, region_of_interest):
-        added_columns = ["minQual" + region_of_interest, "nSeq" + region_of_interest]
-        fixed_cols = ["cloneId", "readCount", "readFraction"]
+        added_columns = ["nSeq" + region_of_interest] #"minQual" + region_of_interest, 
+        fixed_cols = ["Experiment", "cloneId", "readCount", "clonesFraction"]
         cols_of_interest = fixed_cols + added_columns
-        sequencing_report = self.origin_seq_report[cols_of_interest]
-        filtered_nt = sequencing_report[sequencing_report['nSeq' + region_of_interest].apply(self.is_divisible_by_three)]
-        sequencing_report["aaSeq" + region_of_interest] = filtered_nt["nSeq" + region_of_interest].apply(self.translate_sequence)
-        return sequencing_report
+        self.sequencing_report = self.origin_seq_report[cols_of_interest]
+        self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_of_interest].apply(self.is_divisible_by_three)]
+        self.sequencing_report["aaSeq" + region_of_interest] = self.sequencing_report["nSeq" + region_of_interest].apply(self.translate_sequence)
+
 
 
 class BindingReport:
@@ -138,7 +139,9 @@ class Directories:
             os.mkdir(os.path.join(self.module_dir, "temp"))
     
     def read_global_params(self):
-        with open(self.common_vars, "r") as f:
+        ########## TEST
+        
+        with open(r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\settings\global_vars.txt", "r") as f:
             global_params = f.read()
         global_params = literal_eval(global_params)
         return global_params
@@ -206,14 +209,16 @@ class PlotManager:
         self.Report = SequencingReport(self.sequencing_report)
         experiment_path = self.My_dirs.get_experiment_path(self.experiment)
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
+        self.Report.filter_region(self.region_of_interest)
         self.Report.map_exp_names(self.unique_experiments)
-        self.sequencing_report = self.Report.filter_region(self.region_of_interest)
+        self.unique_experiments = self.Report.get_exp_names(experiment_path)
+        self.sequencing_report = self.Report.sequencing_report
         self.font_settings = self.My_dirs.read_font_settings()
         self.legend_settings = self.My_dirs.read_legend_settings()
         self.colorbar_settings = self.My_dirs.read_colorbar_settings()
         self.batch_size = 300
-        self.style = PlotStyle(self.ax, self.plot_type)
         self.ControlFigure = MyFigure()
+        self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
         
