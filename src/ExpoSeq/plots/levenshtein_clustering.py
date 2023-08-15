@@ -108,10 +108,6 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
     fig.colorbar(network_plot,
                  ax=fig.axes)
 
-antigens = ['Ecarpholin_S_DDEL_5ug/mL', 'Myotoxin_II_DDEL_5ug/mL',
-           'PLA2_n.naja(Uniprot:P15445)_DDEL_5ug/mL', 'Ecarpholin_S_CDEL_100nM',
-           'Myotoxin_II_CDEL_100nM',]
-
 
 
 ### is not in use

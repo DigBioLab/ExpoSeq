@@ -25,6 +25,30 @@ from Bio.Seq import Seq
 from ExpoSeq.reset import original_settings
 import shutil
 
+class MyFigure:
+    def __init__(self):
+        self.fig = plt.figure(1)
+        self.ax = self.fig.gca()
+        self.plot_type = "multi"
+
+    def check_fig(self,):
+        if not plt.fignum_exists(1):
+            self.fig = plt.figure(1)
+    
+    def clear_fig(self):
+        self.fig.clear()
+        if self.plot_type == "single":
+            self.ax = self.fig.gca()
+    
+    def update_plot(self):
+        self.ax = self.fig.gca()
+        self.style = PlotStyle(self.ax, self.plot_type)
+        figManager = plt.get_current_fig_manager()
+        figManager.window.showMaximized()
+    
+    def tighten(self):
+        plt.tight_layout()
+        
 
 def save_matrix(matrix):
     while True:
@@ -43,31 +67,10 @@ def save_matrix(matrix):
             
         matrix.to_excel(filename_matrix + ".xlsx")
         
-def upload_settings(pkg_path):
-    font_settings_path = os.path.join(self.pkg_path,
-                                        "settings",
-                                        "font_settings.txt")
-    assert os.path.isfile(font_settings_path), "The font settings file does not exist in the given filepath"
-    with open(font_settings_path, "r") as f:
-        font_settings = f.read()
-    font_settings = literal_eval(font_settings)
-    legend_settings_path = os.path.join(pkg_path,
-                                        "settings",
-                                        "legend_settings.txt")
-    assert os.path.isfile(legend_settings_path), "The legend settings file does not exist in the given filepath"
-    with open(legend_settings_path, "r") as f:
-        legend_settings = f.read()
-    colorbar_path = os.path.join(pkg_path,
-                                    "settings",
-                                    "colorbar.txt")
-    assert os.path.isfile(colorbar_path), "The colorbar file does not exist in the given filepath"
-    
-    with open(colorbar_path, "r") as f:
-        colorbar_settings = f.read()
-    return font_settings, legend_settings, colorbar_settings
+
     
 class SequencingReport:
-    def __init__(self,sequencing_report, test):
+    def __init__(self,sequencing_report):
         self.origin_seq_report = sequencing_report.copy()
 
         
@@ -118,26 +121,64 @@ class BindingReport:
         else:
             binding_data = pd.read_csv(self.binding_data_dir)
         return binding_data
-    
 
-class PlotManager:
-    def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1):
-        self.is_test = test_version
+class Directories:
+    def __init__(self):
         self.module_dir = os.path.abspath("")
         self.pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-        common_vars_path = os.path.join(self.pkg_path,
-                                        "settings",
-                                        "global_vars.txt")
+        self.common_vars =  os.path.join(self.pkg_path,"settings", "global_vars.txt")
+
+        
+    def check_dirs(self):
         if not os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
             print("create my_experiments directory")
             os.mkdir(os.path.join(self.module_dir, "my_experiments"))
         if not os.path.isdir(os.path.join(self.module_dir, "temp")):
             print("create temp directory")
             os.mkdir(os.path.join(self.module_dir, "temp"))
+    
+    def read_global_params(self):
+        with open(self.common_vars_path, "r") as f:
+            global_params = f.read()
+        global_params = literal_eval(global_params)
+        return global_params
+    
+    def read_font_settings(self):
+        font_settings_path = os.path.join(self.pkg_path, "settings", "font_settings.txt")
+        assert os.path.isfile(font_settings_path), "The font settings file does not exist in the given filepath"
+        with open(font_settings_path, "r") as f:
+            font_settings = f.read()
+        font_settings = literal_eval(font_settings)
+        return font_settings
+    
+    def read_legend_settings(self):
+        legend_settings_path = os.path.join(self.pkg_path,
+                                        "settings",
+                                        "legend_settings.txt")
+        assert os.path.isfile(legend_settings_path), "The legend settings file does not exist in the given filepath"
+        with open(legend_settings_path, "r") as f:
+            legend_settings = f.read()
+        legend_settings = literal_eval(legend_settings)
+        return legend_settings
+    
+    def read_colorbar_settings(self):
+        colorbar_path = os.path.join(self.pkg_path,
+                                    "settings",
+                                    "colorbar.txt")
+        assert os.path.isfile(colorbar_path), "The colorbar file does not exist in the given filepath"
+        with open(colorbar_path, "r") as f:
+            colorbar_settings = f.read()
+        colorbar_settings = literal_eval(colorbar_settings)
+        return colorbar_settings
             
-        with open(common_vars_path, "r") as f:
-            self.global_params = f.read()
-        self.global_params = literal_eval(self.global_params)
+
+class PlotManager:
+    def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1):
+        self.is_test = test_version
+        self.My_dirs = Directories()
+        self.My_dirs.check_dirs()
+        self.global_params = self.My_dirs.read_global_params()
+        
         if test_version == True:                
             self.experiment = "Test"
             self.sequencing_report = create_sequencing_report(num_experiments = test_exp_num,
@@ -150,6 +191,8 @@ class PlotManager:
         else:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             self.region_of_interest = self.global_params["region_of_interest"]
+            if self.region_of_interest == "":
+                self.region_of_interest = "CDR3"
             binding_report = BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
         report = SequencingReport(self.sequencing_report)
@@ -160,31 +203,26 @@ class PlotManager:
         self.unique_experiments = report.get_exp_names(experiment_path)
         report.map_exp_names(self.unique_experiments)
         self.sequencing_report = report.filter_region(self.region_of_interest)
-        
-        self.font_settings, self.legend_settings, self.colorbar_settings = upload_settings(self.pkg_path)         
-
-        self.colorbar_settings = literal_eval(self.colorbar_settings)
-        self.legend_settings = literal_eval(self.legend_settings)
-        self.zero = 0
+        self.font_settings = self.My_dirs.read_font_settings()
+        self.legend_settings = self.My_dirs.read_legend_settings()
+        self.colorbar_settings = self.My_dirs.read_colorbar_settings()
         self.batch_size = 300
-        self.fig = plt.figure(1)
-        self.ax = self.fig.gca()
-        self.plot_type = "multi"
         self.style = PlotStyle(self.ax, self.plot_type)
+        self.ControlFigure = MyFigure()
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
-        
-        
-        
-        
         
     def change_region(self):
         """
         :return: changes the region you want to plot
         """
+        intermediate = self.region_of_interest
         self.region_of_interest = input("Which region do you want to plot? The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
-        assert self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"], "The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'"
-        self.sequencing_report = SequencingReport(self.sequencing_report).filter_region(self.region_of_interest)
+        if self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"]:
+            self.sequencing_report = SequencingReport.filter_region(self.region_of_interest)
+        else:
+            print("The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
+            self.region_of_interest = intermediate
         
     def discard_samples(self, samples_to_discard):
         """
@@ -276,24 +314,21 @@ class PlotManager:
         :param log_transformation: optional parameter. You can set it to True if you want to log transform your data
         :return: Creates a figure where you can see the Overall Reads per sample and the number of reads which could be aligned.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         assert log_transformation in [True, False], "You have to give True or False as input for the log transformation"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         try:
-            barplot(self.ax,
+            barplot(self.ControlFigure.ax,
                     self.alignment_report,
                     self.sequencing_report,
                     self.font_settings,
                     self.legend_settings,
                     apply_log = log_transformation)
-            self.plot_type = "single"
-            self.ax = self.fig.gca()
-            self.style = PlotStyle(self.ax, self.plot_type)
-            figManager = plt.get_current_fig_manager()
-            figManager.window.showMaximized()
+            
+            self.ControlFigure.update_plot()
+            self.style = PlotStyle(self.ControlFigure.ax,
+                            self.ControlFigure.plot_type)
         except:
             print("Currenlty you do not have loaded an alignment report.")
 
@@ -304,54 +339,48 @@ class PlotManager:
         :param protein: Default True. If you would like to analyze nucleotide sequences, set it to False
         :return: Returns a plot which shows the amino acid distribution in the given sequence range.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(sample), "You have to give a string as input for the sample"
         assert type(region), "You have to give a list with the start and end position of the region you want to analyze. For instance: [3,7]"
         assert protein in [True, False], "You have to give True or False as input for the protein parameter"
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        stacked_aa_distr(self.ax,
+        self.ControlFigure.clear_fig()
+        stacked_aa_distr(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          region,
                          protein,
                          self.font_settings,
                          self.legend_settings)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
+        
     def rarefraction_curves(self, samples):
         """
         :param samples: you insert a list which contains the sample names
         :return: USQ stands for unique sequences quality and the plot shows you the depth of unique sequences which can be used for evaluating your sequencing quality.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         if type(samples) != list:
             print("You have to give the sample names in the list, also if it is only one! A list is a container which is marked through:[] . Please try again.")
         else:
-            self.fig.clear()
-            self.ax = self.fig.gca()
-            plot_USQ(fig = self.fig,
+            self.ControlFigure.clear_fig()
+            plot_USQ(fig = self.ControlFigure.fig,
                     sequencing_report = self.sequencing_report,
                      samples = samples,
                      font_settings = self.font_settings,
                      legend_settings = self.legend_settings)
-            self.plot_type = "single"
-            self.ax = self.fig.gca()
-            self.style = PlotStyle(self.ax, self.plot_type)
-            figManager = plt.get_current_fig_manager()
-            figManager.window.showMaximized()
-
+            
+            self.ControlFigure.update_plot()
+            self.style = PlotStyle(self.ControlFigure.ax,
+                            self.ControlFigure.plot_type)
     def logoPlot_single(self,
                         sample,
                         highlight_specific_pos = False,
@@ -363,9 +392,8 @@ class PlotManager:
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like to.
         :return: A logo Plot which shows you the composition of aminoacids per position
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(sample) == str, "You have to give a string as input for the sample"
         if highlight_specific_pos != False:
@@ -373,20 +401,19 @@ class PlotManager:
         if highlight_pos_range != False:
             assert type(highlight_pos_range) == list, "You have to give a list with the start and end position of the region you want to highlight. For instance: [3,7]"
         assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        plot_logo_single(self.ax,
+        self.ControlFigure.clear_fig()
+        plot_logo_single(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          self.font_settings,
                          highlight_specific_pos,
                          highlight_pos_range,
                          chosen_seq_length)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
+
 
 
     def logoPlot_multi(self,
@@ -400,16 +427,15 @@ class PlotManager:
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like
         :return: Gives you in one figure one logoPlot per sample.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
         if samples != "all":
             assert type(samples) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in samples if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
-        self.fig.clear()
-        plot_logo_multi(self.fig,
+        self.ControlFigure.clear_fig()
+        plot_logo_multi(self.ControlFigure.fig,
                   self.sequencing_report,
                   samples,
                   num_cols,
@@ -417,13 +443,11 @@ class PlotManager:
                   chosen_seq_length,
                     test_version = self.is_test
                   )
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
+        self.ControlFigure.tighten()
 
-        self.plot_type = "multi"
-        self.ax= self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        plt.tight_layout()
 
     def lengthDistribution_single(self, sample):
         """
@@ -431,23 +455,21 @@ class PlotManager:
         :param sample: name of the sample from which you would like to see the length distribution
         :return: Shows you the length Distribution of your sequences of the given sample
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        length_distribution_single(self.fig,
-                                   self.ax,
+        self.ControlFigure.clear_fig()
+        length_distribution_single(self.ControlFigure.fig,
+                                   self.ControlFigure.ax,
                                    self.sequencing_report,
                                    sample,
                                    self.font_settings)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
+
 
     def lengthDistribution_multi(self,num_cols, samples = "all"):
         """
@@ -455,26 +477,24 @@ class PlotManager:
         :param samples: You analyze ExpoSeq samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :return: Outputs one figure with one subplot per sample which shows you the distribution of the sequence length
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
         if samples != "all":
             assert type(samples) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in samples if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        length_distribution_multi(self.fig,
+        self.ControlFigure.clear_fig()
+        length_distribution_multi(self.ControlFigure.fig,
                             self.sequencing_report,
                             samples,
                             num_cols,
                             font_settings=self.font_settings,
                                 test_version = self.is_test)
-        self.plot_type = "multi"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        plt.tight_layout()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
+        self.ControlFigure.tighten()
+
 
 
     def rel_seq_abundance(self, samples, max_levenshtein_distance = 0, length_filter = 0, batch = 3000):
@@ -486,18 +506,16 @@ class PlotManager:
         :param batch: Default is 3000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Shows you a bar plot of the frequencies of the most abundant sequences. You can introduce the levenshtein distance to see how the frequency changes with higher variability of the sequences.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         assert type(max_levenshtein_distance), "You have to give an integer as input for the maximum levenshtein distance"
         assert type(length_filter), "You have to give an integer as input for the length filter"
         assert type(batch) == int, "You have to give an integer as input for the batch size"
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        relative_sequence_abundance(self.ax,
+        self.ControlFigure.clear_fig()
+        relative_sequence_abundance(self.ControlFigure.ax,
                                     self.sequencing_report,
                                     samples,
                                     max_levenshtein_distance,
@@ -505,11 +523,10 @@ class PlotManager:
                                     batch,
                                     self.font_settings,
                                     self.legend_settings)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                        self.ControlFigure.plot_type)
 
 
     def basic_cluster(self, sample,max_ld = 1, min_ld = 0, second_figure = False):
@@ -520,18 +537,16 @@ class PlotManager:
         :second_figure: optional Parameter. Default is False. If you want to see the a histogram with the levenshtein distances, set it to True
         :return:
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(second_figure) == bool, "You have to give True or False as input for the second figure"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         fig2 = clusterSeq(
-                   self.ax,
+                   self.ControlFigure.ax,
                    self.sequencing_report,
                    sample,
                     max_ld,
@@ -540,12 +555,10 @@ class PlotManager:
                     self.font_settings,
                     second_figure)
 
-        self.ax = self.fig.gca()
-        self.plot_type = "single"
-        self.style = PlotStyle(self.ax,
-                               self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
+
         if second_figure == True:
             print("close the second window before you continue")
 
@@ -561,16 +574,15 @@ class PlotManager:
         :param specific_experiments: optional Parameter. You can give the names of specific samples in a list if you want
         :return: Creates a figure where sequences are clustered based on Levenshtein distance. Additionally the binding data of the sequences against a specific antigen is given.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         assert type(antigen) == str, "You have to give a string as input for the antigen"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
-        self.fig.clear()
-        cluster_single_AG(self.fig,
+        self.ControlFigure.clear_fig()
+        cluster_single_AG(self.ControlFigure.fig,
                           self.sequencing_report,
                           antigen,
                           self.binding_data,
@@ -579,11 +591,9 @@ class PlotManager:
                           batch_size,
                           specific_experiments,
                           )
-        self.plot_type = "multi"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
 
     def tsne_cluster_AG(self, sample, antigen,antigen_names = True, pca_components = 70, perplexity = 25, iterations_tsne = 2500):
         """
@@ -595,9 +605,8 @@ class PlotManager:
         :param iterations_tsne: optional. Default is 2500
         :return: It first embeds the sequences in a vector space and then reduces the dimensions and clusters them with PCA and TSNE. The sequences with the binding data are processed with the input sequences, to enable the plotting of the binding data.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
@@ -607,8 +616,8 @@ class PlotManager:
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
         assert type(antigen) == list, "You have to give a list with the antigens you want to analyze"
         
-        self.fig.clear()
-        tsne_results = cluster_toxins_tsne(self.fig,
+        self.ControlFigure.clear_fig()
+        tsne_results = cluster_toxins_tsne(self.ControlFigure.fig,
                             self.sequencing_report,
                             sample,
                             antigen,
@@ -620,11 +629,9 @@ class PlotManager:
                             self.font_settings,
                             self.colorbar_settings,
                             extra_figure = False)
-        self.plot_type = "multi"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         save_matrix(tsne_results)
 
 
@@ -644,9 +651,8 @@ class PlotManager:
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(samples) == list, "You have to give a list with the samples you want to analyze"
@@ -654,8 +660,7 @@ class PlotManager:
         assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
         assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         show_difference(self.sequencing_report,
                         samples,
                         strands,
@@ -663,14 +668,12 @@ class PlotManager:
                         pca_components,
                         perplexity,
                         iterations_tsne,
-                        self.ax,
+                        self.ControlFigure.ax,
                         self.legend_settings,
                         self.font_settings)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         
     def morosita_horn(self,annotate_cells = False, specific_experiments = False):
         """
@@ -678,29 +681,25 @@ class PlotManager:
         :param specific_experiments: you can give a list with specific experiments
         :return: Returns a matrix of the identity between your samples based on the Morosita Horn Index
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         matrix = plot_heatmap(self.sequencing_report,
                                 True,
                                 "morosita_horn",
-                                self.ax,
+                                self.ControlFigure.ax,
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
                                 specific_experiments = specific_experiments,
                                 )
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         save_matrix(matrix)
 
             
@@ -710,29 +709,25 @@ class PlotManager:
         :param specific_experiments: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Jaccard Index
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         matrix = plot_heatmap(self.sequencing_report,
                                 True,
                                 "jaccard",
-                                self.ax,
+                                self.ControlFigure.ax,
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
                                 specific_experiments = specific_experiments,
                                 )
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         save_matrix(matrix)
 
     def sorensen(self,annotate_cells = False, specific_experiments = False):
@@ -741,29 +736,25 @@ class PlotManager:
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the Sorensen Dice Index
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         matrix = plot_heatmap(self.sequencing_report,
                                 True,
                                 "sorensen",
-                                self.ax,
+                                self.ControlFigure.ax,
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
                                 specific_experiments = specific_experiments,
                                 )
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         save_matrix(matrix)
 
 
@@ -773,29 +764,25 @@ class PlotManager:
         :param specific_samples: give a list with specific samples you would like to analyze
         :return: Returns a matrix of the identity between your samples based on the proportion of identical sequences
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        self.fig.clear()
-        self.ax = self.fig.gca()
+        self.ControlFigure.clear_fig()
         matrix = plot_heatmap(self.sequencing_report,
                             True,
                             "relative",
-                            self.ax,
+                            self.ControlFigure.ax,
                             self.colorbar_settings,
                             self.font_settings,
                             annotate_cells,
                             specific_experiments = specific_experiments,
                             )
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         save_matrix(matrix)
     
         
@@ -805,62 +792,25 @@ class PlotManager:
         :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
         :params batch_size: Default is 1000. The size of the sample which is chosen. 
         """
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
-            
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        levenshtein_dend(self.ax,
+        assert type(sample) == str, "You have to give a string as input for the sample"
+        assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        assert type(max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        levenshtein_dend(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          batch_size,
                          max_cluster_dist, 
                          self.font_settings,
                          )
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                               self.ControlFigure.plot_type)
         
         
-    def levenshtein_binding_dendogram(self,sample, antigens, batch_size = 1000, max_cluster_dist = 2, scale_factor_lines = 1.0):
-        """
-        :param sample: the sample you would like to analyze
-        :params antigens: the antigens you would like to analyze. input format is a list and you find the names in the binding_data
-        :params batch_size: Default is 1000. The size of the sample which is chosen. 
-        :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
-        :scale_factor_lines: Default is 1.5. You can change the scale factor of the lines in the dendogram which indicates the value of your binding data. if you increase the scale factor high values become very clear.
-        """
-        assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(sample) == str, "You have to give a string as input for the sample"
-        assert type(antigens) == list, "You have to give a list with the antigens you want to analyze"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
-        assert type(max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert type(scale_factor_lines) == float, "You have to give a float as input for the scale factor of the lines"
-        assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-            print("Please do not close the window for the figure while the plot is loading")
-            
-        self.fig.clear()
-        self.ax = self.fig.gca()
-        dendo_binding(self.ax,
-                    self.sequencing_report,
-                    self.binding_data,
-                    sample,
-                    antigens,
-                    batch_size,
-                    max_cluster_dist,
-                    scale_factor_lines,
-                    self.font_settings)
-        self.plot_type = "single"
-        self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        plt.tight_layout()
 
 
 

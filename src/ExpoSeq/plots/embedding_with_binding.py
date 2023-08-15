@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.manifold import TSNE
 
 
-def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, toxin_names, pca_components, perplexity, iterations_tsne, font_settings, colorbar_settings, extra_figure):
+def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, toxin_names, pca_components, perplexity, iterations_tsne, font_settings, colorbar_settings, extra_figure, region_of_interest):
     report = sequencing_report[sequencing_report["Experiment"] == sample]
     batch = report.groupby("Experiment").head(1000)
     if extra_figure == True:
@@ -16,15 +16,15 @@ def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, to
     else:
         ax = fig.add_subplot(221)
         ax2 = fig.add_subplot(222)
-    mix = batch.merge(binding_data, on = "aaSeqCDR3", how = "left")
+    mix = batch.merge(binding_data, on = region_of_interest, how = "left")
     mix = pd.concat([batch, binding_data])
     mix = mix.fillna(0)
 
     kds = mix[toxins].max(axis = 1)
     ids = mix[toxins].idxmax(axis = 1)
-    corpus = pd.DataFrame([list(kds), mix.aaSeqCDR3.map(list)]).T
+    corpus = pd.DataFrame([list(kds), mix[region_of_interest].map(list)]).T
     sgt = SGT(kappa = 1, lengthsensitive = False)
-    sequences = mix["aaSeqCDR3"].map(list)
+    sequences = mix[region_of_interest].map(list)
     sequences_list = list(sequences)
     sgtembedding_df = sgt.fit_transform(corpus=sequences_list)
     pca = PCA(n_components=pca_components)
@@ -43,7 +43,7 @@ def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, to
 
     tsne_results = pd.DataFrame(tsne_results,
                                 columns=[["tsne1", "tsne2"]])
-    aminoacids = mix["aaSeqCDR3"].to_list()
+    aminoacids = mix[region_of_interest].to_list()
     experiments_batch = mix["Experiment"]
     unique_experiments_num = pd.factorize(experiments_batch)[0]
     tsne_results["experiments_factorized"] = list(unique_experiments_num)

@@ -35,10 +35,10 @@ def get_clustered_sequences(aa, max_cluster_dist):
     return list(clustered_sequences)
 
 
-def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist, font_settings):
+def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist, font_settings, region_of_interest):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     report = sample_report.head(batch_size)
-    aa = list(report["aaSeqCDR3"])
+    aa = list(report[region_of_interest])
     aa_clustered = get_clustered_sequences(aa, max_cluster_dist)
     # Create the distance matrix using the filtered list of sequences
     levenshtein_distance_matrix = create_distance_matrix(aa_clustered)
@@ -60,31 +60,31 @@ def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist,
     plt.tight_layout()
 
 
-def dendo_binding(ax, sequencing_report,binding_data, sample,antigens, batch_size,max_cluster_dist, scale_factor_lines, font_settings ):
+def dendo_binding(ax, sequencing_report,binding_data, sample,antigens, batch_size,max_cluster_dist, scale_factor_lines, font_settings, region_of_interest ):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     report = sample_report.head(batch_size)
-    aa = report["aaSeqCDR3"]
+    aa = report[region_of_interest]
     aa = pd.DataFrame(aa)
-    pref_columns = antigens + ['aaSeqCDR3']
+    pref_columns = antigens + [region_of_interest]
     b_data = binding_data[pref_columns]
     
     mix = pd.concat([aa, b_data])
     mix = mix.fillna(0)
     mix = mix.reset_index()
     
-    aa_all = mix.aaSeqCDR3
+    aa_all = mix[region_of_interest]
     aa_clustered = get_clustered_sequences(aa_all, max_cluster_dist)
     levenshtein_distance_matrix = create_distance_matrix(aa_clustered)
     condensed_matrix = squareform(levenshtein_distance_matrix, checks=False)
     linked = linkage(condensed_matrix, 'single')
-    values = mix.loc[mix['aaSeqCDR3'].isin(aa_clustered), antigens]
+    values = mix.loc[mix[region_of_interest].isin(aa_clustered), antigens]
     #values = pd.DataFrame(values, columns = ["binding"])
     filtered_df = values[antigens][values[antigens] > 1].dropna(how='all')
     indices = filtered_df.index.tolist()
     key_sequences = []
     key_values = []
     for i in indices:
-        key_sequences.append(mix.iloc[i]['aaSeqCDR3'])
+        key_sequences.append(mix.iloc[i][region_of_interest])
         max_value = max(mix.iloc[i][column] for column in antigens)
         key_values.append(max_value)
     
