@@ -170,6 +170,12 @@ class Directories:
             colorbar_settings = f.read()
         colorbar_settings = literal_eval(colorbar_settings)
         return colorbar_settings
+    
+    def get_experiment_path(self, experiment):
+        experiment_path = os.path.join(self.module_dir,
+                                "my_experiments",
+                                self.experiment,
+                                "experiment_names.pickle")
             
 
 class PlotManager:
@@ -195,14 +201,11 @@ class PlotManager:
                 self.region_of_interest = "CDR3"
             binding_report = BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
-        report = SequencingReport(self.sequencing_report)
-        experiment_path = os.path.join(self.module_dir,
-                                        "my_experiments",
-                                        self.experiment,
-                                        "experiment_names.pickle")
-        self.unique_experiments = report.get_exp_names(experiment_path)
-        report.map_exp_names(self.unique_experiments)
-        self.sequencing_report = report.filter_region(self.region_of_interest)
+        self.Report = SequencingReport(self.sequencing_report)
+        experiment_path = self.My_dirs.get_experiment_path(self.experiment)
+        self.unique_experiments = self.Report.get_exp_names(experiment_path)
+        self.Report.map_exp_names(self.unique_experiments)
+        self.sequencing_report = self.Report.filter_region(self.region_of_interest)
         self.font_settings = self.My_dirs.read_font_settings()
         self.legend_settings = self.My_dirs.read_legend_settings()
         self.colorbar_settings = self.My_dirs.read_colorbar_settings()
@@ -219,7 +222,7 @@ class PlotManager:
         intermediate = self.region_of_interest
         self.region_of_interest = input("Which region do you want to plot? The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
         if self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"]:
-            self.sequencing_report = SequencingReport.filter_region(self.region_of_interest)
+            self.sequencing_report = self.Report.filter_region(self.region_of_interest)
         else:
             print("The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
             self.region_of_interest = intermediate
