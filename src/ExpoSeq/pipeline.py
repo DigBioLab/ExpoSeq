@@ -22,8 +22,8 @@ import os
 from ExpoSeq.settings.change_save_settings import Change_save_settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
 from Bio.Seq import Seq
-from ExpoSeq.reset import original_settings
-import shutil
+
+
 
 class MyFigure:
     def __init__(self):
@@ -138,7 +138,7 @@ class Directories:
             os.mkdir(os.path.join(self.module_dir, "temp"))
     
     def read_global_params(self):
-        with open(self.common_vars_path, "r") as f:
+        with open(self.common_vars, "r") as f:
             global_params = f.read()
         global_params = literal_eval(global_params)
         return global_params
@@ -174,8 +174,9 @@ class Directories:
     def get_experiment_path(self, experiment):
         experiment_path = os.path.join(self.module_dir,
                                 "my_experiments",
-                                self.experiment,
+                                experiment,
                                 "experiment_names.pickle")
+        return experiment_path
             
 
 class PlotManager:
@@ -184,7 +185,8 @@ class PlotManager:
         self.My_dirs = Directories()
         self.My_dirs.check_dirs()
         self.global_params = self.My_dirs.read_global_params()
-        
+        print(self.global_params)
+        self.module_dir = self.My_dirs.module_dir
         if test_version == True:                
             self.experiment = "Test"
             self.sequencing_report = create_sequencing_report(num_experiments = test_exp_num,
