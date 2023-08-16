@@ -1,21 +1,21 @@
 import pandas as pd
-def find_seq_matches(sequencing_report, protein, specific_experiments):
+def find_seq_matches(sequencing_report,region_of_interest, protein, specific_experiments):
     if specific_experiments != False:
         sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:
         pass
     unique_experiments = sequencing_report["Experiment"].unique()
     if protein == True:
-        strand_column = "aaSeqCDR3"
+        strand_column = "aaSeq" + region_of_interest
     else:
-        strand_column = "nSeqCDR3"
+        strand_column = "nSeq" + region_of_interest
     unique_sequences = pd.DataFrame(sequencing_report[strand_column].unique())
     unique_sequences.rename(columns={0: strand_column},
                             inplace=True)
 
     for i, experiment in enumerate(unique_experiments):
         local_data = sequencing_report[sequencing_report["Experiment"] == experiment][strand_column].unique()
-        local_data = pd.DataFrame(local_data, columns=["aaSeqCDR3"])
+        local_data = pd.DataFrame(local_data, columns=[strand_column])
         unique_sequences = pd.merge(unique_sequences, local_data,
                                     on=strand_column,
                                     how='left',

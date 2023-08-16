@@ -100,6 +100,7 @@ class SequencingReport:
         self.sequencing_report = self.origin_seq_report[cols_of_interest]
         self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_of_interest].apply(self.is_divisible_by_three)]
         self.sequencing_report["aaSeq" + region_of_interest] = self.sequencing_report["nSeq" + region_of_interest].apply(self.translate_sequence)
+        
 
 
 
@@ -202,7 +203,7 @@ class PlotManager:
         else:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
             self.region_of_interest = self.global_params["region_of_interest"]
-            if self.region_of_interest == "":
+            if self.region_of_interest == '':
                 self.region_of_interest = "CDR3"
             binding_report = BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
@@ -221,6 +222,7 @@ class PlotManager:
         self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
+        self.region_string = "aaSeq" + self.region_of_interest 
         
     def change_region(self):
         """
@@ -230,6 +232,7 @@ class PlotManager:
         self.region_of_interest = input("Which region do you want to plot? The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
         if self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"]:
             self.sequencing_report = self.Report.filter_region(self.region_of_interest)
+            self.region_string = "aaSeq" + self.region_of_interest 
         else:
             print("The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
             self.region_of_interest = intermediate
@@ -362,7 +365,8 @@ class PlotManager:
                          region,
                          protein,
                          self.font_settings,
-                         self.legend_settings)
+                         self.legend_settings,
+                         self.region_string)
 
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -394,7 +398,6 @@ class PlotManager:
     def logoPlot_single(self,
                         sample,
                         highlight_specific_pos = False,
-                        highlight_pos_range = False,
                         chosen_seq_length = 16):
         """
         :param sample: insert the sample name
@@ -408,8 +411,6 @@ class PlotManager:
         assert type(sample) == str, "You have to give a string as input for the sample"
         if highlight_specific_pos != False:
             assert type(highlight_specific_pos) == int, "You have to give an integer as input for the specific position you want to highlight"
-        if highlight_pos_range != False:
-            assert type(highlight_pos_range) == list, "You have to give a list with the start and end position of the region you want to highlight. For instance: [3,7]"
         assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
         plot_logo_single(self.ControlFigure.ax,
@@ -417,7 +418,7 @@ class PlotManager:
                          sample,
                          self.font_settings,
                          highlight_specific_pos,
-                         highlight_pos_range,
+                         self.region_string,
                          chosen_seq_length)
         
         self.ControlFigure.update_plot()
@@ -450,8 +451,8 @@ class PlotManager:
                   samples,
                   num_cols,
                   self.font_settings,
+                  self.region_string,
                   chosen_seq_length,
-                    test_version = self.is_test
                   )
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -474,7 +475,8 @@ class PlotManager:
                                    self.ControlFigure.ax,
                                    self.sequencing_report,
                                    sample,
-                                   self.font_settings)
+                                   self.font_settings,
+                                   self.region_string)
         
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -498,7 +500,8 @@ class PlotManager:
                             self.sequencing_report,
                             samples,
                             num_cols,
-                            font_settings=self.font_settings,
+                            self.font_settings,
+                            self.region_string,
                                 test_version = self.is_test)
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -531,6 +534,7 @@ class PlotManager:
                                     max_levenshtein_distance,
                                     length_filter,
                                     batch,
+                                    self.region_string,
                                     self.font_settings,
                                     self.legend_settings)
         
@@ -563,7 +567,8 @@ class PlotManager:
                     min_ld,
                    self.batch_size,
                     self.font_settings,
-                    second_figure)
+                    second_figure,
+                    self.region_string)
 
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -599,6 +604,7 @@ class PlotManager:
                           max_ld,
                           min_ld,
                           batch_size,
+                          self.region_string,
                           specific_experiments,
                           )
         self.ControlFigure.update_plot()
@@ -638,7 +644,8 @@ class PlotManager:
                             iterations_tsne,
                             self.font_settings,
                             self.colorbar_settings,
-                            extra_figure = False)
+                            False,
+                            self.region_of_interest)
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
                                self.ControlFigure.plot_type)
@@ -678,6 +685,7 @@ class PlotManager:
                         pca_components,
                         perplexity,
                         iterations_tsne,
+                        self.region_string,
                         self.ControlFigure.ax,
                         self.legend_settings,
                         self.font_settings)
@@ -705,6 +713,7 @@ class PlotManager:
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
+                                self.region_of_interest,
                                 specific_experiments = specific_experiments,
                                 )
         self.ControlFigure.update_plot()
@@ -733,6 +742,7 @@ class PlotManager:
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
+                                self.region_of_interest,
                                 specific_experiments = specific_experiments,
                                 )
         self.ControlFigure.update_plot()
@@ -760,6 +770,7 @@ class PlotManager:
                                 self.colorbar_settings,
                                 self.font_settings,
                                 annotate_cells,
+                                self.region_of_interest,
                                 specific_experiments = specific_experiments,
                                 )
         self.ControlFigure.update_plot()
@@ -788,6 +799,7 @@ class PlotManager:
                             self.colorbar_settings,
                             self.font_settings,
                             annotate_cells,
+                            self.region_of_interest,
                             specific_experiments = specific_experiments,
                             )
         self.ControlFigure.update_plot()
@@ -796,7 +808,7 @@ class PlotManager:
         save_matrix(matrix)
     
         
-    def levenshtein_demdogram(self,sample, max_cluster_dist = 2, batch_size = 1000):
+    def levenshtein_dendrogram(self,sample, max_cluster_dist = 2, batch_size = 1000):
         """
         :params sample: the sample you would like to analyze
         :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
@@ -815,12 +827,31 @@ class PlotManager:
                          batch_size,
                          max_cluster_dist, 
                          self.font_settings,
+                         self.region_string
                          )
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
                                self.ControlFigure.plot_type)
-        
-        
+    
+    def dendro_bind(self, sample, antigens, max_cluster_dist = 2, batch_size = 1000, ascending = True):
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
+        self.ControlFigure.clear_fig()
+        dendo_binding(self.ControlFigure.fig,
+                      self.sequencing_report,
+                      self.binding_data,
+                      sample,
+                      antigens,
+                      batch_size,
+                      max_cluster_dist,
+                      self.font_settings,
+                      self.region_string,
+                      ascending
+                      )
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                                 self.ControlFigure.plot_type)
+        self.ControlFigure.tighten()
 
 
 

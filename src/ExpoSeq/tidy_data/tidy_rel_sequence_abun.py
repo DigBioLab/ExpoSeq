@@ -5,12 +5,12 @@ import pandas as pd
 
 
 # display the summarized dataframe
-def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter, batch = 3000):
+def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter,region_string, batch):
     data = {}
     for sample in samples:
         report = sequencing_report[sequencing_report["Experiment"] == sample]
-        report = report[report['aaSeqCDR3'].str.len() >= length_filter]
-        sequences = report["aaSeqCDR3"].head(batch).to_list()
+        report = report[report[region_string].str.len() >= length_filter]
+        sequences = report[region_string].head(batch).to_list()
         clone_fractions = report["clonesFraction"].head(batch).to_list()
         max_distance = max_levenshtein_distance
         summary = {}

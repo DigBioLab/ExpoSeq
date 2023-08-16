@@ -3,10 +3,11 @@ import logomaker
 from ExpoSeq.tidy_data.tidy_seqlogoPlot import cleaning
 import numpy as np
 
-def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
+def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, region_string, chosen_seq_length = 16):
     aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
                                                                       sequencing_report,
-                                                                      chosen_seq_length)
+                                                                      chosen_seq_length,
+                                                                      region_string)
     logo_plot = logomaker.Logo(aa_distribution,
                                shade_below=.5,
                                fade_below=.5,
@@ -37,7 +38,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
     #                                          color="lightcyan")
 
 
-def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings, chosen_seq_length = 16, test_version = False):
+def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings,region_string, chosen_seq_length = 16,):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -61,7 +62,8 @@ def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings, cho
     for i in unique_experiments:
         aa_distribution, sequence_length, length_filtered_seqs = cleaning(i,
                                                                           sequencing_report,
-                                                                          chosen_seq_length)
+                                                                          chosen_seq_length,
+                                                                          region_string)
         if length_filtered_seqs != 0:
             if length_filtered_seqs < 100:
                 print("only " + str(length_filtered_seqs) + " sequences with the given length were found. The results might be biased")

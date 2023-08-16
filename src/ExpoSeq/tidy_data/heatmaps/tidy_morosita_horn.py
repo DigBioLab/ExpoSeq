@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def cleaning_data(sequencing_report, protein = True, specific_experiments = False):
+def cleaning_data(sequencing_report, region_of_interest, protein = True, specific_experiments = False):
  #   new_fraction = 'new_fraction'
     if specific_experiments != False:
         sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
@@ -15,9 +15,9 @@ def cleaning_data(sequencing_report, protein = True, specific_experiments = Fals
     #                                column = 'nSeqCDR3',
      #                               func = genetic_dogma,
        #                             column_name = 'peptide_seq')
-        strand_column = 'aaSeqCDR3'
+        strand_column = 'aaSeq' + region_of_interest
     else:
-        strand_column = 'nSeqCDR3'
+        strand_column = 'nSeq'+ region_of_interest
 
     group_columns = ["Experiment", strand_column]
    # column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')
