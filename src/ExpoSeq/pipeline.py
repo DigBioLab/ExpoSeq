@@ -21,9 +21,10 @@ import pkg_resources
 import os
 from ExpoSeq.settings.change_save_settings import Change_save_settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
-from Bio.Seq import Seq
-
-
+from .design.anno_sequence import SequenceManipulator
+from .settings.change_settings import Settings
+from .design.multi_seq_align import MSA
+from .settings.reports import SequencingReport, BindingReport
 
 class MyFigure:
     def __init__(self):
@@ -68,62 +69,6 @@ def save_matrix(matrix):
         matrix.to_excel(filename_matrix + ".xlsx")
         
 
-    
-class SequencingReport:
-    def __init__(self,sequencing_report):
-        self.origin_seq_report = sequencing_report.copy()
-        self.sequencing_report = sequencing_report.copy()
-
-    def get_exp_names(self, experiment_path):
-        try:
-            with open(experiment_path, "rb") as f:
-                unique_experiments = pickle.load(f)
-        except:
-            unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
-            unique_experiments = dict(zip(unique_experiments, unique_experiments))
-        return unique_experiments
-            
-    def map_exp_names(self, unique_experiments):
-        self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(unique_experiments)
-
-
-    def is_divisible_by_three(self, seq):
-        return len(seq) % 3 == 0
-
-    def translate_sequence(self, seq):
-        return str(Seq(seq).translate())
-    
-    def filter_region(self, region_of_interest):
-        added_columns = ["nSeq" + region_of_interest] #"minQual" + region_of_interest, 
-        fixed_cols = ["Experiment", "cloneId", "readCount", "clonesFraction"]
-        cols_of_interest = fixed_cols + added_columns
-        self.sequencing_report = self.origin_seq_report[cols_of_interest]
-        self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_of_interest].apply(self.is_divisible_by_three)]
-        self.sequencing_report["aaSeq" + region_of_interest] = self.sequencing_report["nSeq" + region_of_interest].apply(self.translate_sequence)
-        
-
-
-
-class BindingReport:
-    def __init__(self, module_dir, experiment):
-        self.binding_data_dir = os.path.join(module_dir,
-                                "my_experiments",
-                                experiment,
-                                "binding_data.csv")
-        
-    def ask_binding_data(self):
-        if not os.path.isfile(self.binding_data_dir):
-            add_binding = input("Do you have binding Data? Y/n")
-            if add_binding.lower() in ["Y", "y"]:
-                binding_data = collect_binding_data()
-
-                binding_data.to_csv("binding_data.csv")
-            else:
-                binding_data = None
-        else:
-            binding_data = pd.read_csv(self.binding_data_dir)
-        return binding_data
-
 class Directories:
     def __init__(self):
         self.module_dir = os.path.abspath("")
@@ -140,9 +85,8 @@ class Directories:
             os.mkdir(os.path.join(self.module_dir, "temp"))
     
     def read_global_params(self):
-        ########## TEST
-        
-        with open(r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\settings\global_vars.txt", "r") as f:
+
+        with open(self.pkg_path, "r") as f:
             global_params = f.read()
         global_params = literal_eval(global_params)
         return global_params
@@ -182,15 +126,14 @@ class Directories:
                                 "experiment_names.pickle")
         return experiment_path
             
-
+      
 class PlotManager:
     def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1):
         self.is_test = test_version
-        self.My_dirs = Directories()
-        self.My_dirs.check_dirs()
-        self.global_params = self.My_dirs.read_global_params()
-        print(self.global_params)
-        self.module_dir = self.My_dirs.module_dir
+        self.Settings = Settings()
+        self.Settings.check_dirs()
+        self.global_params = self.Settings.read_global_params()
+        self.module_dir = self.Settings.module_dir
         if test_version == True:                
             self.experiment = "Test"
             self.sequencing_report = create_sequencing_report(num_experiments = test_exp_num,
@@ -208,33 +151,38 @@ class PlotManager:
             binding_report = BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
         self.Report = SequencingReport(self.sequencing_report)
-        experiment_path = self.My_dirs.get_experiment_path(self.experiment)
+        experiment_path = self.Settings.get_experiment_path(self.experiment)
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
-        self.Report.filter_region(self.region_of_interest)
+        self.Report.prepare_seq_report(self.region_of_interest)
         self.Report.map_exp_names(self.unique_experiments)
+        self.avail_regions = self.Report.get_fragment()
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
         self.sequencing_report = self.Report.sequencing_report
-        self.font_settings = self.My_dirs.read_font_settings()
-        self.legend_settings = self.My_dirs.read_legend_settings()
-        self.colorbar_settings = self.My_dirs.read_colorbar_settings()
-        self.batch_size = 300
+        self.font_settings = self.Settings.read_font_settings()
+        self.legend_settings = self.Settings.read_legend_settings()
+        self.colorbar_settings = self.Settings.read_colorbar_settings()
         self.ControlFigure = MyFigure()
         self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
-        self.region_string = "aaSeq" + self.region_of_interest 
+        self.region_string = "aaSeq_" + self.region_of_interest 
         
     def change_region(self):
         """
-        :return: changes the region you want to plot
+        :return: changes the region you want to analyse
         """
         intermediate = self.region_of_interest
-        self.region_of_interest = input("Which region do you want to plot? The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
-        if self.region_of_interest in ["CDR1", "CDR2", "CDR3", "FR1", "FR2", "FR3", "FR4"]:
-            self.sequencing_report = self.Report.filter_region(self.region_of_interest)
-            self.region_string = "aaSeq" + self.region_of_interest 
+        possible_regions = self.avail_regions + ["all"]
+        self.region_of_interest = input(f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}. If you want to merge your sequences and analyse the longest possible consecutive sequences your dataset offers type 'all'")
+        if self.region_of_interest in possible_regions:
+            if not self.region_of_interest == "all":
+                self.Report.prepare_seq_report(self.region_of_interest)
+            else:
+                self.Report.filter_longest_sequence()
+            self.sequencing_report = self.Report.sequencing_report
+            self.region_string = "aaSeq_" + self.region_of_interest 
         else:
-            print("The region you want to plot is not valid. The options are: 'CDR1', 'CDR2', 'CDR3', 'FR1', 'FR2', 'FR3', 'FR4'")
+            print(f"The region you want to plot is not valid. The options are: {self.avail_regions}")
             self.region_of_interest = intermediate
         
     def discard_samples(self, samples_to_discard):
@@ -247,11 +195,7 @@ class PlotManager:
         assert type(samples_to_discard) == list, "You have to give a list with the samples you want to discard"
         self.sequencing_report = self.sequencing_report[~self.sequencing_report['Experiment'].isin(samples_to_discard)]
 
-  #  def askMe(self):
-   #     """
-    #    :return: calls the chatbot which can help you to customize your plots or with other question in life and science.
-     #   """
-      #  askMe(self.global_params)
+
 
     def add_binding_data(self):
         """"
@@ -543,12 +487,13 @@ class PlotManager:
                         self.ControlFigure.plot_type)
 
 
-    def basic_cluster(self, sample,max_ld = 1, min_ld = 0, second_figure = False):
+    def basic_cluster(self, sample,max_ld = 1, min_ld = 0, second_figure = False, batch_size = 300):
         """
         :param sample: type in a sample name you want to analyze
         :max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
         :min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
         :second_figure: optional Parameter. Default is False. If you want to see the a histogram with the levenshtein distances, set it to True
+        
         :return:
         """
         self.ControlFigure.check_fig()
@@ -565,7 +510,7 @@ class PlotManager:
                    sample,
                     max_ld,
                     min_ld,
-                   self.batch_size,
+                    batch_size,
                     self.font_settings,
                     second_figure,
                     self.region_string)
@@ -834,6 +779,14 @@ class PlotManager:
                                self.ControlFigure.plot_type)
     
     def dendro_bind(self, sample, antigens, max_cluster_dist = 2, batch_size = 1000, ascending = True):
+        """
+        :params sample: the sample you would like to analyze
+        :params antigens: the antigens you would like to analyze. The input is a list.
+        :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster. The higher this number the bigger the dendrogram
+        :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
+        :params ascending: Default is True. If you want to see the highest fractions first, set it to False
+        :return: Creates a dendrogram which shows the realtionship between your sequences in the sample and your sequences with binding data based on levenshtein distance. Additionally a barplot with the binding data of the found sequences is given.
+        """
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
@@ -852,6 +805,21 @@ class PlotManager:
         self.style = PlotStyle(self.ControlFigure.ax,
                                  self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
+    
+    def MSA_design(self, samples, batch_size = 500):
+        """
+        :params samples: the samples you would like to analyze. The input is a list.
+        :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
+        :return: Creates a multiple sequence alignment of the sequences of the samples you have chosen. The sequences are ordered by their frequency and they are chosen equally based on the given batch size from the different samples. The output is an interface with an overview of the MSA and the option to design a sequence based on the MSA and the findings of the analysis.
+        """
+        incorrect_samples = [x for x in samples if x not in self.experiments_list]
+        assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
+        assert type(samples) == list, "You have to give a list with the samples you want to analyze" 
+        msa = MSA(self.region_of_interest,
+                  self.sequencing_report,
+                  self.Settings,
+                  self.module_dir)
+        msa = msa.run_MSA(batch_size, samples)
 
 
 

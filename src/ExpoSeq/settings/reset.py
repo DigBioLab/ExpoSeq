@@ -18,7 +18,7 @@ def original_settings():
                                     "global_vars.txt")
     with open(common_vars_path, "r") as f:
         global_params = f.read()
-    global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': ''}
+    global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': 42}
     with open(common_vars_path, "w") as f:
         f.write(str(global_params))
     save_path = os.path.join(pkg_path,

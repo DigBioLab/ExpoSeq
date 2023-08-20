@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from scipy.spatial.distance import squareform
 import pandas as pd
 import warnings
-from ExpoSeq.tidy_data.tidy_dendro import create_distance_matrix, get_clustered_sequences, label_bind_seqs, sort_binding_seqs
+from ..tidy_data.tidy_dendro import create_distance_matrix, get_clustered_sequences, label_bind_seqs, sort_binding_seqs
 
 
 
@@ -56,7 +56,7 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     condensed_matrix = squareform(levenshtein_distance_matrix, checks=False)
     linked = linkage(condensed_matrix, 'single')
     
-    aa_clustered, binding_seqs, seq_val = label_bind_seqs(mix, aa_clustered, antigens, region_string)
+    aa_clustered, binding_seqs, seq_val = label_bind_seqs(mix,region_string, aa_clustered, antigens, )
     binding_seqs_sorted, binding_values_sorted = sort_binding_seqs(binding_seqs, seq_val, ascending)
 
 

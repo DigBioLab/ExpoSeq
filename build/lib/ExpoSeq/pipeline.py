@@ -22,7 +22,7 @@ import os
 from ExpoSeq.settings.change_save_settings import Change_save_settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
 
-from ExpoSeq.reset import original_settings
+from ExpoSeq.settings.reset import original_settings
 import shutil
 
 class PlotManager:
