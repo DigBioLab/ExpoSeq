@@ -34,7 +34,7 @@ def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_d
                  **font_settings)
     font_settings["fontsize"] = original_fontsize
     
-def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, font_settings, ):
+def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, font_settings, region_string):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -53,10 +53,10 @@ def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, f
     # Create a Position index
     Position = range(1,Tot + 1)
     n = 0       
-    for i in range(samples.shape[1]):
-        experiment = i["Experiment"][0]
-        fraction = i["clonesFraction"]
-        clones = i["cloneId"]
+    for experiment in unique_experiments:
+        batch = sequencing_report[sequencing_report["Experiment"] == experiment]
+        fraction = batch["cloneFraction"]
+        clones = batch["cloneId"]
         ax = fig.add_subplot(Rows, Cols, Position[n])
         
         ax.bar(clones, fraction)  # Or whatever you want in the subplot
@@ -68,6 +68,9 @@ def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, f
         font_settings["fontsize"] = adapted_fontsize
         ax.set_ylabel("Clones",
                       **font_settings)  # Y label
-        ax.set_xlabel('Clones Fraction',
+        ax.set_xlabel('Clone Fraction',
                       **font_settings)  # X label
+
+        ax.set_ylim(0, np.max(np.array(fraction) + np.max(np.array(fraction) * 0.1)))
+    fig.suptitle("Clone Fraction of given Samples")
 

@@ -39,7 +39,9 @@ AMINO_ACID_COLORS = {
     "R": "#0D47A1",  # Blue 900
     '-': "#1B1B1B",  # Almost Black
     '*': "#1B1B1B",  # Almost Black
-    'end': "#FFFFFF" # White
+    'end': "#FFFFFF", # White,
+    '.': "#1B1B1B",
+    ':': "#1B1B1B"
 }
 
 def parse_clustal_format(filename):
@@ -426,7 +428,7 @@ class ExtendedSequenceManipulator(SequenceManipulator):
         for seq in sequences:
             for aa_position in range(len(seq)):
                 aminoacid = seq[aa_position]
-                if aminoacid in ["*", "-", ""]:
+                if aminoacid in ["*", "-", "", ".", ":"]:
                     pass
                 else:
                     compDict[aminoacid][aa_position] += 1
@@ -448,6 +450,7 @@ class ExtendedSequenceManipulator(SequenceManipulator):
                                    color_scheme="skylign_protein",
                                    show_spines=False,
                                    ax=ax,
+                                   figsize= (fig_width, 4)
                                    )
         logo_plot.style_xticks(anchor=1,
                                spacing=1,
@@ -458,14 +461,16 @@ class ExtendedSequenceManipulator(SequenceManipulator):
         plt.xticks(labels_true[::step], numbers_true[::step])
 
         plot_frame = tk.Frame(self.root)
-        plot_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=1)  # pack it so that it fills available space
+        plot_frame.pack(side=tk.TOP, fill=tk.BOTH) #expand 1  # pack it so that it fills available space
 
         # Embed the plot in the plot frame
         canvas = FigureCanvasTkAgg(fig, master=plot_frame)
+
         canvas_widget = canvas.get_tk_widget()
 
 
         canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
 
         canvas.draw()  # Force drawing
     def __init__(self, sequence, fasta_file, master=None):
@@ -539,7 +544,7 @@ class ExtendedSequenceManipulator(SequenceManipulator):
         self.zoom_scale = tk.Scale(self.root, from_=5, to=20, orient=tk.HORIZONTAL, label="Zoom", command=self.on_zoom)
         self.zoom_scale.set(10)  # set initial value
         self.zoom_scale.pack(pady=5)
-        self.plot_amino_acid_composition()
+       # self.plot_amino_acid_composition()
     # You can use this method to sync other visual elements with the scroll of the MSA.
     # For now, it's just a placeholder that only interacts with the MSA's own scroll.
     def on_zoom(self, value):

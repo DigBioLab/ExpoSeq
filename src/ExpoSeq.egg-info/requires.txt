@@ -10,3 +10,4 @@ PyQt5==5.15.7
 scikit-learn>=1.2.1
 biopython==1.80
 sgt>=2.0.3
+openpyxl

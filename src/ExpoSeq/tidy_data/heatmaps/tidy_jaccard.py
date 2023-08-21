@@ -6,7 +6,10 @@ import numpy as np
 #sequencing_report = sequencing_report.drop('Unnamed: 0', axis=1)
 #protein = True
 def cleaning_jaccard(sequencing_report, region_of_interest, protein, specific_experiments):
-    heatmap_axis, unique_sequences, unique_experiments = find_seq_matches(sequencing_report, protein,region_of_interest, specific_experiments)
+    heatmap_axis, unique_sequences, unique_experiments = find_seq_matches(sequencing_report,
+                                                                          region_of_interest,
+                                                                          protein,
+                                                                          specific_experiments)
     heatmap_absolute_jaccard = np.zeros([heatmap_axis, heatmap_axis])
     for index_sample_one in range(heatmap_axis):
         d1 = unique_sequences.iloc[:, index_sample_one]

@@ -3,7 +3,7 @@ import pandas as pd
 
 def cleaning(sample_name, report, chosen_seq_length, region_string):
     sample = report[report["Experiment"] == sample_name]
-    local_report = sample[["Experiment", "clonesFraction", region_string]]
+    local_report = sample[["Experiment", "cloneFraction", region_string]]
     sequences = local_report[region_string]
     #local_report = local_report.sort_values("cloneFraction").groupby("Experiment", as_index = False).head(3) # filters out three highest values of each group
     aminoacids = "ACDEFGHIKLMNPQRSTVWY"

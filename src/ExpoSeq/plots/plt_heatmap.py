@@ -25,8 +25,9 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, colorbar_settings, fon
         title = "Identity between samples based on Jaccard index"
     if heatmap == "sorensen":
         matrix, unique_sequences, unique_experiments = tidy_sorensen.heatmap_sorensen(sequencing_report,
+                                                                                      protein,
                                                                                       region_of_interest,
-                                                                                      protein = protein,
+                                                                                      
                                                                                       specific_experiments = specific_experiments)
         title = "Identity between samples based on Sorensen index"
     if heatmap == "relative":

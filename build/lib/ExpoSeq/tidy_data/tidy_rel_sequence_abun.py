@@ -17,7 +17,7 @@ def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter,
         report = sequencing_report[sequencing_report["Experiment"] == sample]
         report = report[report[region_string].str.len() >= length_filter]
         sequences = report[region_string].head(batch).to_list()
-        clone_fractions = report["clonesFraction"].head(batch).to_list()
+        clone_fractions = report["cloneFraction"].head(batch).to_list()
         max_distance = max_levenshtein_distance
         summary = {}
         total_clone_fraction = 0

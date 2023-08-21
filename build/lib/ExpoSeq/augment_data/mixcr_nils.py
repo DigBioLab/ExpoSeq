@@ -8,6 +8,7 @@ import pkg_resources
 import editdistance
 import os
 import platform
+import time
 #psutil
 try:
     import tkinter as tk
@@ -140,7 +141,8 @@ class CollectFastq():
 
 
 class CreateCommand:
-    def __init__(self, module_dir, path_to_mixcr, paired_end_sequencing, experiment, files):
+    def __init__(self, module_dir, path_to_mixcr, paired_end_sequencing, experiment, files, java_heap_size):
+        self.java_heap_size = java_heap_size
         self.module_dir = module_dir
         self.path_to_mixcr = path_to_mixcr
         self.paired_end_sequencing = paired_end_sequencing
@@ -189,15 +191,15 @@ class CreateCommand:
             exit(1)
 
     def create_parser(self):
-        try:
-            free_memory = self.get_free_memory()
-            java_heap_size = free_memory // 2  # Using half of the available RAM as an example
-            print(f"50 % of currently available memory: {java_heap_size}\n")
-        except:
-            print("automatic detection of memory failed. Processing continues with 1000MB RAM.")
-            java_heap_size = 1000
+     #   try:
+      #      free_memory = self.get_free_memory()
+      #      java_heap_size = int(free_memory / 4)  # Using half of the available RAM as an example
+       #     print(f"25 % of currently available memory: {java_heap_size}\n")
+        #except:
+         #   print("automatic detection of memory failed. Processing continues with 1000MB RAM.")
+          #  java_heap_size = 1000
         commands = []
-        commands.extend(["java", f"-Xms{java_heap_size}M", "-jar"]) # enable change of para
+        commands.extend(["java", f"-Xms{self.java_heap_size}M", "-jar"]) # enable change of para
         commands.extend([self.path_to_mixcr])
         return commands
 
@@ -224,6 +226,7 @@ class CreateCommand:
     def prepare_clones(self):
         clones_commands = self.create_parser()
         clones_commands.extend(["exportClones"])
+        clones_commands.extend(["-c IGH"])
         clones_commands.extend([self.clones])
         clones_commands.extend([self.table_tsv])
         return clones_commands
@@ -309,15 +312,25 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         pass
 
     sequencing_report = pd.DataFrame([])
+    while True:
+        java_heap_size = input(
+            "Enter the amount of memory you want to allocate for java in Mb. Normally 1000 is sufficient.")
+        try:
+            java_heap_size = int(java_heap_size)
+            break
+        except:
+            print("Please enter the amount as integer")
     for filename in files:
-        Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename)
+        Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))
         subprocess.run(Commands.prepare_assembly())
         subprocess.run(Commands.prepare_clones())
         basename = Commands.basename
-        clones_sample = pd.read_table(os.path.join(module_dir,
-                                                   "temp",
-                                                   basename + "_IGH.tsv"))
+
+        for filename in os.listdir(os.path.join(module_dir, "temp")):
+            if filename.endswith(".tsv"):
+                clones_sample = pd.read_table(os.path.join(module_dir, "temp", filename))
+        clones_sample["Experiment"] = basename
         sequencing_report = pd.concat([sequencing_report, clones_sample])
         files_to_remove = os.listdir(os.path.join(module_dir, "temp"))
         for file in files_to_remove:

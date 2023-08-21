@@ -3,7 +3,7 @@ import pandas as pd
 def cleaning(sequencing_report, sample,region, region_string):
 
     sample = sequencing_report[sequencing_report["Experiment"] == sample]
-    local_report = sample[["Experiment", "clonesFraction", region_string]]
+    local_report = sample[["Experiment", "cloneFraction", region_string]]
     aminoacids = "ACDEFGHIKLMNPQRSTVWY"
 
     sequences = local_report[local_report[region_string].astype(str).str.len() >= region[1]][region_string]

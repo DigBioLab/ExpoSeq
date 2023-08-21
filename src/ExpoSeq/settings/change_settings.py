@@ -1,4 +1,3 @@
-from settings.reset import original_settings
 import subprocess
 import os
 import shutil

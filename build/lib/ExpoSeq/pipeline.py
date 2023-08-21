@@ -129,11 +129,11 @@ class Directories:
             
       
 class PlotManager:
-    def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1):
+    def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1, divisible_by = 3, length_threshold = 9, min_read_count = 3):
         self.is_test = test_version
         self.Settings = Settings()
         self.Settings.check_dirs()
-        self.global_params = self.Settings.read_global_params()
+        self.global_params = self.Settings.global_params
         self.module_dir = self.Settings.module_dir
         if test_version == True:                
             self.experiment = "Test"
@@ -143,18 +143,18 @@ class PlotManager:
             self.alignment_report = None
             self.binding_data = create_binding_report(self.sequencing_report,
                                                       num_antigen = test_panrou_num)
-            self.region_of_interest = "CDR3"
+            self.region_string = "CDR3"
         else:
             self.sequencing_report, self.alignment_report, self.experiment = upload()
-            self.region_of_interest = self.global_params["region_of_interest"]
-            if self.region_of_interest == '':
-                self.region_of_interest = "CDR3"
+            self.region_string = self.global_params["region_of_interest"]
+            if self.region_string == '':
+                self.region_string = "CDR3"
             binding_report = BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
         self.Report = SequencingReport(self.sequencing_report)
         experiment_path = self.Settings.get_experiment_path(self.experiment)
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
-        self.Report.prepare_seq_report(self.region_of_interest)
+        self.Report.prepare_seq_report(self.region_string, divisible_by=divisible_by, length_threshold=length_threshold, min_read_count=min_read_count)
         self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
@@ -166,22 +166,33 @@ class PlotManager:
         self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
-        self.region_string = "aaSeq" + self.region_of_interest 
-        
+        self.region_of_interest = "aaSeq" + self.region_string
+
+
+    def change_filter(self, divisible_by=3, length_threshold =9, min_read_count =0):
+        """
+        :param divisible_by: filter all sequences which are not divisible by this value
+        :param length_threshold: filter out all sequences which are shorter then this value
+        :min_read_count: filter out all sequences which have less clones/reads than this value
+        """
+        self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold, min_read_count)
+        self.sequencing_report = self.Report.sequencing_report
     def change_region(self):
         """
         :return: changes the region you want to analyse
         """
         intermediate = self.region_of_interest
         possible_regions = self.avail_regions + ["all"]
-        self.region_of_interest = input(f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}. If you want to merge your sequences and analyse the longest possible consecutive sequences your dataset offers type 'all'")
-        if self.region_of_interest in possible_regions:
-            if not self.region_of_interest == "all":
-                self.Report.prepare_seq_report(self.region_of_interest)
+        region_string = input(f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}. If you want to merge your sequences and analyse the longest possible consecutive sequences your dataset offers type 'all'")
+        if region_string in possible_regions:
+            if not region_string == "all":
+                region_string = region_string.replace("nSeq", "")
+                self.Report.prepare_seq_report(region_string, divisible_by = 3,length_threshold = 9, min_read_count = 0)
             else:
                 self.Report.filter_longest_sequence()
+
             self.sequencing_report = self.Report.sequencing_report
-            self.region_string = "aaSeq" + self.region_of_interest 
+            self.region_of_interest = "aaSeq" + region_string
         else:
             print(f"The region you want to plot is not valid. The options are: {self.avail_regions}")
             self.region_of_interest = intermediate
@@ -204,14 +215,15 @@ class PlotManager:
         """
         self.binding_data = collect_binding_data(binding_data = self.binding_data)
 
-        self.binding_data.to_csv("binding_data.csv")
+        #self.binding_data.to_csv("binding_data.csv")
             
     def merge_bind_seq_report(self):
         """
         :return: merges the binding data with the sequencing report.
         """
-        assert self.binding_data != None, "You have not given binding data. Please use the add_binding_data function to add binding data."
-        merged_reports = pd.merge(self.sequencing_report, self.binding_data, on = "aaSeqCDR3")
+        assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
+
+        merged_reports = pd.merge(self.sequencing_report, self.binding_data, on = "aaSeqCDR3", how = "outer")
         return merged_reports
         
     def print_antigens(self):
@@ -319,7 +331,7 @@ class PlotManager:
                          protein,
                          self.font_settings,
                          self.legend_settings,
-                         self.region_string)
+                         self.region_of_interest)
 
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -371,7 +383,7 @@ class PlotManager:
                          sample,
                          self.font_settings,
                          highlight_specific_pos,
-                         self.region_string,
+                         self.region_of_interest,
                          chosen_seq_length)
         
         self.ControlFigure.update_plot()
@@ -404,7 +416,7 @@ class PlotManager:
                   samples,
                   num_cols,
                   self.font_settings,
-                  self.region_string,
+                  self.region_of_interest,
                   chosen_seq_length,
                   )
         self.ControlFigure.update_plot()
@@ -429,7 +441,7 @@ class PlotManager:
                                    self.sequencing_report,
                                    sample,
                                    self.font_settings,
-                                   self.region_string)
+                                   self.region_of_interest)
         
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -453,7 +465,7 @@ class PlotManager:
                                         samples,
                                         num_cols,
                                         self.font_settings,
-                                        self.region_string)
+                                        self.region_of_interest)
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
                                 self.ControlFigure.plot_type)
@@ -478,7 +490,7 @@ class PlotManager:
                             samples,
                             num_cols,
                             self.font_settings,
-                            self.region_string,
+                            self.region_of_interest,
                                 test_version = self.is_test)
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -511,7 +523,7 @@ class PlotManager:
                                     max_levenshtein_distance,
                                     length_filter,
                                     batch,
-                                    self.region_string,
+                                    self.region_of_interest,
                                     self.font_settings,
                                     self.legend_settings)
         
@@ -546,7 +558,7 @@ class PlotManager:
                     batch_size,
                     self.font_settings,
                     second_figure,
-                    self.region_string)
+                    self.region_of_interest)
 
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -582,7 +594,7 @@ class PlotManager:
                           max_ld,
                           min_ld,
                           batch_size,
-                          self.region_string,
+                          self.region_of_interest,
                           specific_experiments,
                           )
         self.ControlFigure.update_plot()
@@ -663,7 +675,7 @@ class PlotManager:
                         pca_components,
                         perplexity,
                         iterations_tsne,
-                        self.region_string,
+                        self.region_of_interest,
                         self.ControlFigure.ax,
                         self.legend_settings,
                         self.font_settings)
@@ -805,7 +817,7 @@ class PlotManager:
                          batch_size,
                          max_cluster_dist, 
                          self.font_settings,
-                         self.region_string
+                         self.region_of_interest
                          )
         self.ControlFigure.update_plot()
         self.style = PlotStyle(self.ControlFigure.ax,
@@ -820,11 +832,15 @@ class PlotManager:
         :params ascending: Default is True. If you want to see the highest fractions first, set it to False
         :return: Creates a dendrogram which shows the realtionship between your sequences in the sample and your sequences with binding data based on levenshtein distance. Additionally a barplot with the binding data of the found sequences is given.
         """
+        assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
+
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert max_cluster_dist == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert batch_size == int, "You have to give an integer as input for the batch size"
+        assert type(
+            max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
         assert type(ascending) == bool, "You have to give True or False as input for the ascending parameter"
+
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
@@ -836,7 +852,7 @@ class PlotManager:
                       batch_size,
                       max_cluster_dist,
                       self.font_settings,
-                      self.region_string,
+                      self.region_of_interest,
                       ascending
                       )
         self.ControlFigure.update_plot()
@@ -850,11 +866,12 @@ class PlotManager:
         :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
         :return: Creates a multiple sequence alignment of the sequences of the samples you have chosen. The sequences are ordered by their frequency and they are chosen equally based on the given batch size from the different samples. The output is an interface with an overview of the MSA and the option to design a sequence based on the MSA and the findings of the analysis.
         """
+        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze" 
+
         msa = MSA(self.region_of_interest,
-                  self.sequencing_report,
+                  self.Report,
                   self.Settings,
                   self.module_dir)
         msa = msa.run_MSA(batch_size, samples)

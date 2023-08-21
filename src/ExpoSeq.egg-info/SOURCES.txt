@@ -25,6 +25,11 @@ src/ExpoSeq/augment_data/read_raw_data.py
 src/ExpoSeq/augment_data/structure_files.py
 src/ExpoSeq/augment_data/trimming.py
 src/ExpoSeq/augment_data/uploader.py
+src/ExpoSeq/design/__init__.py
+src/ExpoSeq/design/anno_sequence.py
+src/ExpoSeq/design/msa_design.py
+src/ExpoSeq/design/multi_seq_align.py
+src/ExpoSeq/design/utilize_af.py
 src/ExpoSeq/plots/__init__.py
 src/ExpoSeq/plots/barplot.py
 src/ExpoSeq/plots/cluster_embedding.py
@@ -53,7 +58,6 @@ src/ExpoSeq/settings/reset.py
 src/ExpoSeq/settings/save_settings.txt
 src/ExpoSeq/test_data/__init__.py
 src/ExpoSeq/test_data/all_alignment_reports.pickle
-src/ExpoSeq/test_data/test_files/Chris_main_df.csv
 src/ExpoSeq/test_data/test_files/__init__.py
 src/ExpoSeq/test_data/test_files/binding_data.csv
 src/ExpoSeq/test_data/test_files/experiment_names.pickle

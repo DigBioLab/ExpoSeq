@@ -31,12 +31,12 @@ def cleaning_data(sequencing_report, region_of_interest, protein = True, specifi
     unique_experiments = list(unique_experiments)
     for experiment in unique_experiments:
         local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strand_column,
-                                                                                       "clonesFraction"]]
+                                                                                       "cloneFraction"]]
         unique_sequences = unique_sequences.merge(local_data,
                                                   how='left',
                                                   on = strand_column)
         unique_sequences = unique_sequences.fillna(0)
-        unique_sequences = unique_sequences.rename(columns={"clonesFraction": "clonesFraction" + experiment})
+        unique_sequences = unique_sequences.rename(columns={"cloneFraction": "cloneFraction" + experiment})
     unique_sequences.drop(strand_column,
                           inplace=True,
                           axis=1)
