@@ -3,10 +3,11 @@ import logomaker
 from ExpoSeq.tidy_data.tidy_seqlogoPlot import cleaning
 import numpy as np
 
-def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, highlight_pos_range, chosen_seq_length = 16):
+def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, region_string, chosen_seq_length = 16):
     aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
                                                                       sequencing_report,
-                                                                      chosen_seq_length)
+                                                                      chosen_seq_length,
+                                                                      region_string)
     logo_plot = logomaker.Logo(aa_distribution,
                                shade_below=.5,
                                fade_below=.5,
@@ -15,7 +16,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                                show_spines=False,
                                ax=ax,
                                )
-    logo_plot.style_xticks(anchor=0,
+    logo_plot.style_xticks(anchor=1,
                            spacing=1,
                            rotation=0)
     original_fontsize = font_settings["fontsize"]
@@ -24,6 +25,9 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
     font_settings["fontsize"] = 22
     plt.title("Logo Plot of " + sample + " with sequence length " + str(chosen_seq_length), **font_settings)
     font_settings["fontsize"] = original_fontsize
+    labels_true = list(range(0, chosen_seq_length))
+    numbers_true = list(range(1, chosen_seq_length + 1))
+    plt.xticks(labels_true, numbers_true)
     if highlight_specific_pos != False:
         logo_plot.highlight_position(p=5,
                                      color='gold',
@@ -34,7 +38,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
     #                                          color="lightcyan")
 
 
-def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings, chosen_seq_length = 16, test_version = False):
+def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings,region_string, chosen_seq_length = 16,):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -58,7 +62,8 @@ def plot_logo_multi(fig, sequencing_report, samples,num_cols, font_settings, cho
     for i in unique_experiments:
         aa_distribution, sequence_length, length_filtered_seqs = cleaning(i,
                                                                           sequencing_report,
-                                                                          chosen_seq_length)
+                                                                          chosen_seq_length,
+                                                                          region_string)
         if length_filtered_seqs != 0:
             if length_filtered_seqs < 100:
                 print("only " + str(length_filtered_seqs) + " sequences with the given length were found. The results might be biased")

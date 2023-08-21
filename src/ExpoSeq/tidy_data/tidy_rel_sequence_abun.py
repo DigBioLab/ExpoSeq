@@ -3,7 +3,13 @@ import pandas as pd
 
 # create an empty dictionary to store the summarized clone fractions
 
-
+def cleaning_all():
+    data = {}
+    for sample in samples:
+        report = sequencing_report[sequencing_report["Experiment"] == sample]
+        report = report[report[region_string].str.len() >= length_filter]
+        sequences = report[region_string].to_list()
+        
 # display the summarized dataframe
 def cleaning(sequencing_report,max_levenshtein_distance, samples, length_filter,region_string, batch):
     data = {}

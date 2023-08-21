@@ -5,12 +5,12 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 
-def tidy_embed(sequencing_report, batch_size, list_experiments, pca_components, perplexity ,iterations_tsne):
+def tidy_embed(sequencing_report, batch_size, list_experiments, pca_components, perplexity ,iterations_tsne, region_string):
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     selected_rows = report_batch.loc[report_batch["Experiment"].isin(list_experiments)]
     sgt = SGT(kappa=1,
               lengthsensitive=True)
-    sequences = selected_rows["aaSeqCDR3"].map(list)
+    sequences = selected_rows[region_string].map(list)
     sequences_list = list(sequences)
     sgtembedding_df = sgt.fit_transform(corpus=sequences_list)
     pca = PCA(n_components=pca_components)

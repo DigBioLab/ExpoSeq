@@ -1,5 +1,4 @@
 from tkinter import TclError
-
 import tkinter.font as tkfont
 import tkinter as tk
 from tkinter import simpledialog, messagebox

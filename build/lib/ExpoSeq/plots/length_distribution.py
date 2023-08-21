@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def length_distribution_single(fig,ax, sequencing_report, sample, font_settings):
+def length_distribution_single(fig,ax, sequencing_report, sample, font_settings, region_string):
     batch = sequencing_report[sequencing_report["Experiment"] == sample]
-    length = batch["aaSeqCDR3"].str.len()
+    length = batch[region_string].str.len()
     unique_length, counts_length = np.unique(np.array(length)
                                                 , return_counts = True)
     ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
@@ -24,7 +24,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings)
 
 
 
-def length_distribution_multi(fig, sequencing_report, samples,num_cols, font_settings, test_version = False):
+def length_distribution_multi(fig, sequencing_report, samples,num_cols, font_settings, region_string, test_version = False,):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -49,7 +49,7 @@ def length_distribution_multi(fig, sequencing_report, samples,num_cols, font_set
    # fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
         batch = sequencing_report[sequencing_report["Experiment"] == experiment]
-        length = batch["aaSeqCDR3"].str.len()
+        length = batch[region_string].str.len()
         unique_length, counts_length = np.unique(np.array(length)
                                                  , return_counts = True)
             # add every single subplot to the figure with a for loop

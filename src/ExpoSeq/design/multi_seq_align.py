@@ -21,9 +21,6 @@ class MSA:
         records = [SeqRecord(Seq(row["aaSeq_all"]), id=f"seq{i+1}", description='') for i, row in sequences.iterrows()]
         SeqIO.write(records, self.seqs_path, "fasta")
         
-    def get_clustalw_path(self):
-        path_clustalw = input("Please enter the path to clustalw")
-        return path_clustalw
     
     def get_top_sequences(self, batch_size, samples):
         self.SeqReport.filter_longest_sequence()

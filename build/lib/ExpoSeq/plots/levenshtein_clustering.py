@@ -6,10 +6,10 @@ import pandas as pd
 from ExpoSeq.tidy_data.clustering import cleaning
 
 
-def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size, font_settings, second_figure):
+def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size, font_settings, second_figure, region_string):
     sample_report = sequencing_report[sequencing_report["Experiment"] == sample] ## insert test if sample not found
     sample_report = sample_report.head(batch_size)
-    G, degree_sequence = cleaning(sample_report, max_ld, min_ld)
+    G, degree_sequence = cleaning(sample_report, max_ld, min_ld, region_string)
     # Create a gridspec for adding subplots of different sizes
     clone_counts = sample_report["readCount"]
     G_deg = G.degree()
@@ -46,7 +46,7 @@ def clusterSeq(ax, sequencing_report, sample,max_ld, min_ld, batch_size, font_se
     else:
         return
 
-def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size, specific_experiments = False, ):
+def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size,region_string, specific_experiments = False, ):
     assert antigen in binding_data.columns, "it seems like your antigen does not exist in the binding data. Please enter the correct value"
     report_batch = sequencing_report.groupby("Experiment").head(batch_size)
     if specific_experiments != False:
@@ -70,7 +70,7 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
         mix = pd.concat([batch, binding_data])
         mix = mix.fillna(0)
         mix = mix.reset_index()
-        G, degree_sequence = cleaning(mix, max_ld, min_ld)
+        G, degree_sequence = cleaning(mix, max_ld, min_ld, region_string)
         G_deg = G.degree()
         to_remove = [n for (n, deg) in G_deg if deg == 0]
         G.remove_nodes_from(to_remove)
@@ -108,10 +108,6 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
     fig.colorbar(network_plot,
                  ax=fig.axes)
 
-antigens = ['Ecarpholin_S_DDEL_5ug/mL', 'Myotoxin_II_DDEL_5ug/mL',
-           'PLA2_n.naja(Uniprot:P15445)_DDEL_5ug/mL', 'Ecarpholin_S_CDEL_100nM',
-           'Myotoxin_II_CDEL_100nM',]
-
 
 
 ### is not in use
@@ -135,7 +131,7 @@ def cluster_antigens(sequencing_report, sample, antigens, batch_size):
     mix = mix.fillna(0)
     mix = mix.reset_index()
     mix = mix.drop("index", axis=1)
-    G, degree_sequence = cleaning(mix)
+    G, degree_sequence = cleaning(mix, max_ld, min_ld, region_string)
     G_deg = G.degree()
     to_remove = [n for (n, deg) in G_deg if deg == 0]
     G.remove_nodes_from(to_remove)

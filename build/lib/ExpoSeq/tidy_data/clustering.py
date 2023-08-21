@@ -3,8 +3,8 @@ import numpy as np
 import editdistance
 import networkx as nx
 
-def cleaning(report, max_ld, min_ld):
-    aa = list(report["aaSeqCDR3"])
+def cleaning(report, max_ld, min_ld, region_string):
+    aa = list(report[region_string])
     num_strings = len(aa)
     string_index = [*range(0, num_strings, 1)]
     max_ld = max_ld

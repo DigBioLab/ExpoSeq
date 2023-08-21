@@ -111,8 +111,8 @@ class SequencingReport:
         found_frags = self.origin_seq_report[cols_of_interest]
         found_frags = found_frags[~found_frags.applymap(lambda x: x == "region_not_covered").any(axis=1)]
         found_frags['merged_with_spaces'] = found_frags[cols_longest].apply(lambda row: ' '.join(row), axis=1)
-        found_frags["nSeq_all"] = found_frags['merged_with_spaces'].str.replace('\\', '').str.replace(' ', '')
-        found_frags['aaSeq_all'] = found_frags['nSeq_all'].apply(self.translate_seq())
+        found_frags["nSeqall"] = found_frags['merged_with_spaces'].str.replace('\\', '').str.replace(' ', '')
+        found_frags['aaSeqall'] = found_frags['nSeqall'].apply(self.translate_seq())
         found_frags.reset_index(inplace = True)
         region_of_interest = "all"
         self.sequencing_report = found_frags

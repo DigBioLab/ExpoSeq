@@ -9,6 +9,7 @@ from .plots.cluster_embedding import show_difference
 from .plots.stacked_aa_distribution import stacked_aa_distr
 from .plots.barplot import barplot
 from .plots.hist_lvst_dist import levenshtein_dend, dendo_binding
+from .plots.relative_sequence_abundance import relative_sequence_abundance_all
 from .plots.saveFig import saveFig
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -165,7 +166,7 @@ class PlotManager:
         self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         self.settings_saver = Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
-        self.region_string = "aaSeq_" + self.region_of_interest 
+        self.region_string = "aaSeq" + self.region_of_interest 
         
     def change_region(self):
         """
@@ -180,7 +181,7 @@ class PlotManager:
             else:
                 self.Report.filter_longest_sequence()
             self.sequencing_report = self.Report.sequencing_report
-            self.region_string = "aaSeq_" + self.region_of_interest 
+            self.region_string = "aaSeq" + self.region_of_interest 
         else:
             print(f"The region you want to plot is not valid. The options are: {self.avail_regions}")
             self.region_of_interest = intermediate
@@ -226,11 +227,19 @@ class PlotManager:
         :return: prints the names of your samples, so you can insert them in lists or similar for the analysis with some plots
         """
         print(list(self.unique_experiments.values()))
-    def save(self, name = False):
+    def save(self, enter_filename, dpi = 300, format = "png"):
         """
         :return: can be used to save your plots. It will ask you automatically for the directory where you want to save it
         """
-        saveFig(name)
+        print("Choose the directory where you want to save your plot with the filechooser")
+        try:
+            from tkinter import filedialog
+            save_dir = filedialog.askdirectory()
+        except:
+            save_dir = ""
+        
+        plt.savefig(fname = os.path.join(save_dir, enter_filename), dpi = dpi, format = format)
+
     def close(self):
         plt.close()
 
@@ -426,11 +435,35 @@ class PlotManager:
         self.style = PlotStyle(self.ControlFigure.ax,
                         self.ControlFigure.plot_type)
 
-
+    def relative_abundance_mult(self, samples, num_cols = "all"):
+        """
+        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :param num_cols: number of columns you want to have in your figure.
+        :return: Outputs a figure which shows the fractions per clones for each sample in the dataset
+        """
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "multi"
+        if samples != "all":
+            assert type(samples) == list, "You have to give a list with the samples you want to analyze"
+            incorrect_samples = [x for x in samples if x not in self.experiments_list]
+            assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
+        self.ControlFigure.clear_fig()
+        relative_sequence_abundance_all(self.ControlFigure.fig,
+                                        self.sequencing_report,
+                                        samples,
+                                        num_cols,
+                                        self.font_settings,
+                                        self.region_string)
+        self.ControlFigure.update_plot()
+        self.style = PlotStyle(self.ControlFigure.ax,
+                                self.ControlFigure.plot_type)
+        self.ControlFigure.tighten()
+        
+        
     def lengthDistribution_multi(self,num_cols, samples = "all"):
         """
         :param num_cols: number of columns you want to have in your figure.
-        :param samples: You analyze ExpoSeq samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
+        :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :return: Outputs one figure with one subplot per sample which shows you the distribution of the sequence length
         """
         self.ControlFigure.check_fig()
@@ -787,6 +820,11 @@ class PlotManager:
         :params ascending: Default is True. If you want to see the highest fractions first, set it to False
         :return: Creates a dendrogram which shows the realtionship between your sequences in the sample and your sequences with binding data based on levenshtein distance. Additionally a barplot with the binding data of the found sequences is given.
         """
+        assert type(sample) == str, "You have to give a string as input for the sample"
+        assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        assert max_cluster_dist == int, "You have to give an integer as input for the maximum levenshtein distance"
+        assert batch_size == int, "You have to give an integer as input for the batch size"
+        assert type(ascending) == bool, "You have to give True or False as input for the ascending parameter"
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()

@@ -107,7 +107,11 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
         paired_end = True
     else:
         paired_end = False
-
+    if repo_path == "":
+        repo_path = os.path.join(module_dir,
+                                "my_experiments",
+                                experiment,
+                                "sequencing_report.csv")
     process_mixcr(experiment,
                   method=method,
                   testing = testing,
@@ -128,6 +132,7 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
         print(
             "No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
     return sequencing_report, all_alignment_reports
+
 def method_two(module_dir, experiment, testing = False, testing_value = None):
 
     print("Choose the folder which contains the sequencing_report and the alignment reports.")

@@ -1,9 +1,9 @@
 from ExpoSeq.tidy_data.tidy_stacked_aa_distr import cleaning
 import matplotlib.pyplot as plt
 
-def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settings, legend_settings):
+def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settings,region_string):
 
-    aa_distribution = cleaning(sequencing_report, sample, region, protein)
+    aa_distribution = cleaning(sequencing_report, sample, region, region_string)
     color_scheme = {
         'F': [.16, .99, .18],
         'Y': [.04, .40, .05],

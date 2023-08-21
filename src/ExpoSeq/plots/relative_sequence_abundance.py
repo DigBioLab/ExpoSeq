@@ -1,4 +1,5 @@
 from ExpoSeq.tidy_data.tidy_rel_sequence_abun import cleaning
+import numpy as np
 def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_distance,length_filter,batch,region_string, font_settings, legend_settings):
     all_samples = cleaning(sequencing_report,
                             max_levenshtein_distance,
@@ -32,3 +33,41 @@ def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_d
                  pad = 12,
                  **font_settings)
     font_settings["fontsize"] = original_fontsize
+    
+def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, font_settings, ):
+    if samples == "all":
+        unique_experiments = sequencing_report["Experiment"].unique()
+        unique_experiments = np.sort(unique_experiments)
+    else:
+        sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(samples)]
+        unique_experiments = sequencing_report["Experiment"].unique()
+        unique_experiments = np.sort(unique_experiments)
+    Tot = unique_experiments.shape[0]
+    Cols = num_cols
+    # Compute Rows required
+    Rows = Tot // Cols
+    #     EDIT for correct number of rows:
+    #     If one additional row is necessary -> add one:
+    if Tot % Cols != 0:
+        Rows += 1
+    # Create a Position index
+    Position = range(1,Tot + 1)
+    n = 0       
+    for i in range(samples.shape[1]):
+        experiment = i["Experiment"][0]
+        fraction = i["clonesFraction"]
+        clones = i["cloneId"]
+        ax = fig.add_subplot(Rows, Cols, Position[n])
+        
+        ax.bar(clones, fraction)  # Or whatever you want in the subplot
+       # ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
+        ax.title.set_text(experiment)
+        ax.title.set_size(10)
+
+        adapted_fontsize = 10 - int(Cols) + 2
+        font_settings["fontsize"] = adapted_fontsize
+        ax.set_ylabel("Clones",
+                      **font_settings)  # Y label
+        ax.set_xlabel('Clones Fraction',
+                      **font_settings)  # X label
+

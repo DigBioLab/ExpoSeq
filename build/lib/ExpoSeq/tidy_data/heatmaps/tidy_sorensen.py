@@ -3,9 +3,10 @@ import pandas as pd
 from .bool_sequences_matrix import find_seq_matches
 
 
-def heatmap_sorensen(sequencing_report, protein, specific_experiments):
+def heatmap_sorensen(sequencing_report, protein,region_of_interest, specific_experiments):
     heatmap_axis, unique_sequences, unique_experiments = find_seq_matches(sequencing_report,
                                                                           protein,
+                                                                          region_of_interest, 
                                                                           specific_experiments)
     heatmap_absolute_sorensen = np.zeros([heatmap_axis, heatmap_axis])
     for index_sample_one in range(heatmap_axis):

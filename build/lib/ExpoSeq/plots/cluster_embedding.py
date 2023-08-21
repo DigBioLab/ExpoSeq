@@ -1,13 +1,14 @@
 import pandas as pd
 from ExpoSeq.tidy_data.tidy_cluster_embedding import tidy_embed
 
-def show_difference(sequencing_report, list_experiments,strands, batch_size, pca_components, perplexity, iterations_tsne, ax, legend_settings, font_settings):
+def show_difference(sequencing_report, list_experiments,strands, batch_size, pca_components, perplexity, iterations_tsne,region_string, ax, legend_settings, font_settings):
     tsne_results, aminoacids, experiments_batch = tidy_embed(sequencing_report,
                                                               batch_size,
                                                               list_experiments,
                                                               pca_components,
                                                               perplexity,
-                                                              iterations_tsne)
+                                                              iterations_tsne,
+                                                              region_string)
     tsne_plot = ax.scatter(tsne_results.tsne1,
                            tsne_results.tsne2,
                            c = pd.factorize(experiments_batch)[0],

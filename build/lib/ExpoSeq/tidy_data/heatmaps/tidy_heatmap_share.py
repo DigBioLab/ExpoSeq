@@ -2,10 +2,11 @@ import numpy as np
 from .bool_sequences_matrix import find_seq_matches
 import pandas as pd
 
-def heatmap_share(sequencing_report, protein, specific_experiments):
+def heatmap_share(sequencing_report,region_of_interest, protein, specific_experiments):
     heatmap_axis, unique_sequences, unique_experiments = find_seq_matches(sequencing_report,
                                                                           protein,
-                                                                          specific_experiments)
+                                                                          specific_experiments,
+                                                                          region_of_interest)
     heatmap_absolute = np.zeros([heatmap_axis, heatmap_axis])
 
 
