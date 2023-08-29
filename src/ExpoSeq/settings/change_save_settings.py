@@ -1,7 +1,6 @@
 import os
 from ast import literal_eval
 
-import pkg_resources
 try:
     import tkinter as tk
     from tkinter import filedialog
@@ -9,9 +8,9 @@ except:
     pass
 class Change_save_settings():
     def __init__(self):
-        self.pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
+        self.module_dir = os.getcwd()
 
-        self.save_settings_path = os.path.join(self.pkg_path,
+        self.save_settings_path = os.path.join(self.module_dir,
                                           "settings",
                                         "save_settings.txt")
         with open(self.save_settings_path, "r") as f:

@@ -2,12 +2,11 @@ from .pipeline import PlotManager
 import os
 import pandas as pd
 import shutil
-import pkg_resources
 from ast import literal_eval
 
 def run_pipeline(antigens = None, usq_multiple = "n", pass_interrupt = True, test = False):
-    pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-    save_settings_path = os.path.join(pkg_path,
+    module_dir = os.getcwd()
+    save_settings_path = os.path.join(module_dir,
                  "settings",
                  "save_settings.txt")
     with open(save_settings_path, "r") as f:

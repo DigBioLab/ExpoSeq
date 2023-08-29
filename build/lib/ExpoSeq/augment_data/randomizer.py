@@ -54,7 +54,10 @@ def create_sequencing_report(num_experiments = 30, mean_length = 48, stddev_leng
         readsCount = np.array(fractions) * random_read
         readsCount = list(np.round(readsCount).astype(np.uint32))
         length_cdr3 = [len(string) for string in sequences]
+        limit = len(aminoacid_seqs)
+        cloneid = [i for i in range(1, limit + 1)]
         data = {"Experiment": sample_name,
+                "cloneId": cloneid,
                     "aaSeqCDR3": aminoacid_seqs,
                     "nSeqCDR3": sequences,
                     "clonesFraction": fractions,
@@ -76,7 +79,10 @@ def create_sequencing_report(num_experiments = 30, mean_length = 48, stddev_leng
             readsCount_new = np.array(fractions_new) * random_read
             readsCount_new = list(np.round(readsCount_new).astype(np.uint32))
             length_cdr3_new = [len(string) for string in sequences_new]
+            limit = len(aminoacid_seqs_new)
+            cloneid = [i for i in range(1, limit + 1)]
             data = {"Experiment": sample_name,
+                    "cloneId": cloneid,
                     "aaSeqCDR3": aminoacid_seqs_new,
                     "nSeqCDR3": sequences_new,
                     "clonesFraction": fractions_new,

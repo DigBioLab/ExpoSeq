@@ -1,19 +1,18 @@
 import shutil
 import os
 from ast import literal_eval
-import pkg_resources
+
 def remove_directories(directory_path):
     # Iterate over all items in the directory
     for item in os.listdir(directory_path):
         shutil.rmtree(os.path.join(directory_path, item))
 
 def original_settings():
-    pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-    module_dir = os.path.abspath("")
+    module_dir = os.getcwd()
     experiments_dir = os.path.join(module_dir,
                                    "my_experiments")
     remove_directories(experiments_dir)
-    common_vars_path = os.path.join(pkg_path,
+    common_vars_path = os.path.join(module_dir,
                                     "settings",
                                     "global_vars.txt")
     with open(common_vars_path, "r") as f:
@@ -21,13 +20,13 @@ def original_settings():
     global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': 42}
     with open(common_vars_path, "w") as f:
         f.write(str(global_params))
-    save_path = os.path.join(pkg_path,
+    save_path = os.path.join(module_dir,
                              "settings",
                              "save_settings.txt")
     save_params = {'fname': '', 'format': 'png', 'dpi': 300}
     with open(save_path, "w") as f:
         f.write(str(save_params))
-    legend_settings_path = os.path.join(pkg_path,
+    legend_settings_path = os.path.join(module_dir,
                                         "settings",
                                         "legend_settings.txt")
     legend_params = {"loc": "upper right", #'upper left', 'upper right', 'lower left', 'lower right'
@@ -42,7 +41,7 @@ def original_settings():
                     }
     with open(legend_settings_path, "w") as f:
         f.write(str(legend_params))
-    font_settings_path = os.path.join(pkg_path,
+    font_settings_path = os.path.join(module_dir,
                                       "settings",
                                       "font_settings.txt")
     font_settings_params = {
@@ -54,7 +53,7 @@ def original_settings():
                             }
     with open(font_settings_path, "w") as f:
         f.write(str(font_settings_params))
-    colorbar_path = os.path.join(pkg_path,
+    colorbar_path = os.path.join(module_dir,
                                  "settings",
                                  "colorbar.txt")
     colorbar_params = {

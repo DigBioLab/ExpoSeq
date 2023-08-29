@@ -1,5 +1,8 @@
-import tkinter as tk
-from tkinter import simpledialog
+try: 
+    import tkinter as tk
+    from tkinter import simpledialog
+except:
+    pass
 
 class SequenceManipulator:
     def __init__(self, sequence):

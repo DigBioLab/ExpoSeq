@@ -57,7 +57,7 @@ class SequencingReport:
         #                                    how="left",
         #                                   on="nSeqCDR3")
         self.sequencing_report["lengthOfCDR3"] = self.sequencing_report["nSeqCDR3"].str.len() ## assumes all that pipeline starts with cdr3 region
-        self.sequencing_report = self.sequencing_report.sort_values(by="cloneId")
+        #self.sequencing_report = self.sequencing_report.sort_values(by="cloneId")
         self.sequencing_report = self.sequencing_report.reset_index()
         #self.sequencing_report = self.sequencing_report.drop(columns=["readFraction_y", "index"])
         #self.sequencing_report = self.sequencing_report.rename(columns={"readFraction_x": "cloneFraction"})

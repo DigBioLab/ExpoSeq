@@ -6,9 +6,9 @@ def find_seq_matches(sequencing_report,region_of_interest, protein, specific_exp
         pass
     unique_experiments = sequencing_report["Experiment"].unique()
     if protein == True:
-        strand_column = "aaSeq" + region_of_interest
+        strand_column = region_of_interest
     else:
-        strand_column = "nSeq" + region_of_interest
+        strand_column =  region_of_interest
     unique_sequences = pd.DataFrame(sequencing_report[strand_column].unique())
     unique_sequences.rename(columns={0: strand_column},
                             inplace=True)

@@ -78,7 +78,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         print(filenames)
         experiment = "test_directory"
     
-    settings_dir = os.path.join(pkg_path,
+    settings_dir = os.path.join(module_dir,
                                 "settings",
                                 "global_vars.txt")
     with open(settings_dir) as f:
@@ -209,7 +209,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                   "sequencing_report.csv")
         sequencing_report.to_csv(report_dir)
         data["last_experiment"] = experiment
-        glob_vars_dir = os.path.join(pkg_path,
+        glob_vars_dir = os.path.join(module_dir,
                                      "settings",
                                      "global_vars.txt")
         with open(glob_vars_dir, "w") as f:

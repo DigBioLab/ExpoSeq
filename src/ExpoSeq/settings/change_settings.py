@@ -3,15 +3,13 @@ import os
 import shutil
 import os
 from ast import literal_eval
-import pkg_resources
     
 
 
 class Settings:
     def __init__(self):
         self.module_dir = os.path.abspath("")
-        self.pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-        self.common_vars =  os.path.join(self.pkg_path,"settings", "global_vars.txt")
+        self.common_vars =  os.path.join(self.module_dir,"settings", "global_vars.txt")
         with open(self.common_vars, "r") as f:
             global_params = f.read()
         self.global_params = literal_eval(global_params)
@@ -48,7 +46,7 @@ class Settings:
             shutil.rmtree(os.path.join(directory_path, item))
             
     def read_font_settings(self):
-        font_settings_path = os.path.join(self.pkg_path, "settings", "font_settings.txt")
+        font_settings_path = os.path.join(self.module_dir, "settings", "font_settings.txt")
         assert os.path.isfile(font_settings_path), "The font settings file does not exist in the given filepath"
         with open(font_settings_path, "r") as f:
             font_settings = f.read()
@@ -56,7 +54,7 @@ class Settings:
         return font_settings
     
     def read_legend_settings(self):
-        legend_settings_path = os.path.join(self.pkg_path,
+        legend_settings_path = os.path.join(self.module_dir,
                                         "settings",
                                         "legend_settings.txt")
         assert os.path.isfile(legend_settings_path), "The legend settings file does not exist in the given filepath"
@@ -66,7 +64,7 @@ class Settings:
         return legend_settings
     
     def read_colorbar_settings(self):
-        colorbar_path = os.path.join(self.pkg_path,
+        colorbar_path = os.path.join(self.module_dir,
                                     "settings",
                                     "colorbar.txt")
         assert os.path.isfile(colorbar_path), "The colorbar file does not exist in the given filepath"
@@ -86,7 +84,7 @@ class Settings:
     def reset_pipeline(self):
         global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': 42}
         self.save_settings(self.global_params, global_params)
-        self.save_settings(os.path.join(self.pkg_path,"settings","save_settings.txt"), {'fname': '', 'format': 'png', 'dpi': 300})
+        self.save_settings(os.path.join(self.module_dir,"settings","save_settings.txt"), {'fname': '', 'format': 'png', 'dpi': 300})
         legend_params = {"loc": "upper right", #'upper left', 'upper right', 'lower left', 'lower right'
                     "bbox_to_anchor": (1, 1),
                     "ncols": 1,
@@ -97,9 +95,9 @@ class Settings:
                     "mode": None,
                     "title_fontsize": 'small',
                     }
-        self.save_settings(os.path.join(self.pkg_path,"settings","legend_settings.txt"), legend_params)
-        self.save_settings(os.path.join(self.pkg_path,"settings","font_settings.txt"), {"fontfamily": "serif","fontsize": "14","fontstyle": "normal","fontweight": "bold"})
-        self.save_settings(os.path.join(self.pkg_path,"settings","colorbar.txt"), {"cmap": "inferno","orientation": "vertical","spacing": "proportional","extend": "neither"})
+        self.save_settings(os.path.join(self.module_dir,"settings","legend_settings.txt"), legend_params)
+        self.save_settings(os.path.join(self.module_dir,"settings","font_settings.txt"), {"fontfamily": "serif","fontsize": "14","fontstyle": "normal","fontweight": "bold"})
+        self.save_settings(os.path.join(self.module_dir,"settings","colorbar.txt"), {"cmap": "inferno","orientation": "vertical","spacing": "proportional","extend": "neither"})
         
 
     def reinstall_pipeline(self,):

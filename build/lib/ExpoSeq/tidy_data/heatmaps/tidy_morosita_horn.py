@@ -15,9 +15,9 @@ def cleaning_data(sequencing_report, region_of_interest, protein = True, specifi
     #                                column = 'nSeqCDR3',
      #                               func = genetic_dogma,
        #                             column_name = 'peptide_seq')
-        strand_column = 'aaSeq' + region_of_interest
+        strand_column =  region_of_interest
     else:
-        strand_column = 'nSeq'+ region_of_interest
+        strand_column = region_of_interest
 
     group_columns = ["Experiment", strand_column]
    # column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')

@@ -1,19 +1,19 @@
 import matplotlib.pyplot as plt
 from ast import literal_eval
 import os
-import pkg_resources
+
 class PlotStyle:
     def __init__(self, ax, plot_type):
-        self.pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-        self.module_dir = os.path.abspath("")
+
+        self.module_dir = os.getcwd()
         self.ax = ax
-        font_settings_path = os.path.join(self.pkg_path,
+        font_settings_path = os.path.join(self.module_dir,
                                           "settings",
                                           "font_settings.txt")
         with open(font_settings_path, "r") as f:
             font_settings = f.read()
         self.font_settings = literal_eval(font_settings)
-        legend_settings_path = os.path.join(self.pkg_path,
+        legend_settings_path = os.path.join(self.module_dir,
                                             "settings",
                                             "legend_settings.txt")
         with open(legend_settings_path, "r") as f:
