@@ -94,20 +94,30 @@ class CollectFastq():
         return path_to_file
     def __len__(self, file_list):
         return len(file_list)
+
     def get_pairs(self):
         if self.__len__(self.forward) != self.__len__(self.backward):
             print("Files matching aborted. Your have not collected the same number of files for the forward and backward reads.")
         else:
-            max_similarity = 0
             best_pair = (None, None)
             # Pairwise comparison of filenames
             for i, file1 in enumerate(self.forward):
                 for j, file2 in enumerate(self.backward):
-                    similarity = 1 - editdistance.distance(file1, file2) / max(len(file1), len(file2))
-                    if similarity > max_similarity:
-                        max_similarity = similarity
-                        best_pair = [file1, file2]
-                self.paired.append(best_pair)
+                    with open(file1, "r") as one:
+                        one_first = one.readline().strip()
+                        one_sub_first = one_first.rfind(":")
+                        one_first_sub = one_first[one_sub_first+1:]
+                    with open(file2, "r") as two:
+                        two_first = two.readline().strip()
+                        two_sub_first = two_first.rfind(":")
+                        two_first_sub = two_first[two_sub_first+1:]
+                    if one_first_sub == two_first_sub:
+                        best_pair = [os.path.basename(file1), os.path.basename(file2)]
+
+                if not best_pair:
+                    print(f"Could not find match for {file1}")
+                else:
+                    self.paired.append(best_pair)
     def get_files(self):
         print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.")
         self.forward = self.get_filenames()
@@ -260,7 +270,8 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                     files = Collect.paired
                                     break
                                 else:
-                                    files = Collect.manually_match_pairs()
+                                    Collect.manually_match_pairs()
+                                    files = Collect.paired
                                     break
                             else:
                                 print("Please enter a valid value")
