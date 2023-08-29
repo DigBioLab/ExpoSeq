@@ -196,7 +196,7 @@ class PlotManager:
     def change_filter(self, divisible_by=3, length_threshold =9, min_read_count =0):
         """
         :param divisible_by: filter all sequences which are not divisible by this value
-        :param length_threshold: filter out all sequences which are shorter then this value
+        :param length_threshold: filter out all sequences which are shorter than this value
         :min_read_count: filter out all sequences which have less clones/reads than this value
         """
         self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold, min_read_count)
