@@ -1,30 +1,16 @@
-from .plots.usq_plot import plot_USQ
-from .plots.plt_heatmap import plot_heatmap
-from .plots.logo_plot import plot_logo_multi, plot_logo_single
-from .plots.length_distribution import length_distribution_single, length_distribution_multi
-from .plots.levenshtein_clustering import clusterSeq, cluster_single_AG
-from .plots.embedding_with_binding import cluster_toxins_tsne
-from .plots.relative_sequence_abundance import relative_sequence_abundance
-from .plots.cluster_embedding import show_difference
-from .plots.stacked_aa_distribution import stacked_aa_distr
-from .plots.barplot import barplot
-from .plots.hist_lvst_dist import levenshtein_dend, dendo_binding
-from .plots.relative_sequence_abundance import relative_sequence_abundance_all
-from .plots.saveFig import saveFig
+import ExpoSeq.plots as plots
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
 from ast import literal_eval
-from .settings.plot_styler import PlotStyle
 import pandas as pd
 import pickle
 import os
-from ExpoSeq.settings.change_save_settings import Change_save_settings
+import ExpoSeq.settings as settings
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
-from .design.anno_sequence import SequenceManipulator
-from .settings.change_settings import Settings
 from .design.multi_seq_align import MSA
-from .settings.reports import SequencingReport, BindingReport
+
+
 
 class MyFigure:
     def __init__(self):
@@ -43,7 +29,7 @@ class MyFigure:
     
     def update_plot(self):
         self.ax = self.fig.gca()
-        self.style = PlotStyle(self.ax, self.plot_type)
+        self.style = settings.plot_styler.PlotStyle(self.ax, self.plot_type)
         figManager = plt.get_current_fig_manager()
         figManager.window.showMaximized()
     
@@ -155,9 +141,9 @@ class Directories:
 class PlotManager:
     def __init__(self, test_version = False, test_exp_num = 3, test_panrou_num = 1, divisible_by = 3, length_threshold = 9, min_read_count = 3):
         self.is_test = test_version
-        self.Settings = Settings()
+        self.Settings = settings.change_settings.Settings()
         self.Settings.check_dirs()
-        self.global_params = self.Settings.global_params
+        self.global_params = self.Settings.read_global_vars()
         self.module_dir = self.Settings.module_dir
         if test_version == True:                
             self.experiment = "Test"
@@ -173,9 +159,9 @@ class PlotManager:
             self.region_string = self.global_params["region_of_interest"]
             if self.region_string == '':
                 self.region_string = "CDR3"
-            binding_report = BindingReport(self.module_dir, self.experiment)
+            binding_report = settings.reports.BindingReport(self.module_dir, self.experiment)
             self.binding_data = binding_report.ask_binding_data()
-        self.Report = SequencingReport(self.sequencing_report)
+        self.Report = settings.reports.SequencingReport(self.sequencing_report)
         experiment_path = self.Settings.get_experiment_path(self.experiment)
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
         self.Report.prepare_seq_report(self.region_string, divisible_by=divisible_by, length_threshold=length_threshold, min_read_count=min_read_count)
@@ -187,8 +173,8 @@ class PlotManager:
         self.legend_settings = self.Settings.read_legend_settings()
         self.colorbar_settings = self.Settings.read_colorbar_settings()
         self.ControlFigure = MyFigure()
-        self.style = PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
-        self.settings_saver = Change_save_settings()
+        self.style = settings.plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
+        self.settings_saver = settings.change_save_settings.Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
         self.region_of_interest = "aaSeq" + self.region_string
 
@@ -321,7 +307,7 @@ class PlotManager:
         assert log_transformation in [True, False], "You have to give True or False as input for the log transformation"
         self.ControlFigure.clear_fig()
         try:
-            barplot(self.ControlFigure.ax,
+            plots.barplot(self.ControlFigure.ax,
                     self.alignment_report,
                     self.sequencing_report,
                     self.font_settings,
@@ -329,7 +315,7 @@ class PlotManager:
                     apply_log = log_transformation)
             
             self.ControlFigure.update_plot()
-            self.style = PlotStyle(self.ControlFigure.ax,
+            self.style = settings.plot_style.PlotStyle(self.ControlFigure.ax,
                             self.ControlFigure.plot_type)
         except:
             print("Currenlty you do not have loaded an alignment report.")
@@ -348,7 +334,7 @@ class PlotManager:
         assert type(region), "You have to give a list with the start and end position of the region you want to analyze. For instance: [3,7]"
         assert protein in [True, False], "You have to give True or False as input for the protein parameter"
         self.ControlFigure.clear_fig()
-        stacked_aa_distr(self.ControlFigure.ax,
+        plots.stacked_aa_distr(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          region,
@@ -358,7 +344,7 @@ class PlotManager:
                          self.region_of_interest)
 
         self.ControlFigure.update_plot()
-        self.style = PlotStyle(self.ControlFigure.ax,
+        self.style = settings.plot_style.PlotStyle(self.ControlFigure.ax,
                         self.ControlFigure.plot_type)
         
     def rarefraction_curves(self, samples):
@@ -375,14 +361,14 @@ class PlotManager:
             print("You have to give the sample names in the list, also if it is only one! A list is a container which is marked through:[] . Please try again.")
         else:
             self.ControlFigure.clear_fig()
-            plot_USQ(fig = self.ControlFigure.fig,
+            plots.plot_USQ(fig = self.ControlFigure.fig,
                     sequencing_report = self.sequencing_report,
                      samples = samples,
                      font_settings = self.font_settings,
                      legend_settings = self.legend_settings)
             
             self.ControlFigure.update_plot()
-            self.style = PlotStyle(self.ControlFigure.ax,
+            self.style = settings.plot_style.PlotStyle(self.ControlFigure.ax,
                             self.ControlFigure.plot_type)
     def logoPlot_single(self,
                         sample,
@@ -402,7 +388,7 @@ class PlotManager:
             assert type(highlight_specific_pos) == int, "You have to give an integer as input for the specific position you want to highlight"
         assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
-        plot_logo_single(self.ControlFigure.ax,
+        plots.plot_logo_single(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          self.font_settings,
@@ -435,7 +421,7 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
-        plot_logo_multi(self.ControlFigure.fig,
+        plots.plot_logo_multi(self.ControlFigure.fig,
                   self.sequencing_report,
                   samples,
                   num_cols,
@@ -444,7 +430,7 @@ class PlotManager:
                   chosen_seq_length,
                   )
         self.ControlFigure.update_plot()
-        self.style = PlotStyle(self.ControlFigure.ax,
+        self.style = settings.plot_style.PlotStyle(self.ControlFigure.ax,
                         self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
 
@@ -460,7 +446,7 @@ class PlotManager:
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        length_distribution_single(self.ControlFigure.fig,
+        plots.length_distribution_single(self.ControlFigure.fig,
                                    self.ControlFigure.ax,
                                    self.sequencing_report,
                                    sample,
@@ -484,7 +470,7 @@ class PlotManager:
             incorrect_samples = [x for x in samples if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        relative_sequence_abundance_all(self.ControlFigure.fig,
+        plots.relative_sequence_abundance_all(self.ControlFigure.fig,
                                         self.sequencing_report,
                                         samples,
                                         num_cols,
@@ -509,7 +495,7 @@ class PlotManager:
             incorrect_samples = [x for x in samples if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        length_distribution_multi(self.ControlFigure.fig,
+        plots.length_distribution_multi(self.ControlFigure.fig,
                             self.sequencing_report,
                             samples,
                             num_cols,
@@ -541,7 +527,7 @@ class PlotManager:
         assert type(length_filter), "You have to give an integer as input for the length filter"
         assert type(batch) == int, "You have to give an integer as input for the batch size"
         self.ControlFigure.clear_fig()
-        relative_sequence_abundance(self.ControlFigure.ax,
+        plots.relative_sequence_abundance(self.ControlFigure.ax,
                                     self.sequencing_report,
                                     samples,
                                     max_levenshtein_distance,
@@ -573,7 +559,7 @@ class PlotManager:
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(second_figure) == bool, "You have to give True or False as input for the second figure"
         self.ControlFigure.clear_fig()
-        fig2 = clusterSeq(
+        fig2 = plots.clusterSeq(
                    self.ControlFigure.ax,
                    self.sequencing_report,
                    sample,
@@ -611,7 +597,7 @@ class PlotManager:
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
         self.ControlFigure.clear_fig()
-        cluster_single_AG(self.ControlFigure.fig,
+        plots.cluster_single_AG(self.ControlFigure.fig,
                           self.sequencing_report,
                           antigen,
                           self.binding_data,
@@ -647,7 +633,7 @@ class PlotManager:
         assert type(antigen) == list, "You have to give a list with the antigens you want to analyze"
         
         self.ControlFigure.clear_fig()
-        tsne_results = cluster_toxins_tsne(self.ControlFigure.fig,
+        tsne_results = plots.cluster_toxins_tsne(self.ControlFigure.fig,
                             self.sequencing_report,
                             sample,
                             antigen,
@@ -692,7 +678,7 @@ class PlotManager:
         assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
         self.ControlFigure.clear_fig()
-        show_difference(self.sequencing_report,
+        plots.show_difference(self.sequencing_report,
                         samples,
                         strands,
                         batch_size,
@@ -720,7 +706,7 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plot_heatmap(self.sequencing_report,
+        matrix = plots.plot_heatmap(self.sequencing_report,
                                 True,
                                 "morosita_horn",
                                 self.ControlFigure.ax,
@@ -749,7 +735,7 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plot_heatmap(self.sequencing_report,
+        matrix = plots.plot_heatmap(self.sequencing_report,
                                 True,
                                 "jaccard",
                                 self.ControlFigure.ax,
@@ -777,7 +763,7 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plot_heatmap(self.sequencing_report,
+        matrix = plots.plot_heatmap(self.sequencing_report,
                                 True,
                                 "sorensen",
                                 self.ControlFigure.ax,
@@ -806,7 +792,7 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plot_heatmap(self.sequencing_report,
+        matrix = plots.plot_heatmap(self.sequencing_report,
                             True,
                             "relative",
                             self.ControlFigure.ax,
@@ -835,7 +821,7 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
-        levenshtein_dend(self.ControlFigure.ax,
+        plots.levenshtein_dend(self.ControlFigure.ax,
                          self.sequencing_report,
                          sample,
                          batch_size,
@@ -868,7 +854,7 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
-        dendo_binding(self.ControlFigure.fig,
+        plots.dendo_binding(self.ControlFigure.fig,
                       self.sequencing_report,
                       self.binding_data,
                       sample,

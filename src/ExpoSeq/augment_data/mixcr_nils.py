@@ -125,6 +125,8 @@ class CollectFastq():
             print("Now choose the directory where you store the fastq files with the backward reads.")
             self.backward = self.get_filenames()
             self.get_pairs()
+        else:
+            self.paired = self.forward
     def call_pairs(self):
          if self.paired_end_sequencing:
              for i in self.paired:
