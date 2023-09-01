@@ -35,8 +35,8 @@ def collect_binding_data(binding_data = None):
             elif binding_file.endswith(".csv"):
                 binding_new = pd.read_csv(binding_file)
             if binding_new.columns.to_list()[0] == "aaSeqCDR3":
-                pass
                 second_prompt = False
+                pass
             else:
                 second_prompt = True
                 print("Please change the header of the first column in your csv file to aaSeqCDR3")

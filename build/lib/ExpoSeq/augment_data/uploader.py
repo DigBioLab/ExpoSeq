@@ -8,7 +8,6 @@ from glob import glob
 from ExpoSeq.augment_data.check_reports import check_completeness
 import sys
 import pickle
-import pkg_resources
 from ExpoSeq.augment_data.trimming import trimming
 try:
     import tkinter as tk
@@ -255,9 +254,9 @@ def find_file_in_subdirectories(directory, filename):
                 return os.path.join(dirpath, filename)
     return None
 
-def check_last_exp(pkg_path, module_dir, testing):
+def check_last_exp(module_dir, testing):
     if not testing:
-        glob_vars = os.path.join(pkg_path,
+        glob_vars = os.path.join(module_dir,
                                 "settings",
                                 "global_vars.txt")
         with open(glob_vars, "r") as f:
@@ -396,8 +395,8 @@ def process_data_with_last_experiment(module_dir, last_experiment, testing):
 
 
 
-def write_last_exp(pkg_path, experiment):
-    glob_vars = os.path.join(pkg_path,
+def write_last_exp(module_dir, experiment):
+    glob_vars = os.path.join(module_dir,
                              "settings",
                              "global_vars.txt")
     with open(glob_vars, "r") as f:
@@ -409,8 +408,8 @@ def write_last_exp(pkg_path, experiment):
 
 def upload(testing=False, continue_analysis = "n", upload_type = "2", choose_exp = '1', paired_end_test = 'n', experiment_column = '1'):
     module_dir = os.getcwd()
-    pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-    repo_path, last_experiment = check_last_exp(pkg_path, module_dir, testing)
+
+    repo_path, last_experiment = check_last_exp( module_dir, testing)
     
     if os.path.isfile(repo_path):
         continue_analysis = get_continue_analysis_input(last_experiment,
@@ -456,5 +455,5 @@ def upload(testing=False, continue_analysis = "n", upload_type = "2", choose_exp
                                    experiment))
     
     if not testing and experiment != "test_directory":
-        write_last_exp(pkg_path, experiment)
+        write_last_exp(module_dir, experiment)
     return sequencing_report, all_alignment_reports, experiment 

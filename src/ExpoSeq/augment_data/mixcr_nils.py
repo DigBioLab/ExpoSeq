@@ -112,7 +112,7 @@ class CollectFastq():
                         two_sub_first = two_first.rfind(":")
                         two_first_sub = two_first[two_sub_first+1:]
                     if one_first_sub == two_first_sub:
-                        best_pair = [os.path.basename(file1), os.path.basename(file2)]
+                        best_pair = [file1, file2]
 
                 if not best_pair:
                     print(f"Could not find match for {file1}")
@@ -251,6 +251,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         Collect = CollectFastq(paired_end_sequencing)
         Collect.get_files()
         files = Collect.paired
+        files = [[i] for i in files]
         if paired_end_sequencing:
             while True:
                 if len(files) > 0:
@@ -279,6 +280,8 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                 print("Please enter a valid value")
                 else:
                     print("Please enter a valid value")
+        else:
+            pass
         if not os.path.isdir(os.path.join(module_dir, "my_experiments", experiment, "alignment_reports")):
             os.mkdir(os.path.join(module_dir, "my_experiments", experiment, "alignment_reports"))
     else:
@@ -333,6 +336,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             break
         except:
             print("Please enter the amount as integer")
+
     for filename in files:
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))

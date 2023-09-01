@@ -94,20 +94,30 @@ class CollectFastq():
         return path_to_file
     def __len__(self, file_list):
         return len(file_list)
+
     def get_pairs(self):
         if self.__len__(self.forward) != self.__len__(self.backward):
             print("Files matching aborted. Your have not collected the same number of files for the forward and backward reads.")
         else:
-            max_similarity = 0
             best_pair = (None, None)
             # Pairwise comparison of filenames
             for i, file1 in enumerate(self.forward):
                 for j, file2 in enumerate(self.backward):
-                    similarity = 1 - editdistance.distance(file1, file2) / max(len(file1), len(file2))
-                    if similarity > max_similarity:
-                        max_similarity = similarity
+                    with open(file1, "r") as one:
+                        one_first = one.readline().strip()
+                        one_sub_first = one_first.rfind(":")
+                        one_first_sub = one_first[one_sub_first+1:]
+                    with open(file2, "r") as two:
+                        two_first = two.readline().strip()
+                        two_sub_first = two_first.rfind(":")
+                        two_first_sub = two_first[two_sub_first+1:]
+                    if one_first_sub == two_first_sub:
                         best_pair = [file1, file2]
-                self.paired.append(best_pair)
+
+                if not best_pair:
+                    print(f"Could not find match for {file1}")
+                else:
+                    self.paired.append(best_pair)
     def get_files(self):
         print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.")
         self.forward = self.get_filenames()
@@ -115,6 +125,8 @@ class CollectFastq():
             print("Now choose the directory where you store the fastq files with the backward reads.")
             self.backward = self.get_filenames()
             self.get_pairs()
+        else:
+            self.paired = self.forward
     def call_pairs(self):
          if self.paired_end_sequencing:
              for i in self.paired:
@@ -239,6 +251,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         Collect = CollectFastq(paired_end_sequencing)
         Collect.get_files()
         files = Collect.paired
+        files = [[i] for i in files]
         if paired_end_sequencing:
             while True:
                 if len(files) > 0:
@@ -260,12 +273,15 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                     files = Collect.paired
                                     break
                                 else:
-                                    files = Collect.manually_match_pairs()
+                                    Collect.manually_match_pairs()
+                                    files = Collect.paired
                                     break
                             else:
                                 print("Please enter a valid value")
                 else:
                     print("Please enter a valid value")
+        else:
+            pass
         if not os.path.isdir(os.path.join(module_dir, "my_experiments", experiment, "alignment_reports")):
             os.mkdir(os.path.join(module_dir, "my_experiments", experiment, "alignment_reports"))
     else:
@@ -273,7 +289,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         print(files)
         files = [[i] for i in files]
         experiment = "test_directory"
-    settings_dir = os.path.join(pkg_path,
+    settings_dir = os.path.join(module_dir,
                                 "settings",
                                 "global_vars.txt")
     with open(settings_dir) as f:
@@ -320,6 +336,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             break
         except:
             print("Please enter the amount as integer")
+
     for filename in files:
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))
@@ -344,7 +361,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                                   "sequencing_report.csv")
         sequencing_report.to_csv(report_dir)
         data["last_experiment"] = experiment
-        glob_vars_dir = os.path.join(pkg_path,
+        glob_vars_dir = os.path.join(module_dir,
                                      "settings",
                                      "global_vars.txt")
         with open(glob_vars_dir, "w") as f:

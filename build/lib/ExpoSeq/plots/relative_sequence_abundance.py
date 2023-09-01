@@ -13,6 +13,7 @@ def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_d
     for i in range(all_samples.shape[1]):
         y = all_samples.iloc[:, i]
         x_pos = [j + i * bar_width for j in range(len(x_vals))]
+
         ax.bar(x_pos,
                y,
                width=0.25,
@@ -72,5 +73,6 @@ def relative_sequence_abundance_all(fig, sequencing_report, samples, num_cols, f
                       **font_settings)  # X label
 
         ax.set_ylim(0, np.max(np.array(fraction) + np.max(np.array(fraction) * 0.1)))
+        n += 1
     fig.suptitle("Clone Fraction of given Samples")
 

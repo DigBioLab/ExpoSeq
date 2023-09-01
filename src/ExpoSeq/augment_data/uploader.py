@@ -409,7 +409,7 @@ def write_last_exp(module_dir, experiment):
 def upload(testing=False, continue_analysis = "n", upload_type = "2", choose_exp = '1', paired_end_test = 'n', experiment_column = '1'):
     module_dir = os.getcwd()
 
-    repo_path, last_experiment = check_last_exp(module_dir, module_dir, testing)
+    repo_path, last_experiment = check_last_exp( module_dir, testing)
     
     if os.path.isfile(repo_path):
         continue_analysis = get_continue_analysis_input(last_experiment,

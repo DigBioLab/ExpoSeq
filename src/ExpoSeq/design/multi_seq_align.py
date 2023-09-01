@@ -42,7 +42,8 @@ class MSA:
         return sequences
 
     def get_clustalw_path(self):
-        clustalw_path = self.Settings.global_params["clustalw_path"]
+        global_params = self.Settings.read_global_vars()
+        clustalw_path = global_params["clustalw_path"]
         try:
             import tkinter as tk
             from tkinter import filedialog

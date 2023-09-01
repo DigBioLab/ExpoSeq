@@ -1,7 +1,6 @@
 import os.path
 from matplotlib.pyplot import savefig
 from ast import literal_eval
-import pkg_resources
 try:
     import tkinter as tk
     from tkinter import filedialog
@@ -9,8 +8,8 @@ except:
     pass
 
 def saveFig(name):
-    pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
-    save_settings_file = os.path.join(pkg_path,
+    module_dir = os.getcwd()
+    save_settings_file = os.path.join(module_dir,
                                       "settings",
                                       "save_settings.txt")
     with open(save_settings_file, "r") as f:

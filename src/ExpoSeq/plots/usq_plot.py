@@ -11,7 +11,7 @@ def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     y_axis = []
     for sample in range(len(sub_table)):
         sequences = list(sub_table.iloc[sample]["nSeqCDR3"])
-        fraction = list(sub_table.iloc[sample]["clonesFraction"])
+        fraction = list(sub_table.iloc[sample]["cloneFraction"])
         counter = 0
         temp_list = []
         unique_list = []
