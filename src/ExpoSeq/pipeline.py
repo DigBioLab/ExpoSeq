@@ -274,12 +274,15 @@ class PlotManager:
             self.region_string = self.global_params["region_of_interest"]
             if self.region_string == '':
                 self.region_string = "CDR3"
-            binding_report = reports.BindingReport(self.module_dir, self.experiment)
+            binding_report = reports.BindingReport(self.module_dir,
+                                                   self.experiment)
             self.binding_data = binding_report.ask_binding_data()
         self.Report = reports.SequencingReport(self.sequencing_report)
         experiment_path = self.Settings.get_experiment_path(self.experiment)
         self.unique_experiments = self.Report.get_exp_names(experiment_path)
-        self.Report.prepare_seq_report(self.region_string, divisible_by=divisible_by, length_threshold=length_threshold,
+        self.Report.prepare_seq_report(self.region_string,
+                                       divisible_by=divisible_by,
+                                       length_threshold=length_threshold,
                                        min_read_count=min_read_count)
         self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()

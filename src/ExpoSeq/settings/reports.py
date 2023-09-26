@@ -49,7 +49,7 @@ class SequencingReport:
         
 
     def trim_data(self, region_string, divisible_by = 3,length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
-        #new_fractions = clones_sample.groupby("nSeqCDR3")["readFraction"].sum().reset_index()
+
         self.sequencing_report = self.origin_seq_report.drop_duplicates(subset=["nSeq" + region_string], keep="first")
         indexes_to_drop = self.sequencing_report[self.sequencing_report["aaSeq" + region_string] == 'region_not_covered'].index
         self.sequencing_report = self.sequencing_report.drop(indexes_to_drop)
