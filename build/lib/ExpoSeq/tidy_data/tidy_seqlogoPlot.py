@@ -1,22 +1,18 @@
 import pandas as pd
+import numpy as np
+def calculate_entropy(probs):
+    """Calculate Shannon entropy."""
+    return -np.sum([p * np.log2(p) if p > 0 else 0 for p in probs])
 
-
-def cleaning(sample_name, report, chosen_seq_length, region_string):
+def cleaning(sample_name, report, chosen_seq_length, region_string, method):
     sample = report[report["Experiment"] == sample_name]
     local_report = sample[["Experiment", "cloneFraction", region_string]]
     sequences = local_report[region_string]
     #local_report = local_report.sort_values("cloneFraction").groupby("Experiment", as_index = False).head(3) # filters out three highest values of each group
     aminoacids = "ACDEFGHIKLMNPQRSTVWY"
-    if chosen_seq_length == "median":
-        chosen_sequence = int(sequences.str.len().median())#raise error if 0
-    if type(chosen_seq_length) == int:
-        chosen_sequence = int(chosen_seq_length)
-    if chosen_seq_length == "max":
-        chosen_sequence = int(sequences.str.len().max())
-    if chosen_seq_length == "mean":
-        chosen_sequence = int(sequences.str.len().mean())
-    compDict = {aa: chosen_sequence*[0] for aa in aminoacids}
-    sequences = local_report[local_report.aaSeqCDR3.astype(str).str.len() == chosen_sequence]["aaSeqCDR3"]
+
+    compDict = {aa: chosen_seq_length*[0] for aa in aminoacids}
+    sequences = local_report[local_report.aaSeqCDR3.astype(str).str.len() == chosen_seq_length]["aaSeqCDR3"]
     length_filtered_seqs = sequences.shape[0]
     for seq in sequences:
         for aa_position in range(len(seq)):
@@ -25,9 +21,19 @@ def cleaning(sample_name, report, chosen_seq_length, region_string):
                 pass
             else:
                 compDict[aminoacid][aa_position] += 1
-    aa_distribution = pd.DataFrame.from_dict(compDict)
-    #aa_distribution = aa_distribution.divide(aa_distribution.shape[1])
-    aa_distribution = aa_distribution.divide(aa_distribution.sum(axis = 1), axis = 0)
-    return aa_distribution, chosen_sequence, length_filtered_seqs
+    if method == "bits":
+        # Calculate frequencies
+        frequencies = {aa: [count/length_filtered_seqs for count in compDict[aa]] for aa in aminoacids}
+        
+        # Calculate Shannon entropy for each position
+        entropies = [calculate_entropy([frequencies[aa][i] for aa in aminoacids]) for i in range(chosen_seq_length)]
+        
+        # Calculate bits for sequence logo for each amino acid
+        bits_dict = {aa: [2 - entropies[i] if frequencies[aa][i] > 0 else 0 for i in range(chosen_seq_length)] for aa in aminoacids}
+        aa_distribution = pd.DataFrame.from_dict(bits_dict)
+    else:
+        aa_distribution = pd.DataFrame.from_dict(compDict)
+        aa_distribution = aa_distribution.divide(aa_distribution.sum(axis=1), axis=0)
+    return aa_distribution, chosen_seq_length, length_filtered_seqs
 
 

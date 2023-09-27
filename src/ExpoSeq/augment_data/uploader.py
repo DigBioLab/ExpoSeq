@@ -87,7 +87,12 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
             "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3.\nPress enter if you want to continue.\nOtherwise type in the method of your choice.\nIt has to be the exact same string which is given on the Mixcr documentation.The available presets are:")
         for i in data_list:
             print(i)
-        while use_method not in data_list or use_method != "":
+        while True:
+            if use_method == "":
+                use_method = "milab-human-tcr-dna-multiplex-cdr3"  # default value
+                break
+            elif use_method in data_list:
+                break
             use_method = input("The method you entered is not in the list. Please enter a valid method.")
             if use_method in data_list:
                 break

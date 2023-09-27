@@ -35,6 +35,7 @@ src/ExpoSeq/plots/barplot.py
 src/ExpoSeq/plots/cluster_embedding.py
 src/ExpoSeq/plots/embedding_with_binding.py
 src/ExpoSeq/plots/hist_lvst_dist.py
+src/ExpoSeq/plots/layout_finder.py
 src/ExpoSeq/plots/length_distribution.py
 src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
@@ -45,6 +46,7 @@ src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
 src/ExpoSeq/plots/usq_plot.py
 src/ExpoSeq/settings/__init__.py
+src/ExpoSeq/settings/available_presets.py
 src/ExpoSeq/settings/blosum_62.txt
 src/ExpoSeq/settings/change_save_settings.py
 src/ExpoSeq/settings/change_settings.py

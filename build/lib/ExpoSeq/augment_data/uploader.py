@@ -1,4 +1,3 @@
-
 from .mixcr_nils import process_mixcr
 from ast import literal_eval
 import os
@@ -17,6 +16,7 @@ except:
 import random
 import string
 import shutil
+from ExpoSeq.settings.available_presets import data_list
 
 def get_random_string(length):
     letters = string.ascii_letters  # this will get all the uppercase and lowercase letters
@@ -33,14 +33,14 @@ def pull_seq_align_repo(testing, testing_value):
             
         except:
             filenames_dir = input(
-                "Enter the directory where you store the alignment reports and your sequencing report manually. You should have one file for the sequencing report and multiple files for the alignment reports.")
+                "Enter the directory where you store the alignment reports and your sequencing report manually.\nYou should have one file for the sequencing report and multiple files for the alignment reports.")
             while True:
                 if os.path.isdir(filenames_dir):
                     break
                 else:
                     print("Please enter a valid directory.")
                     filenames_dir = input(
-                        "Enter the directory where you store the alignment reports and your sequencing report manually. You should have one file for the sequencing report and multiple files for the alignment reports.")
+                        "Enter the directory where you store the alignment reports and your sequencing report manually.\nYou should have one file for the sequencing report and multiple files for the alignment reports.")
             filenames_dir = os.path.abspath(filenames_dir + "//*")
             filenames = glob(filenames_dir)
     else:
@@ -84,7 +84,15 @@ def check_experiment(module_dir, testing):
 def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"):
     if not testing:
         use_method = input(
-            "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3 . Press enter if you want to continue. Otherwise type in the method of your choice which. It has to be the exact same string which is given on the Mixcr documentation.")
+            "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3.\nPress enter if you want to continue.\nOtherwise type in the method of your choice.\nIt has to be the exact same string which is given on the Mixcr documentation.The available presets are:")
+        for i in data_list:
+            print(i)
+        while use_method not in data_list or use_method != "":
+            use_method = input("The method you entered is not in the list. Please enter a valid method.")
+            if use_method in data_list:
+                break
+            else:
+                print("Please enter a valid method.")
     else:
         use_method = ""
     if use_method == "":
@@ -236,7 +244,7 @@ def method_three(module_dir, experiment, testing ):
                     pickle.dump(experiment_dic, f)
                 break
             else:
-                print("Sorry, but we could not find the column Experiment in your sequencing report. Please check if you have this")
+                print("Sorry, but we could not find the column Experiment in your sequencing report.\nPlease check if you have this")
         else:
             print("Sorry, but the filepath you entered is invalid.")
     all_alignment_reports = None
@@ -275,7 +283,7 @@ def check_last_exp(module_dir, testing):
                     dirpath = os.path.dirname(subdirectory)
                     last_experiment = os.path.basename(dirpath)
                 else:
-                    print("The experiments in my experiment do not contain the sequencing report. You need to upload a new experiment.")
+                    print("The experiments in my experiment do not contain the sequencing report.\nYou need to upload a new experiment.")
                     repo_path = ""
             
         else:
@@ -295,21 +303,36 @@ def check_last_exp(module_dir, testing):
 
 def get_continue_analysis_input(last_experiment, testing=False, testing_value = None):
     if not testing:
-        continue_input = input("Do you want to continue to analyze with " + last_experiment + "? Y/n")
+        while True:
+            continue_input = input("Do you want to continue to analyze with " + last_experiment + "? Y/n")
+            if continue_input in ["Y", "y", "n", "N"]:
+                break
+            else:
+                print("Please enter a correct value.")
     else:
         continue_input = testing_value
     return continue_input
 
 def get_next_step_input(testing=False, testing_value = None):
     if not testing:
-        next_step = input("If you want to upload a new experiment press 1. If you want to choose another experiment press 2. ")
+        while True:
+            next_step = input("If you want to upload a new experiment press 1.\nIf you want to choose another experiment press 2. ")
+            if next_step in ["1", "2"]:
+                break
+            else:
+                print("Please enter a correct value.")
     else:
         next_step = testing_value
     return next_step
 
 def get_choose_method_input(testing, testing_value = None):
     if not testing:
-        processing = input("If you want to process your fastq files with mixcr press 1. If you want to upload an already processed sequencing report in table format, press 2.")
+        while True:
+            processing = input("If you want to process your fastq files with mixcr press 1.\nIf you want to upload an already processed sequencing report in table format, press 2.")
+            if processing in ["1", "2"]:
+                break
+            else:
+                print("Please enter a correct value.")
     else:
         processing = testing_value
     return processing
@@ -379,9 +402,9 @@ def retrieve_reports(module_dir, experiment, testing):
             all_alignment_reports = load_alignment_reports(alignment_reports)
         except:
             all_alignment_reports = pd.DataFrame([])
-            print("No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
+            print("No alignment reports could be found in " + experiment + ".\nYou will continue without being able to analyze the Alignment Quality.")
     else:
-        print("The sequencing report could not be found in " + experiment + ". Please enter an experiment with an existing sequencing_report.csv file or upload new data.")
+        print("The sequencing report could not be found in " + experiment + ".\nPlease enter an experiment with an existing sequencing_report.csv file or upload new data.")
         sequencing_report = None
         all_alignment_reports = None
         experiment = None

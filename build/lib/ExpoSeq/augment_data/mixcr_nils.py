@@ -158,7 +158,13 @@ class CreateCommand:
         self.module_dir = module_dir
         self.path_to_mixcr = path_to_mixcr
         self.paired_end_sequencing = paired_end_sequencing
-        basename = os.path.basename(os.path.splitext(files[0])[0])
+
+
+        if paired_end_sequencing:
+            basename = os.path.basename(os.path.splitext(files[0][0])[0])
+        else:
+            print(files[0])
+            basename = os.path.basename(os.path.splitext(files[0])[0])
         self.basename = basename[:len(basename) - 2]
         self.filename_base = basename
         self.result = os.path.join(self.module_dir, "temp", self.filename_base + ".vdjca")
@@ -336,8 +342,12 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             break
         except:
             print("Please enter the amount as integer")
-
+    files_to_remove = os.listdir(os.path.join(module_dir, "temp"))
     for filename in files:
+        for file in files_to_remove:
+            os.remove(os.path.join(module_dir,
+                                   "temp",
+                                   file))
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))
         subprocess.run(Commands.prepare_assembly())
@@ -349,7 +359,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                 clones_sample = pd.read_table(os.path.join(module_dir, "temp", filename))
         clones_sample["Experiment"] = basename
         sequencing_report = pd.concat([sequencing_report, clones_sample])
-        files_to_remove = os.listdir(os.path.join(module_dir, "temp"))
+
         for file in files_to_remove:
             os.remove(os.path.join(module_dir,
                                    "temp",

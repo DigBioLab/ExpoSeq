@@ -517,10 +517,12 @@ class PlotManager:
     def logoPlot_single(self,
                         sample = None,
                         highlight_specific_pos=False,
+                        method = "proportion",
                         chosen_seq_length=16):
         """
         :param sample: insert the sample name
         :param highlight_specific_pos: optional. you can highlight a specific position. For instance if you want to highlight the 3rd position, you insert 3.
+        :param method: You can specify whether you want to have on your y axis the frequency of the amino acids or the information content in bits. The default is proportion. If you want to have the information content, insert "bits"
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like to.
         :return: A logo Plot which shows you the composition of aminoacids per position
         """
@@ -542,6 +544,7 @@ class PlotManager:
                                self.font_settings,
                                highlight_specific_pos,
                                self.region_of_interest,
+                               method,
                                chosen_seq_length)
 
         self.ControlFigure.update_plot()
@@ -549,21 +552,15 @@ class PlotManager:
                                                    self.ControlFigure.plot_type)
 
     def logoPlot_multi(self,
-                       num_cols = None,
                        samples="all",
                        chosen_seq_length=16,
+                       method = "proportion",
                        ):
         """
-        :param num_cols: number of columns you want to have in your figure.
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :param chosen_seq_length: 16 per default. You always analyze online one sequence length! You can change it if you would like
         :return: Gives you in one figure one logoPlot per sample.
         """
-        if num_cols == None:
-            if len(self.experiments_list) > 4:
-                num_cols = int(len(self.experiments_list)/4)
-            else:
-                num_cols = len(self.experiments_list)
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         if samples != "all":
@@ -576,9 +573,9 @@ class PlotManager:
         logo_plot.plot_logo_multi(self.ControlFigure.fig,
                               self.sequencing_report,
                               samples,
-                              num_cols,
                               self.font_settings,
                               self.region_of_interest,
+                              method,
                               chosen_seq_length,
                               )
         self.ControlFigure.update_plot()
@@ -610,19 +607,14 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                                    self.ControlFigure.plot_type)
 
-    def relative_abundance_multi(self, samples = "all", num_cols=None):
+    def relative_abundance_multi(self, samples = "all"):
         """
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
-        :param num_cols: number of columns you want to have in your figure.
         :return: Outputs a figure which shows the fractions per clones for each sample in the dataset
         """
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
-        if num_cols == None:
-            if len(self.experiments_list) > 4:
-                num_cols = int(len(self.experiments_list)/4)
-            else:
-                num_cols = len(self.experiments_list)
+
         if samples != "all":
             assert type(samples) == list, "You have to give a list with the samples you want to analyze"
             incorrect_samples = [x for x in samples if x not in self.experiments_list]
@@ -633,7 +625,6 @@ class PlotManager:
         relative_sequence_abundance.relative_sequence_abundance_all(self.ControlFigure.fig,
                                               self.sequencing_report,
                                               samples,
-                                              num_cols,
                                               self.font_settings,
                                               self.region_of_interest)
         self.ControlFigure.update_plot()
@@ -641,17 +632,11 @@ class PlotManager:
                                                    self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
 
-    def lengthDistribution_multi(self, num_cols = None, samples="all"):
+    def lengthDistribution_multi(self, samples="all"):
         """
-        :param num_cols: number of columns you want to have in your figure.
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :return: Outputs one figure with one subplot per sample which shows you the distribution of the sequence length
         """
-        if num_cols == None:
-            if len(self.experiments_list) > 4:
-                num_cols = int(len(self.experiments_list)/4)
-            else:
-                num_cols = len(self.experiments_list)
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         if samples != "all":
@@ -662,7 +647,6 @@ class PlotManager:
         length_distribution.length_distribution_multi(self.ControlFigure.fig,
                                         self.sequencing_report,
                                         samples,
-                                        num_cols,
                                         self.font_settings,
                                         self.region_of_interest,
                                         test_version=self.is_test)

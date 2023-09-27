@@ -161,19 +161,22 @@ class CreateCommand:
 
 
         if paired_end_sequencing:
-            basename = os.path.basename(os.path.splitext(files[0][0])[0])
+            self.basename = os.path.basename(os.path.splitext(files[0][0])[0])
+            self.files = [os.path.normpath(j)  for i in files for j in i]
         else:
-            print(files[0])
-            basename = os.path.basename(os.path.splitext(files[0])[0])
-        self.basename = basename[:len(basename) - 2]
-        self.filename_base = basename
+            self.basename = os.path.basename(os.path.splitext(files[0])[0])
+            self.files = [os.path.normpath(i) for i in files]
+        self.filename_base = self.basename
         self.result = os.path.join(self.module_dir, "temp", self.filename_base + ".vdjca")
         self.alignment_path = os.path.normpath(os.path.join(self.module_dir,"my_experiments",experiment,"alignment_reports",self.filename_base + "_AlignmentReport.txt"))
-        self.clones = os.path.join(self.module_dir, "temp", self.basename + "clones.clns")
+        self.clones = os.path.join(self.module_dir,
+                                   "temp",
+                                   self.basename + "_clones.clns")
         self.table_tsv = os.path.join(module_dir,
                                      "temp",
-                                     basename + ".tsv")
-        self.files = [os.path.normpath(i) for i in files]
+                                     self.basename + ".tsv")
+
+
 
     def get_free_memory_linux(self):
         with open("/proc/meminfo", "r") as f:

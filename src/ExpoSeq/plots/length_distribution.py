@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from ExpoSeq.plots.layout_finder import best_layout
 
 def length_distribution_single(fig,ax, sequencing_report, sample, font_settings, region_string):
     batch = sequencing_report[sequencing_report["Experiment"] == sample]
@@ -24,7 +25,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings,
 
 
 
-def length_distribution_multi(fig, sequencing_report, samples,num_cols, font_settings, region_string, test_version = False,):
+def length_distribution_multi(fig, sequencing_report, samples, font_settings, region_string, test_version = False,):
     if samples == "all":
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
@@ -32,20 +33,11 @@ def length_distribution_multi(fig, sequencing_report, samples,num_cols, font_set
         sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(samples)]
         unique_experiments = sequencing_report["Experiment"].unique()
         unique_experiments = np.sort(unique_experiments)
-
-    # Subplots are organized in a Rows x Cols Grid
-    # Tot and Cols are known
     Tot = unique_experiments.shape[0]
-    Cols = num_cols
-    # Compute Rows required
-    Rows = Tot // Cols
-    #     EDIT for correct number of rows:
-    #     If one additional row is necessary -> add one:
-    if Tot % Cols != 0:
-        Rows += 1
-    # Create a Position index
-    Position = range(1,Tot + 1)
+    Rows, Cols = best_layout(Tot)
+    Position = range(1, Tot + 1)
     n = 0
+
    # fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
         batch = sequencing_report[sequencing_report["Experiment"] == experiment]
