@@ -19,28 +19,36 @@ def cleaning_data(sequencing_report, region_of_interest, protein = True, specifi
     else:
         strand_column = region_of_interest
 
+
+    unique_experiments = sequencing_report["Experiment"].unique()
     group_columns = ["Experiment", strand_column]
    # column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')
     #sequencing_report[new_fraction] = column
-    sequencing_report = sequencing_report.drop_duplicates(group_columns,
-                                                            keep='last')
-    unique_experiments = sequencing_report["Experiment"].unique()
+
+   # new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
+   # sequencing_report = sequencing_report.copy()
+    #sequencing_report["cloneFraction"] = new_column
+
+
     unique_sequences = pd.DataFrame(sequencing_report[strand_column].unique()) #nseqcdr3 has to be changed since it is a chosen name for column
     unique_sequences.rename(columns={0: strand_column},
                             inplace=True)
     unique_experiments = list(unique_experiments)
+
     for experiment in unique_experiments:
         local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strand_column,
                                                                                        "cloneFraction"]]
+
         unique_sequences = unique_sequences.merge(local_data,
                                                   how='left',
                                                   on = strand_column)
-        unique_sequences = unique_sequences.fillna(0)
+       # unique_sequences = unique_sequences.fillna(0)
         unique_sequences = unique_sequences.rename(columns={"cloneFraction": "cloneFraction" + experiment})
     unique_sequences.drop(strand_column,
-                          inplace=True,
+                         inplace=True,
                           axis=1)
     unique_sequences = unique_sequences.fillna(0)
+    unique_sequences.reset_index(inplace = True)
     return unique_sequences, unique_experiments
 
 
@@ -55,9 +63,9 @@ def morosita_horn_matrix(unique_sequences, unique_experiments):
         start = 0
         for index_sample_two in range(columns):
             d2 = unique_sequences.iloc[:, index_sample_two]
-            product_d1_d2 = d1 * d2
-            d1_square = d1**2
-            d2_square = d2**2
+            product_d1_d2 = np.array(d1) * np.array(d2)
+            d1_square = np.array(d1)**2
+            d2_square = np.array(d2)**2
        #     cal_cols=pd.concat([d1,d2,product_d1_d2,d1_square,d2_square], axis=1).fillna(0)
         #    cal_cols.columns=['d1',
          #                     'd2',

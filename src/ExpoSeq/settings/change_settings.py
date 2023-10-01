@@ -41,7 +41,7 @@ class Settings:
             f.write(str(font_settings))
             
     def create_legend_settings(self):
-        legend_params = {'loc': 'upper right', 'bbox_to_anchor': (1, 1), 'ncols': 1, 'fontsize': 16, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
+        legend_params = {'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
         with open(self.legend_settings_path, "w") as f:
             f.write(str(legend_params))
             

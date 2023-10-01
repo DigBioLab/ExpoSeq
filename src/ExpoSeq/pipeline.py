@@ -10,12 +10,17 @@ import os
 from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
 from .design.multi_seq_align import MSA
 from ExpoSeq.settings import change_settings, change_save_settings, reports, plot_styler
-
-
+from tkinter import filedialog
+import subprocess
+import glob
+from ExpoSeq.augment_data.uploader import create_alignment_report
+from ExpoSeq.settings.general_instructions import print_instructions
+from ExpoSeq.tidy_data.heatmaps.read_matrix import read_matrix
+from ExpoSeq.augment_data.mixcr_nils import check_mixcr
 
 class MyFigure:
     def __init__(self):
-        self.fig = plt.figure(1)
+        self.fig = plt.figure(1, figsize = (12, 10))
         self.ax = self.fig.gca()
         self.plot_type = "multi"
 
@@ -31,29 +36,33 @@ class MyFigure:
     def update_plot(self):
         self.ax = self.fig.gca()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
+       # figManager = plt.get_current_fig_manager()
+      #  figManager.window.showMaximized()
+        self.tighten()
 
     def tighten(self):
         plt.tight_layout()
 
 
-def save_matrix(matrix):
-    while True:
-        save_matrix = input("Do you want to save the generated data? (Y/n)")
-        if save_matrix in ["Y", "y", "N", "n"]:
-            break
-        else:
-            print("Please enter Y or n")
-    if save_matrix.lower() in ["Y", "y"]:
+def save_matrix(matrix, path = None):
+    if path == None:
         while True:
-            filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
-            if not os.path.isfile(filename_matrix):
+            save_matrix = input("Do you want to save the generated data? (Y/n)")
+            if save_matrix in ["Y", "y", "N", "n"]:
                 break
             else:
-                print("This file already exists. Please choose another name.")
+                print("Please enter Y or n")
+        if save_matrix.lower() in ["Y", "y"]:
+            while True:
+                filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
+                if not os.path.isfile(filename_matrix):
+                    matrix.to_excel(path + ".xlsx")
+                    break
+                else:
+                    print("This file already exists. Please choose another name.")
+    else:
+        matrix.to_excel(path)
 
-        matrix.to_excel(filename_matrix + ".xlsx")
 
 
 class Directories:
@@ -140,120 +149,14 @@ class Directories:
                                        "experiment_names.pickle")
         return experiment_path
 
-def print_instructions():
-    instructions = '''
 
------------------------
-General Instructions
------------------------
-All plots can be called with 'plot' followed by the name of the plot, separated by a dot.
-To analyze a specific sample or investigate possible options, use 'help()' and 'plot' followed by the name of the plot.
 
------------------------
-Plot Commands
------------------------
-- plot.alignment_quality(): 
-    Creates a figure showing the Overall Reads per sample and the number of aligned reads.
 
-- plot.aa_distribution(): 
-    Returns a plot showing the amino acid distribution in the given sequence range.
-
-- plot.rarefraction_curves(): 
-    Shows the rarefraction curves for the given samples.
-
-- plot.logoPlot_single(): 
-    A logo Plot showing the composition of amino acids per position.
-
-- plot.logoPlot_multiple(): 
-    A logo Plot showing the composition of amino acids per position for multiple samples.
-
-- plot.lengthDistribution_single(): 
-    Shows the length distribution of the given sample.
-
-- plot.relative_abundance_multi(): 
-    Shows the relative abundance of the given samples.
-
-- plot.lengthDistribution_multi(): 
-    Shows the length distribution of the given samples.
-
-- plot.rel_seq_abundance(): 
-    Shows a bar plot of the frequencies of the most abundant sequences with optional Levenshtein distance.
-
-- plot.basic_cluster(): 
-    Clusters a batch of sequences based on a threshold for the Levenshtein distance.
-
-- plot.cluster_one_AG(): 
-    Clusters sequences based on Levenshtein distance and shows binding data against a specific antigen.
-
-- plot.tsne_cluster_AG(): 
-    Embeds sequences in a vector space, reduces dimensions, and clusters them. Also plots binding data.
-
-- plot.embedding_tsne(): 
-    Transforms sequences into a vector space and uses PCA and t-SNE for dimensionality reduction.
-
-- plot.morosita_horn(): 
-    Returns a matrix of the identity between your samples based on the Morosita Horn Index.
-
-- plot.jaccard(): 
-    Returns a matrix of the identity between your samples based on the Jaccard Index.
-
-- plot.sorensen(): 
-    Returns a matrix of the identity between your samples based on the Sorensen Index.
-
-- plot.relative(): 
-    Returns a matrix of the identity between your samples based on the Relative Index.
-
-- plot.levenshtein_dendrogram(): 
-    Returns a dendrogram of the sequences based on the Levenshtein distance.
-
-- plot.dendro_bind(): 
-    Shows a dendrogram based on Levenshtein distance and a bar plot with binding data.
-
-- plot.MSA_design(): 
-    Creates a multiple sequence alignment and offers an interface for sequence design.
-
------------------------
-Non-Plot Commands
------------------------
-- plot.add_binding_data(): 
-    Allows you to add more binding data to the pipeline.
-
-- plot.change_preferred_antigen(): 
-    Sets the antigen you'd like to analyze in the plots.
-
-- plot.change_preferred_sample(): 
-    Sets the sample you'd like to analyze in the plots.
-
-- plot.change_preferred_region(): 
-    Sets the region you'd like to analyze in the plots.
-
-- plot.change_filter(): 
-    Adjusts the thresholds for filtering sequences in your analysis.
-
-- plot.discard_samples(): 
-    Allows you to remove samples from the analysis.
-
-- plot.merge_bind_seq_report(): 
-    Merges binding data with NGS data.
-
-- plot.print_antigens(): 
-    Shows the available antigen names in your data.
-
-- plot.print_samples(): 
-    Shows the available samples in your data.
-
-- plot.save(): 
-    Allows you to save a plot.
-
-- plot.change_experiment_names(): 
-    Allows you to change the names of the samples.
-'''
-    print(instructions)
 
 # Call the function to print the instructions
 
 class PlotManager:
-    def __init__(self, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=9,
+    def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=9,
                  min_read_count=3):
         self.is_test = test_version
         self.Settings = change_settings.Settings()
@@ -270,7 +173,15 @@ class PlotManager:
                                                       num_antigen=test_panrou_num)
             self.region_string = "CDR3"
         else:
-            self.sequencing_report, self.alignment_report, self.experiment = upload()
+            if experiment == None:
+                self.sequencing_report, self.alignment_report, self.experiment = upload()
+            else:
+                self.sequencing_report  = pd.read_csv(os.path.join(self.module_dir,
+                                                                   "my_experiments",
+                                                                   experiment,
+                                                                   "sequencing_report.csv"))
+                self.alignment_report = create_alignment_report(self.module_dir, experiment)
+                self.experiment = experiment
             self.region_string = self.global_params["region_of_interest"]
             if self.region_string == '':
                 self.region_string = "CDR3"
@@ -286,30 +197,188 @@ class PlotManager:
                                        min_read_count=min_read_count)
         self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
-        self.unique_experiments = self.Report.get_exp_names(experiment_path)
         self.sequencing_report = self.Report.sequencing_report
         self.font_settings = self.Settings.read_font_settings()
         self.legend_settings = self.Settings.read_legend_settings()
         self.colorbar_settings = self.Settings.read_colorbar_settings()
         self.ControlFigure = MyFigure()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
-        #self.settings_saver = change_save_settings.Change_save_settings()
+        # self.settings_saver = change_save_settings.Change_save_settings()
         self.experiments_list = list(self.unique_experiments.values())
         self.region_of_interest = "aaSeq" + self.region_string
         self.preferred_sample = self.experiments_list[0]
         self.change_preferred_antigen()
         print_instructions()
-            
-    def change_preferred_antigen(self, antigen = None):
+        self.report_path = os.path.join(self.module_dir, "my_experiments", self.experiment, "reports_pipeline")
+        if not os.path.isdir(self.report_path):
+            os.mkdir(self.report_path)
+        if not os.path.isdir(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots")):
+            os.mkdir(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots"))
+        self.plot_path = os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", self.region_of_interest)
+        self.mixcr_plots_path = os.path.join(self.plot_path, "mixcr_plots")
+        if not os.path.isdir(self.plot_path):
+            os.mkdir(self.plot_path)
+            if not os.path.isdir(self.mixcr_plots_path):
+                os.mkdir(self.mixcr_plots_path)
+            self.full_analysis()
+
+
+    def save_in_plots(self, enter_filename):
+        plt.savefig(fname = os.path.join(self.plot_path, enter_filename + f".png"), dpi = 300,  format="png")
+
+    def get_best_binder(self):
+        if self.binding_data is None:
+            return None
+        found_antigens = self.binding_data.columns.to_list()[1:]
+        best_binding = {}
+
+        for i in self.unique_experiments:
+            sub_report = self.sequencing_report[self.sequencing_report["Experiment"] == i]
+            merged_report = sub_report.merge(self.binding_data, how = "inner")
+            clone_fractions = merged_report["cloneFraction"]
+            clone_fractions.fillna(0, inplace = True)
+            best_binding_local = {}
+            for antigen in found_antigens:
+                binding_values = merged_report[antigen]
+                binding_values.fillna(0, inplace = True)
+                significance_binding = (binding_values * clone_fractions).mean()
+                if antigen in best_binding_local.keys():
+                    if best_binding_local.get(antigen) < significance_binding:
+                        best_binding_local[antigen] = significance_binding
+                    else:
+                        pass
+                else:
+                    best_binding_local[antigen] = significance_binding
+
+            sorted_keys = sorted(best_binding_local, key=best_binding_local.get, reverse=True)
+
+            # Get the best and second best keys
+            best_key = sorted_keys[0]
+            if len(found_antigens) >= 3:
+                second_best_key = sorted_keys[1] if len(sorted_keys) > 1 else None
+                best_binding[i] = [best_key, second_best_key]
+            else:
+                best_binding[i] = [best_key]
+        return best_binding
+
+
+    def full_analysis(self):
+        """
+        :return: returns some plots about quality in /my_experiments/YOUR_EXPERIMENT_NAME/plots. Is called automatically when launching the pipeline.
+        """
+        try:
+            mh_save_path = os.path.join(self.report_path, "morosita_horn_identity" + ".xlsx")
+            self.morosita_horn(matrix_save_path = mh_save_path)
+            plt.tight_layout()
+            self.save_in_plots("morosita_horn")
+        except:
+            print("Creating Morosita Horn matrix failed")
+        try:
+            self.lengthDistribution_multi()
+            plt.tight_layout()
+            self.save_in_plots("length_distribution_multi")
+        except:
+            print("Creating Length Distribution of samples failed")
+        try:
+            print("Begin with creating mixcr plots. You can find a description about them here:\n https://mixcr.com/mixcr/reference/mixcr-exportPlots/")
+            self.export_mixcr_quality()
+            self.mixcr_explain_diversity()
+            self.mixcr_vdj_usage()
+            self.mixcr_overlap()
+        except:
+            print(f".clns files could not be found. Most certainly, you have uploaded the sequencing report.")
+        try:
+            self.alignment_quality()
+            plt.tight_layout()
+            self.save_in_plots("alignment_quality")
+        except:
+            print("Alignment reports could not be found")
+        for i in self.experiments_list:
+            self.rarefraction_curves(samples = [i])
+            plt.tight_layout()
+            self.save_in_plots("rarefraction_curves_"+i)
+       # self.relative_abundance_multi()
+       # plt.tight_layout()
+        #self.save_in_plots("relative_sequence_abundance_multi")
+        try:
+            self.logoPlot_multi()
+            plt.tight_layout()
+            self.save_in_plots("logo_plot_multi")
+        except:
+            print("Creating Logo plot of multiple samples failed")
+        print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")
+        if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
+            os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
+
+            for single_experiment in self.experiments_list:
+                try:
+                    self.levenshtein_dendrogram(sample = single_experiment, max_cluster_dist = 1)
+                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
+                    self.basic_cluster(samples = [single_experiment],
+                                       max_ld = 2,
+                                       batch_size=1000,
+                                       save_report_path = os.path.join(self.report_path, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
+                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
+                except:
+                    print(f"Sequence clustering failed at: {single_experiment}")
+        threshold_identity = 0.2
+        while True:
+            overlapping_samples = read_matrix(threshold=threshold_identity, path_matrix=mh_save_path)
+            mean_length = sum(len(v) for v in overlapping_samples.values()) / len(overlapping_samples)
+            if mean_length > 2.5:
+                break
+            elif threshold_identity < 0.05:
+                break
+            else:
+                threshold_identity -= 0.01
+        for single_experiment in list(overlapping_samples.keys()):
+            try:
+                self.embedding_tsne(samples = overlapping_samples[single_experiment])
+                self.save_in_plots(single_experiment + "embedding_tsne")
+            except:
+                print(f"Clustering with TSNE failed for {single_experiment}.")
+        best_binder = self.get_best_binder()    
+        if best_binder == None:
+            print("No binding data was found. Thus, no binding plots can be created.")
+        else:
+            clustering_antigens_path = os.path.join(self.plot_path, "clustering_antigens")
+            if not os.path.isdir(clustering_antigens_path):
+                os.mkdir(clustering_antigens_path)
+            experiment_keys = list(best_binder.keys())
+            print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n2500 iterations are used for tsne.")
+            for experiment in experiment_keys:
+                self.tsne_cluster_AG(sample = experiment,
+                                     antigen = best_binder[experiment],
+                                     save_report_path = os.path.join(self.report_path, experiment + "_best_binder[experiment]" + ".xlsx"))
+                self.save_in_plots(os.path.join( "clustering_antigens", experiment + "tsne_cluster_AG"))
+            dendro_path = os.path.join(self.plot_path,"clustering_antigens", "dendro_binding")
+            if not os.path.isdir(dendro_path):
+                os.mkdir(dendro_path)
+            print("Create dendrogram with binding data and levenshtein distance of 2 and batch size of 1000.")
+            for experiment in experiment_keys:
+                fig2 = self.dendro_bind(sample = experiment,
+                                 antigens = best_binder[experiment],
+                                 )
+                self.fig.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}.png"))
+                fig2.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}_values.png"))
+
+
+        print(f"The pipeline has created some plots in: {self.plot_path}")
+        
+
+    def change_preferred_antigen(self, antigen=None):
         if self.binding_data is not None:
             columns_bind_data = self.binding_data.columns.to_list()
-            self.preferred_antigen = columns_bind_data[1]
+            if antigen == None:
+                antigen = columns_bind_data[1]
+            self.preferred_antigen = antigen
         else:
             self.preferred_antigen = None
+
     def change_preferred_sample(self, sample):
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.preferred_sample = sample
-        
+
     def change_filter(self, divisible_by=3, length_threshold=9, min_read_count=0):
         """
         :param divisible_by: filter all sequences which are not divisible by this value
@@ -395,7 +464,7 @@ class PlotManager:
         except:
             save_dir = ""
 
-        plt.savefig(fname=os.path.join(save_dir, enter_filename), dpi=dpi, format=format)
+        plt.savefig(fname=os.path.join(save_dir, enter_filename + f".{format}"), dpi=dpi, format=format)
 
     def close(self):
         plt.close()
@@ -446,19 +515,19 @@ class PlotManager:
         self.ControlFigure.clear_fig()
         try:
             barplot.barplot(self.ControlFigure.ax,
-                          self.alignment_report,
-                          self.sequencing_report,
-                          self.font_settings,
-                          self.legend_settings,
-                          apply_log=log_transformation)
+                            self.alignment_report,
+                            self.sequencing_report,
+                            self.font_settings,
+                            self.legend_settings,
+                            apply_log=log_transformation)
 
             self.ControlFigure.update_plot()
             self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                       self.ControlFigure.plot_type)
+                                               self.ControlFigure.plot_type)
         except:
             print("Currenlty you do not have loaded an alignment report.")
 
-    def aa_distribution(self, sample = None, region = [3,7], protein=True):
+    def aa_distribution(self, sample=None, region=[3, 7], protein=True):
         """
         :param sample: The sample you would like to analyze
         :param region: The input is a list and you can specify with the first value the beginning region and with the second value the end region within your sequences for which you want to know the amino acid composition. For instance: [3,7]
@@ -476,18 +545,18 @@ class PlotManager:
         assert protein in [True, False], "You have to give True or False as input for the protein parameter"
         self.ControlFigure.clear_fig()
         stacked_aa_distribution.stacked_aa_distr(self.ControlFigure.ax,
-                               self.sequencing_report,
-                               sample,
-                               region,
-                               protein,
-                               self.font_settings,
-                               self.region_of_interest)
+                                                 self.sequencing_report,
+                                                 sample,
+                                                 region,
+                                                 protein,
+                                                 self.font_settings,
+                                                 self.region_of_interest)
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
-    def rarefraction_curves(self, samples = None):
+    def rarefraction_curves(self, samples=None):
         """
         :param samples: you insert a list which contains the sample names
         :return: Shows your the rarefraction curves for the given samples.
@@ -505,19 +574,19 @@ class PlotManager:
         else:
             self.ControlFigure.clear_fig()
             usq_plot.plot_USQ(fig=self.ControlFigure.fig,
-                           sequencing_report=self.sequencing_report,
-                           samples=samples,
-                           font_settings=self.font_settings,
-                           legend_settings=self.legend_settings)
+                              sequencing_report=self.sequencing_report,
+                              samples=samples,
+                              font_settings=self.font_settings,
+                              legend_settings=self.legend_settings)
 
             self.ControlFigure.update_plot()
             self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                       self.ControlFigure.plot_type)
+                                               self.ControlFigure.plot_type)
 
     def logoPlot_single(self,
-                        sample = None,
+                        sample=None,
                         highlight_specific_pos=False,
-                        method = "proportion",
+                        method="proportion",
                         chosen_seq_length=16):
         """
         :param sample: insert the sample name
@@ -539,22 +608,22 @@ class PlotManager:
             chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
         logo_plot.plot_logo_single(self.ControlFigure.ax,
-                               self.sequencing_report,
-                               sample,
-                               self.font_settings,
-                               highlight_specific_pos,
-                               self.region_of_interest,
-                               method,
-                               chosen_seq_length)
+                                   self.sequencing_report,
+                                   sample,
+                                   self.font_settings,
+                                   highlight_specific_pos,
+                                   self.region_of_interest,
+                                   method,
+                                   chosen_seq_length)
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
     def logoPlot_multi(self,
                        samples="all",
                        chosen_seq_length=16,
-                       method = "proportion",
+                       method="proportion",
                        ):
         """
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
@@ -571,19 +640,19 @@ class PlotManager:
             chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
         logo_plot.plot_logo_multi(self.ControlFigure.fig,
-                              self.sequencing_report,
-                              samples,
-                              self.font_settings,
-                              self.region_of_interest,
-                              method,
-                              chosen_seq_length,
-                              )
+                                  self.sequencing_report,
+                                  samples,
+                                  self.font_settings,
+                                  self.region_of_interest,
+                                  method,
+                                  chosen_seq_length,
+                                  )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
 
-    def lengthDistribution_single(self, sample = None):
+    def lengthDistribution_single(self, sample=None):
         """
 
         :param sample: name of the sample from which you would like to see the length distribution
@@ -597,17 +666,17 @@ class PlotManager:
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         length_distribution.length_distribution_single(self.ControlFigure.fig,
-                                         self.ControlFigure.ax,
-                                         self.sequencing_report,
-                                         sample,
-                                         self.font_settings,
-                                         self.region_of_interest)
+                                                       self.ControlFigure.ax,
+                                                       self.sequencing_report,
+                                                       sample,
+                                                       self.font_settings,
+                                                       self.region_of_interest)
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
-    def relative_abundance_multi(self, samples = "all"):
+    def relative_abundance_multi(self, samples="all"):
         """
         :param samples: You analyze all samples per default. If you want to analyze specific samples it has to be a list with the corresponding sample names
         :return: Outputs a figure which shows the fractions per clones for each sample in the dataset
@@ -623,13 +692,13 @@ class PlotManager:
             samples = self.experiments_list
         self.ControlFigure.clear_fig()
         relative_sequence_abundance.relative_sequence_abundance_all(self.ControlFigure.fig,
-                                              self.sequencing_report,
-                                              samples,
-                                              self.font_settings,
-                                              self.region_of_interest)
+                                                                    self.sequencing_report,
+                                                                    samples,
+                                                                    self.font_settings,
+                                                                    self.region_of_interest)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
 
     def lengthDistribution_multi(self, samples="all"):
@@ -645,17 +714,17 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         length_distribution.length_distribution_multi(self.ControlFigure.fig,
-                                        self.sequencing_report,
-                                        samples,
-                                        self.font_settings,
-                                        self.region_of_interest,
-                                        test_version=self.is_test)
+                                                      self.sequencing_report,
+                                                      samples,
+                                                      self.font_settings,
+                                                      self.region_of_interest,
+                                                      test_version=self.is_test)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
 
-    def rel_seq_abundance(self, samples = None, max_levenshtein_distance=0, length_filter=0, batch=3000):
+    def rel_seq_abundance(self, samples=None, max_levenshtein_distance=0, length_filter=0, batch=3000):
         """
 
         :param samples: For a qualitative analysis choose samples from the same panning experiment. Input is a list
@@ -677,66 +746,92 @@ class PlotManager:
         assert type(batch) == int, "You have to give an integer as input for the batch size"
         self.ControlFigure.clear_fig()
         relative_sequence_abundance.relative_sequence_abundance(self.ControlFigure.ax,
-                                          self.sequencing_report,
-                                          samples,
-                                          max_levenshtein_distance,
-                                          length_filter,
-                                          batch,
-                                          self.region_of_interest,
-                                          self.font_settings,
-                                          self.legend_settings)
+                                                                self.sequencing_report,
+                                                                samples,
+                                                                max_levenshtein_distance,
+                                                                length_filter,
+                                                                batch,
+                                                                self.region_of_interest,
+                                                                self.font_settings,
+                                                                self.legend_settings)
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
-    def basic_cluster(self, sample = None, max_ld=1, min_ld=0, second_figure=False, batch_size=300):
+    def save_cluster_report(self,cluster_report, path=None):
+        if path == None:
+            while True:
+                cluster_report_save = input("Do you want to save the generated data? (Y/n)")
+                if cluster_report_save in ["Y", "y", "N", "n"]:
+                    break
+                else:
+                    print("Please enter Y or n")
+            if cluster_report_save.lower() in ["Y", "y"]:
+                while True:
+                    filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
+                    if not os.path.isfile(filename_matrix):
+                        path = os.path.join(self.report_path, filename_matrix)
+                        cluster_report.to_excel(path)
+                        break
+                    else:
+                        print("This file already exists. Please choose another name.")
+        else:
+            cluster_report.to_excel(path)
+
+
+    def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, second_figure = False, label_type = "numbers", save_report_path = None):
         """
-        :param sample: type in a sample name you want to analyze
-        :max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
-        :min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
-        :second_figure: optional Parameter. Default is False. If you want to see the a histogram with the levenshtein distances, set it to True
-        :return:
+        :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
+        :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
+        :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
+        :param second_figure: Default is False. Creates a second figure with the levenshtein distance as bars
+        :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
+        :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         """
-        if sample == None:
-            sample = self.preferred_sample
+        if samples == None:
+            samples = [self.preferred_sample]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
-        assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(sample) == str, "You have to give a string as input for the sample"
+      #  assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        assert type(samples) == list, "You have to give a string as input for the sample"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(second_figure) == bool, "You have to give True or False as input for the second figure"
         self.ControlFigure.clear_fig()
-        fig2 = levenshtein_clustering.clusterSeq(
+        cluster_report = levenshtein_clustering.clusterSeq(
             self.ControlFigure.ax,
             self.sequencing_report,
-            sample,
+            samples,
             max_ld,
             min_ld,
             batch_size,
             self.font_settings,
             second_figure,
-            self.region_of_interest)
+            self.region_of_interest,
+            label_type)
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
-
+                                           self.ControlFigure.plot_type)
+        self.save_cluster_report(cluster_report = cluster_report,
+                                 path = save_report_path)
         if second_figure == True:
             print("close the second window before you continue")
 
-    def cluster_one_AG(self, antigen = None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False):
-        """
 
+    def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, preferred_cmap = "Blues", label_type = "numbers", save_report_path = None):
+        """
         :param antigen: is the name of the antigen you would like to analyze
         :param max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
         :param min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
         :param batch_size: optional Parameter where its default is 1000. Is the batch size you want to use for the analysis
         :param specific_experiments: optional Parameter. You can give the names of specific samples in a list if you want
+        :param preferred_cmap: optional Parameter. Define the colormap you would like to use.
+        :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         :return: Creates a figure where sequences are clustered based on Levenshtein distance. Additionally the binding data of the sequences against a specific antigen is given.
         """
-    
+
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
@@ -747,22 +842,26 @@ class PlotManager:
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
         self.ControlFigure.clear_fig()
-        levenshtein_clustering.cluster_single_AG(self.ControlFigure.fig,
-                                self.sequencing_report,
-                                antigen,
-                                self.binding_data,
-                                max_ld,
-                                min_ld,
-                                batch_size,
-                                self.region_of_interest,
-                                specific_experiments,
-                                )
+        cluster_report = levenshtein_clustering.cluster_single_AG(self.ControlFigure.fig,
+                                                 self.sequencing_report,
+                                                 antigen,
+                                                 self.binding_data,
+                                                 max_ld,
+                                                 min_ld,
+                                                 batch_size,
+                                                 self.region_of_interest,
+                                                 preferred_cmap,
+                                                 specific_experiments,
+                                                 label_type
+                                                 )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
+        self.save_cluster_report(cluster_report = cluster_report,
+                                 path = save_report_path)
 
-    def tsne_cluster_AG(self, sample = None, antigen = None, antigen_names=True, pca_components=70, perplexity=25,
-                        iterations_tsne=2500):
+    def tsne_cluster_AG(self, sample=None, antigen=None, antigen_names=True, pca_components=70, perplexity=25,
+                        iterations_tsne=2500, save_report_path = None):
         """
         :param sample: the sample you would like to analyze
         :param antigen: the toxins you would like to cluster
@@ -789,25 +888,26 @@ class PlotManager:
 
         self.ControlFigure.clear_fig()
         tsne_results = embedding_with_binding.cluster_toxins_tsne(self.ControlFigure.fig,
-                                                 self.sequencing_report,
-                                                 sample,
-                                                 antigen,
-                                                 self.binding_data,
-                                                 antigen_names,
-                                                 pca_components,
-                                                 perplexity,
-                                                 iterations_tsne,
-                                                 self.font_settings,
-                                                 self.colorbar_settings,
-                                                 False,
-                                                 self.region_of_interest)
+                                                                  self.sequencing_report,
+                                                                  sample,
+                                                                  antigen,
+                                                                  self.binding_data,
+                                                                  antigen_names,
+                                                                  pca_components,
+                                                                  perplexity,
+                                                                  iterations_tsne,
+                                                                  self.font_settings,
+                                                                  self.colorbar_settings,
+                                                                  False,
+                                                                  self.region_of_interest)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
-        save_matrix(tsne_results)
+                                           self.ControlFigure.plot_type)
+
+        self.save_cluster_report(tsne_results, path = save_report_path)
 
     def embedding_tsne(self,
-                       samples = None,
+                       samples=None,
                        strands=True,
                        pca_components=80,
                        perplexity=30,
@@ -835,24 +935,25 @@ class PlotManager:
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
         self.ControlFigure.clear_fig()
         cluster_embedding.show_difference(self.sequencing_report,
-                              samples,
-                              strands,
-                              batch_size,
-                              pca_components,
-                              perplexity,
-                              iterations_tsne,
-                              self.region_of_interest,
-                              self.ControlFigure.ax,
-                              self.legend_settings,
-                              self.font_settings)
+                                          samples,
+                                          strands,
+                                          batch_size,
+                                          pca_components,
+                                          perplexity,
+                                          iterations_tsne,
+                                          self.region_of_interest,
+                                          self.ControlFigure.ax,
+                                          self.legend_settings,
+                                          self.font_settings)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
-    def morosita_horn(self, annotate_cells=False, specific_experiments=False):
+    def morosita_horn(self, annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
         :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_experiments: you can give a list with specific experiments
+        :param matrix_save_path: Path where you want to save the matrix
         :return: Returns a matrix of the identity between your samples based on the Morosita Horn Index
         """
         self.ControlFigure.check_fig()
@@ -863,19 +964,19 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                    True,
-                                    "morosita_horn",
-                                    self.ControlFigure.ax,
-                                    self.colorbar_settings,
-                                    self.font_settings,
-                                    annotate_cells,
-                                    self.region_of_interest,
-                                    specific_experiments=specific_experiments,
-                                    )
+                                          True,
+                                          "morosita_horn",
+                                          self.ControlFigure.ax,
+                                          self.colorbar_settings,
+                                          self.font_settings,
+                                          annotate_cells,
+                                          self.region_of_interest,
+                                          specific_experiments=specific_experiments,
+                                          )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
-        save_matrix(matrix)
+                                           self.ControlFigure.plot_type)
+        save_matrix(matrix, matrix_save_path)
 
     def jaccard(self, annotate_cells=False, specific_experiments=False):
         """
@@ -891,18 +992,18 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                    True,
-                                    "jaccard",
-                                    self.ControlFigure.ax,
-                                    self.colorbar_settings,
-                                    self.font_settings,
-                                    annotate_cells,
-                                    self.region_of_interest,
-                                    specific_experiments=specific_experiments,
-                                    )
+                                          True,
+                                          "jaccard",
+                                          self.ControlFigure.ax,
+                                          self.colorbar_settings,
+                                          self.font_settings,
+                                          annotate_cells,
+                                          self.region_of_interest,
+                                          specific_experiments=specific_experiments,
+                                          )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         save_matrix(matrix)
 
     def sorensen(self, annotate_cells=False, specific_experiments=False):
@@ -919,18 +1020,18 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                    True,
-                                    "sorensen",
-                                    self.ControlFigure.ax,
-                                    self.colorbar_settings,
-                                    self.font_settings,
-                                    annotate_cells,
-                                    self.region_of_interest,
-                                    specific_experiments=specific_experiments,
-                                    )
+                                          True,
+                                          "sorensen",
+                                          self.ControlFigure.ax,
+                                          self.colorbar_settings,
+                                          self.font_settings,
+                                          annotate_cells,
+                                          self.region_of_interest,
+                                          specific_experiments=specific_experiments,
+                                          )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         save_matrix(matrix)
 
     def relative(self, annotate_cells=False, specific_experiments=False):
@@ -947,21 +1048,21 @@ class PlotManager:
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
         matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                    True,
-                                    "relative",
-                                    self.ControlFigure.ax,
-                                    self.colorbar_settings,
-                                    self.font_settings,
-                                    annotate_cells,
-                                    self.region_of_interest,
-                                    specific_experiments=specific_experiments,
-                                    )
+                                          True,
+                                          "relative",
+                                          self.ControlFigure.ax,
+                                          self.colorbar_settings,
+                                          self.font_settings,
+                                          annotate_cells,
+                                          self.region_of_interest,
+                                          specific_experiments=specific_experiments,
+                                          )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         save_matrix(matrix)
 
-    def levenshtein_dendrogram(self, sample = None, max_cluster_dist=2, batch_size=1000):
+    def levenshtein_dendrogram(self, sample=None, max_cluster_dist=2, batch_size=1000):
         """
         :params sample: the sample you would like to analyze
         :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
@@ -979,18 +1080,18 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         hist_lvst_dist.levenshtein_dend(self.ControlFigure.ax,
-                               self.sequencing_report,
-                               sample,
-                               batch_size,
-                               max_cluster_dist,
-                               self.font_settings,
-                               self.region_of_interest
-                               )
+                                        self.sequencing_report,
+                                        sample,
+                                        batch_size,
+                                        max_cluster_dist,
+                                        self.font_settings,
+                                        self.region_of_interest
+                                        )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
 
-    def dendro_bind(self, sample = None, antigens = None, max_cluster_dist=2, batch_size=1000, ascending=True):
+    def dendro_bind(self, sample=None, antigens=None, max_cluster_dist=2, batch_size=1000, ascending=True):
         """
         :params sample: the sample you would like to analyze
         :params antigens: the antigens you would like to analyze. The input is a list.
@@ -1014,23 +1115,24 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
-        hist_lvst_dist.dendo_binding(self.ControlFigure.fig,
-                            self.sequencing_report,
-                            self.binding_data,
-                            sample,
-                            antigens,
-                            batch_size,
-                            max_cluster_dist,
-                            self.font_settings,
-                            self.region_of_interest,
-                            ascending
-                            )
+        fig2 = hist_lvst_dist.dendo_binding(self.ControlFigure.fig,
+                                     self.sequencing_report,
+                                     self.binding_data,
+                                     sample,
+                                     antigens,
+                                     batch_size,
+                                     max_cluster_dist,
+                                     self.font_settings,
+                                     self.region_of_interest,
+                                     ascending
+                                     )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
-                                                   self.ControlFigure.plot_type)
+                                           self.ControlFigure.plot_type)
         self.ControlFigure.tighten()
+        return fig2
 
-    def MSA_design(self, samples = None, batch_size=500):
+    def MSA_design(self, samples=None, batch_size=500):
         """
         :params samples: the samples you would like to analyze. The input is a list.
         :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
@@ -1048,8 +1150,196 @@ class PlotManager:
                   self.module_dir)
         msa = msa.run_MSA(batch_size, samples)
 
+    def validate_mixcr_path(self):
+        path_to_mixcr = self.global_params["mixcr_path"]
+        settings_dir = os.path.join(self.module_dir, "settings", "global_vars.txt")
+        check_mixcr(path_to_mixcr, self.global_params, settings_dir)
+
+    def create_parser(self):
+        self.validate_mixcr_path()
+        path_to_mixcr = self.global_params["mixcr_path"]
+        commands = []
+        commands.extend(["java", f"-Xms{500}M", "-jar"])  # enable change of para
+        commands.extend([path_to_mixcr])
+        return commands
+
+    def export_mixcr_quality(self,save_dir = None, specific_chain=None, metric=None, plot_type=None):
+        if save_dir == None:
+            save_dir = self.mixcr_plots_path
+        output_file = os.path.join(save_dir, self.experiment + "_alignQc.pdf")
+        path_to_tables = os.path.join(self.module_dir, "my_experiments", self.experiment, "clones_result", "*.clns")
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportQc"])
+        export_plots_commands.extend(["align"])
+        export_plots_commands.extend([path_to_tables])
+        export_plots_commands.extend([output_file])
+        export_plots_commands.extend(["--force-overwrite"])
+        subprocess.run(export_plots_commands)
+        print(f"You can find the result file at: {output_file}")
+
+        for i in glob.glob(path_to_tables):
+
+            name=os.path.basename(i).split(".")[0]
+           # output_file = os.path.join(save_dir, name + "_tags.pdf")
+            #export_plots_commands = self.create_parser()
+            #export_plots_commands.extend(["exportQc"])
+            #export_plots_commands.extend(["tags"])
+            #export_plots_commands.extend([i])
+            #export_plots_commands.extend([output_file])
+            #export_plots_commands.extend(["--force-overwrite"])
+            #subprocess.run(export_plots_commands)
+            #print(f"You can find the result file at: {output_file}")
+            name = os.path.basename(i).split(".")[0]
+            output_file = os.path.join(save_dir, name + "chainUsage.pdf")
+            export_plots_commands = self.create_parser()
+            export_plots_commands.extend(["exportQc"])
+            export_plots_commands.extend(["chainUsage"])
+            export_plots_commands.extend(["--hide-non-functional"])
+            export_plots_commands.extend([i])
+            export_plots_commands.extend([output_file])
+            export_plots_commands.extend(["--force-overwrite"])
+            subprocess.run(export_plots_commands)
+            print(f"You can find the result file at: {output_file}")
+        output_file = os.path.join(save_dir, self.experiment + "_coverage.pdf")
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportQc"])
+        export_plots_commands.extend(["coverage"])
+        export_plots_commands.extend([path_to_tables])
+        export_plots_commands.extend([output_file])
+        export_plots_commands.extend(["--force-overwrite"])
+        subprocess.run(export_plots_commands)
+        print(f"You can find the result file at: {output_file}")
+
+        if specific_chain != None:
+            export_plots_commands.extend(["--chains", specific_chain])
+        if metric != None:
+            export_plots_commands.extend(["--metrics", metric])
+        if plot_type != None:
+            export_plots_commands.extend(["--plotType", plot_type])
 
 
+    def mixcr_explain_diversity(self,plot_name = "cdr3_metrics", plot_save_dir = None, metric = "cdr3metrics",chains = None, plot_type = "violin", output_type = "pdf"):
+        """
+        :param: metric: Default is cdr3metrics. You can choose between cdr3metrics and diversity. If you choose diversity you will focus on the clone fractions whereas with cdr3metrics you will focus on certain aspects of these chains such as length (https://mixcr.com/mixcr/reference/mixcr-postanalysis/#diversity-measures)
+        :param: chains: Default is None. Possible inputs are : IGH, IGL, IGK, TRA, TRB, TRG, TRD, IG. You will choose a specific chain for the analysis.
+        :param: plot_type: Default is violin. You can choose between: boxplot, boxplot-bindot, boxplot-jitter, violin, violin-bindot, barplot, barplot-stacked, lineplot, lineplot-jitter, lineplot-bindot, scatter
+        :param: output_type: Default is pdf. Allows you to control the file type of your output. Possible values are: pdf, jpeg, png, svg, eps,
+        """
+        if metric in ["cdr3metrics", "diversity"]:
+            pass
+        else:
+            print("Please choose a correct value for the metric. Pipeline continues with:\ncdr3metrics and cdr3lenAA for metric_type")
+            metric = "cdr3metrics"
+            metric_type = "cdr3lenAA"
+
+        chains_values = [None, "IGH", "IGL", "IGK", "TRA", "TRB", "TRG", "TRD", "IG"]
+        if chains not in chains_values:
+            print("Please enter a correct shortcut for the chain preferred chain. These are: ")
+            [print(i) for i in chains_values]
+        plot_type_values = ["boxplot", "boxplot-bindot", "boxplot-jitter", "violin", "violin-bindot", "barplot", "barplot-stacked", "lineplot", "lineplot-jitter", "lineplot-bindot", "scatter"]
+        if plot_type not in plot_type_values:
+            print("Please enter a correct shortcut for the chain plot type. These are: ")
+            [print(i) for i in plot_type_values]
+
+
+        print(f"To be able to understand the following processing go to: https://mixcr.com/mixcr/reference/mixcr-postanalysis/#overlap-postanalysis")
+        plot_name = plot_name
+
+        if plot_save_dir == None:
+            plot_save_dir = self.mixcr_plots_path
+        save_dir = os.path.join(self.module_dir, "my_experiments", self.experiment)
+        json_dir = os.path.join(save_dir, "pa_individual.json")
+        path_to_tables = os.path.join(self.module_dir, "my_experiments", self.experiment, "clones_result", "*.clns")
+        if not os.path.isfile(json_dir):
+            export_plots_commands = self.create_parser()
+            export_plots_commands.extend(["postanalysis"])
+            export_plots_commands.extend(["individual"])
+            export_plots_commands.extend(["--default-downsampling", "none"])
+            export_plots_commands.extend(["--default-weight-function", "none"])
+            export_plots_commands.extend([path_to_tables])
+            export_plots_commands.extend([json_dir])
+            subprocess.run(export_plots_commands)
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend([metric])
+      #  export_plots_commands.extend(["--metric",metric_type])
+      #  export_plots_commands.extend(["-f"])
+        if not chains == None:
+            export_plots_commands.extend(["--chains", chains])
+        export_plots_commands.extend(["--plot-type", plot_type])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(plot_save_dir, plot_name + "." + output_type)])
+        subprocess.run(export_plots_commands)
+
+
+
+    def mixcr_vdj_usage(self,):
+        save_dir = self.mixcr_plots_path
+
+        json_dir = os.path.join(self.module_dir, "my_experiments", self.experiment, "pa_individual.json")
+        if not os.path.isfile(json_dir):
+            export_plots_commands = self.create_parser()
+            export_plots_commands.extend(["postanalysis"])
+            export_plots_commands.extend(["individual"])
+            export_plots_commands.extend(["--default-downsampling", "none"])
+            export_plots_commands.extend(["--default-weight-function", "none"])
+            export_plots_commands.extend([path_to_tables])
+            export_plots_commands.extend([json_dir])
+            subprocess.run(export_plots_commands)
+
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend(["vUsage"])
+      #  export_plots_commands.extend(["-f"])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(save_dir, "vUsage_heatmap.pdf")])
+        subprocess.run(export_plots_commands)
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend(["jUsage"])
+       # export_plots_commands.extend(["-f"])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(save_dir, "jUsage_heatmap.pdf")])
+        subprocess.run(export_plots_commands)
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend(["vjUsage"])
+       # export_plots_commands.extend(["-f"])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(save_dir, "vjUsage_heatmap.pdf")])
+        subprocess.run(export_plots_commands)
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend(["isotypeUsage"])
+       # export_plots_commands.extend(["-f"])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(save_dir, "isotypeUsage_heatmap.pdf")])
+        subprocess.run(export_plots_commands)
+
+
+    def mixcr_overlap(self):
+        save_dir = self.plot_path
+        path_to_tables = os.path.join(self.module_dir, "my_experiments", self.experiment, "clones_result")
+        json_dir = os.path.join(self.module_dir, "my_experiments", self.experiment, "pa_overlap.json")
+        if not os.path.isfile(json_dir):
+            export_plots_commands = self.create_parser()
+            export_plots_commands.extend(["postanalysis"])
+            export_plots_commands.extend(["overlap"])
+            export_plots_commands.extend(["--default-downsampling", "none"])
+            export_plots_commands.extend(["--default-weight-function", "none"])
+            export_plots_commands.extend([path_to_tables])
+            export_plots_commands.extend([json_dir])
+            subprocess.run(export_plots_commands)
+        possible_metrics = ["SharedClonotypes", "RelativeDiversity", "F1Index", "F2Index", "JaccardIndex", "Pearson", "PearsonAll"]
+
+        export_plots_commands = self.create_parser()
+        export_plots_commands.extend(["exportPlots"])
+        export_plots_commands.extend(["overlap"])
+   #     export_plots_commands.extend(["--metric", metric])
+       # export_plots_commands.extend(["--color-key", "Patient"])
+        export_plots_commands.extend([json_dir])
+        export_plots_commands.extend([os.path.join(save_dir, f"overlap.pdf")])
+        subprocess.run(export_plots_commands)
 
 
 

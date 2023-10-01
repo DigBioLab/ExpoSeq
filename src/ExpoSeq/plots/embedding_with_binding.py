@@ -66,7 +66,7 @@ def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, to
     ax.set_ylabel("t-SNE2", **font_settings)
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-   # ax.set_title("Sequence Embedding on t-SNE Space for Sample " + sample, pad= 12, **font_settings)
+
     font_settings["fontsize"] = original_fontsize
     fig.tight_layout()
 
@@ -85,6 +85,7 @@ def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, to
                 ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=8)
         n += 1
 
+    fig.suptitle("Sequence Embedding on t-SNE Space for Sample " + sample, pad= 12, **font_settings)
 
     return tsne_results
 

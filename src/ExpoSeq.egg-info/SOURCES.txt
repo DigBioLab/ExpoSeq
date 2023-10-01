@@ -3,9 +3,7 @@ MANIFEST.in
 README.md
 setup.py
 src/ExpoSeq/__init__.py
-src/ExpoSeq/full_pipe.py
 src/ExpoSeq/pipeline.py
-src/ExpoSeq/run.py
 src/ExpoSeq/test_uploader.py
 src/ExpoSeq.egg-info/PKG-INFO
 src/ExpoSeq.egg-info/SOURCES.txt
@@ -15,6 +13,8 @@ src/ExpoSeq.egg-info/top_level.txt
 src/ExpoSeq/augment_data/__init__.py
 src/ExpoSeq/augment_data/binding_data.py
 src/ExpoSeq/augment_data/check_reports.py
+src/ExpoSeq/augment_data/collect_fastqs.py
+src/ExpoSeq/augment_data/create_mixcr_commands.py
 src/ExpoSeq/augment_data/load_data.py
 src/ExpoSeq/augment_data/loop_collect_reports.py
 src/ExpoSeq/augment_data/mixcr_analyze.py
@@ -50,8 +50,10 @@ src/ExpoSeq/settings/available_presets.py
 src/ExpoSeq/settings/blosum_62.txt
 src/ExpoSeq/settings/change_save_settings.py
 src/ExpoSeq/settings/change_settings.py
+src/ExpoSeq/settings/check_dirs.py
 src/ExpoSeq/settings/colorbar.txt
 src/ExpoSeq/settings/font_settings.txt
+src/ExpoSeq/settings/general_instructions.py
 src/ExpoSeq/settings/global_vars.txt
 src/ExpoSeq/settings/legend_settings.txt
 src/ExpoSeq/settings/plot_styler.py
@@ -82,6 +84,7 @@ src/ExpoSeq/tidy_data/tidy_seqlogoPlot.py
 src/ExpoSeq/tidy_data/tidy_stacked_aa_distr.py
 src/ExpoSeq/tidy_data/heatmaps/__init__.py
 src/ExpoSeq/tidy_data/heatmaps/bool_sequences_matrix.py
+src/ExpoSeq/tidy_data/heatmaps/read_matrix.py
 src/ExpoSeq/tidy_data/heatmaps/tidy_heatmap_share.py
 src/ExpoSeq/tidy_data/heatmaps/tidy_jaccard.py
 src/ExpoSeq/tidy_data/heatmaps/tidy_morosita_horn.py

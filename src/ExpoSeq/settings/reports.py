@@ -11,7 +11,7 @@ from Bio.Seq import Seq
 class SequencingReport:
     def __init__(self,sequencing_report):
         self.origin_seq_report = sequencing_report.copy()
-        self.sequencing_report = sequencing_report.copy()
+        self.sequencing_report = sequencing_report
 
     def get_exp_names(self, experiment_path):
         try:
@@ -40,7 +40,7 @@ class SequencingReport:
     
     def filter_region(self, region_string):
         added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
-        fixed_cols = ["Experiment", "cloneId", "readCount", "cloneFraction"]
+        fixed_cols = ["Experiment", "cloneId", "readCount", "readFraction"]
         cols_of_interest = fixed_cols + added_columns
         self.sequencing_report = self.sequencing_report[cols_of_interest]
         self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
@@ -50,29 +50,29 @@ class SequencingReport:
 
     def trim_data(self, region_string, divisible_by = 3,length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
 
-        self.sequencing_report = self.origin_seq_report.drop_duplicates(subset=["nSeq" + region_string], keep="first")
-        indexes_to_drop = self.sequencing_report[self.sequencing_report["aaSeq" + region_string] == 'region_not_covered'].index
-        self.sequencing_report = self.sequencing_report.drop(indexes_to_drop)
-        # clones_sample = new_fractions.merge(clones_sample,
-        #                                    how="left",
-        #                                   on="nSeqCDR3")
-        self.sequencing_report["lengthOfCDR3"] = self.sequencing_report["nSeqCDR3"].str.len() ## assumes all that pipeline starts with cdr3 region
-        #self.sequencing_report = self.sequencing_report.sort_values(by="cloneId")
-        self.sequencing_report = self.sequencing_report.reset_index()
-        #self.sequencing_report = self.sequencing_report.drop(columns=["readFraction_y", "index"])
-        #self.sequencing_report = self.sequencing_report.rename(columns={"readFraction_x": "cloneFraction"})
-        self.sequencing_report = self.sequencing_report[(self.sequencing_report["lengthOfCDR3"] % divisible_by) == 0]
-        self.sequencing_report = self.sequencing_report[(self.sequencing_report["aaSeq" + region_string].str.len()) > length_threshold ]
-        self.sequencing_report = self.sequencing_report[(self.sequencing_report["readCount"] > min_read_count)]
-        new_column = self.sequencing_report['readCount'] / self.sequencing_report.groupby('Experiment')['readCount'].transform('sum')
+        sequencing_report = self.sequencing_report.groupby("Experiment").apply(lambda group: group.drop_duplicates(subset=["nSeq" + region_string], keep="first")).reset_index(drop=True)
+        indexes_to_drop = sequencing_report[sequencing_report["aaSeq" + region_string] == 'region_not_covered'].index
+        sequencing_report = sequencing_report.drop(indexes_to_drop)
+
+        sequencing_report["lengthOfCDR3"] = sequencing_report["nSeqCDR3"].str.len() ## assumes all that pipeline starts with cdr3 region
+
+        sequencing_report = sequencing_report.reset_index()
+
+        sequencing_report = sequencing_report[(sequencing_report["lengthOfCDR3"] % divisible_by) == 0]
+        sequencing_report = sequencing_report[(sequencing_report["aaSeq" + region_string].str.len()) > length_threshold ]
+        sequencing_report = sequencing_report[(sequencing_report["readCount"] > min_read_count)]
+
+
+        new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
+        self.sequencing_report = sequencing_report.copy()
         self.sequencing_report[new_fraction] = np.array(new_column)
         
     def remove_not_covered(self):
         self.sequencing_report = self.sequencing_report[~self.sequencing_report.applymap(lambda x: x == "region_not_covered").any(axis=1)]
     
     def prepare_seq_report(self, region_string, divisible_by, length_threshold, min_read_count):
-        self.trim_data(region_string, divisible_by, length_threshold, min_read_count,)
         self.filter_region(region_string)
+        self.trim_data(region_string, divisible_by, length_threshold, min_read_count,)
         self.remove_not_covered()
         
     def find_longest_sequence(self):

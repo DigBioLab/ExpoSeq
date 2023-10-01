@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ExpoSeq
-Version: 3.1.1
+Version: 4.0
 Summary: A pacakge which provides various ways to analyze NGS data from phage display campaigns
 Home-page: https://github.com/nilshof01/ExpoSeq
 Author: Nils Hofmann
@@ -37,8 +37,12 @@ The PlotManager is the main interface for creating various plots using your FAST
 ```python
 plot = PlotManager()
 ```
+After that you will be automatically guided through the data processing and preparation. As soon as this has been finished you the pipeline will automatically create an analysis of your data and will store the plots in ~/my_experiments/YOUR_EXPERIMENT_NAME/plots .
+<br>
+If you want to create some plots by yourself, please take a look at the [Jupyter script](ExpoSeq_handsOn.ipynb).
+<br>
 
-To use the PlotManager to create plots, you will need to upload your FASTQ data to the pipeline. This will automatically happen as soon as you have called the PlotManager. In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
+In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
 <br>
 ![relative_path_to_image](pictures_gen/workflow_ExpoSeq.png)
 <br>
@@ -48,33 +52,6 @@ If you just want to test the pipeline and see its functions you can call:
 ```python
 plot = PlotManager(test_version = True)
 ```
-
-Alternatively you can take a look in the [Jupyter script](ExpoSeq_handsOn.ipynb)
-
-Once you have called the test version or have finished the data processing, you can use the PlotManager to create a variety of plots, such as an identity   plot based on the jaccard similarity. Here is an example of how to create this type of plot:
-<br>
-
-```python
-plot.jaccard()
-```
-
-If you want to change the style of the plot you can use the PlotManager. If you called it plot you can do for instance the following:
-<br>
-
-```python
-plot.style.title_xaxis("your_title")
-``` 
-
-If you want to implement further plot change you can also refer to the matplotlib.pyplot library and change it in the same way as following:
-<br>
-
-```python
-import matplotlib.pyplot as plt
-```
-
-```python
-plt.xlabel("your_title")
-```
 <br>
 If you would like to have details about the inputs and functions of the PlotManager call:
 <br>
@@ -83,7 +60,7 @@ If you would like to have details about the inputs and functions of the PlotMana
 help(plot)
 ``` 
 
-You can also call
+You can also call for specific plots, for instance:
 <br>
 
 ```python
@@ -99,9 +76,38 @@ If you have conducted DELFIA or other techniques to receive binding data for cer
 plot.add_binding_data()
 ```
 <br>
-Note: If you decide to add more binding data to your analysis you can just use the same command and choose the new file with the filechooser and it will be added to the existing data.
 
+**Note**: If you decide to add more binding data to your analysis you can just use the same command and choose the new file with the filechooser and it will be added to the existing data.
 
+## Data processing on a Cluster
+
+First pull the folder with the scripts for the processing to your working directory
+
+```bash
+wget https://github.com/nilshof01/ExpoSeq/tree/final_master/bash_processing
+```
+
+I have prepared and example jobscript for working on an LSF cluster. You can have a look under ~/bash_processing/example_LSF_cluster.sh . 
+To run your script interactively you can call:
+
+```bash
+python ~/bash_processing/mixcr_cl.py $PATH_TO_MIXCR $YOUR_EXPERIMENT_NAME $PATH_TO_FORWARD_FILES 
+```
+
+**NOTE**: You need to have mixcr installed in your working directory to be able to start the processing.
+To use multithreading and increase the RAM allocation have a look at the following arguments you can input:
+
+- `--path_to_mixcr`: Is the filepath to the mixcr.jar file.
+- `--experiment_name`: A string which is the name of your experiment.
+- `--path_to_forward`: The directory of the fastq files with the forward reads. 
+- `--path_to_backward`: The directory of the fastq files with the backward reads.
+- `--threads`: The number of threads you would like to use for the processing.
+- `--method`: The mixcr method to align and assemble the reads you would like to use. Default is milab-human-tcr-dna-multiplex-cdr3
+- `--java_heap_size`: Memory for proecssing in MB.
+
+**NOTE**: If you only want to process forward reads, then you do not need to add the path to the directory with the backward reads. Further, if you would like to analyze paired end sequencing data, please make sure that forward and backward fastq files are in separate folders.
+
+After the processing has been finished you can use the directory ~/my_experiments/YOUR_EXPERIMENT_NAME for the plotmanager. As soon as you call it you can choose to upload the directory.
 
 ## References
 [1] Dmitriy A. Bolotin, Stanislav Poslavsky, Igor Mitrophanov, Mikhail Shugay, Ilgar Z. Mamedov, Ekaterina V. Putintseva, and Dmitriy M. Chudakov. "MiXCR: software for comprehensive adaptive immunity profiling." Nature methods 12, no. 5 (2015): 380-381.

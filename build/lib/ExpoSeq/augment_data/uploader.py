@@ -81,18 +81,38 @@ def check_experiment(module_dir, testing):
                     experiment))
     return experiment
 
+def create_alignment_report(module_dir, experiment):
+    try:
+        align_repo_path = os.path.join(module_dir,
+                                       "my_experiemnts",
+                                       experiment,
+                                       "alignment_reports",
+                                       "*")
+        alignment_reports = glob(align_repo_path)
+        all_alignment_reports = load_alignment_reports(alignment_reports)
+    except:
+        all_alignment_reports = pd.DataFrame([])
+        print(
+            "No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
+    return all_alignment_reports
+
 def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"):
     if not testing:
-        use_method = input(
-            "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3.\nPress enter if you want to continue.\nOtherwise type in the method of your choice.\nIt has to be the exact same string which is given on the Mixcr documentation.The available presets are:")
         for i in data_list:
             print(i)
-        while use_method not in data_list or use_method != "":
-            use_method = input("The method you entered is not in the list. Please enter a valid method.")
-            if use_method in data_list:
-                break
-            else:
-                print("Please enter a valid method.")
+        use_method = input(
+            "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3.\nPress enter if you want to continue.\nOtherwise type in the method of your choice.\nIt has to be the exact same string which is given on the Mixcr documentation.The available presets are:")
+        if use_method == "":
+            use_method = "milab-human-tcr-dna-multiplex-cdr3"
+        else:
+            while True:
+                if use_method in data_list:
+                    break
+                use_method = input("The method you entered is not in the list. Please enter a valid method.")
+                if use_method in data_list:
+                    break
+                else:
+                    print("Please enter a valid method.")
     else:
         use_method = ""
     if use_method == "":
@@ -126,18 +146,7 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
 
     with open(repo_path, "rb") as f:
         sequencing_report = pd.read_table(f, sep=",")
-    try:
-        align_repo_path = os.path.join(module_dir,
-                                       "my_experiemnts",
-                                       experiment,
-                                       "alignment_reports",
-                                       "*")
-        alignment_reports = glob(align_repo_path)
-        all_alignment_reports = load_alignment_reports(alignment_reports)
-    except:
-        all_alignment_reports = pd.DataFrame([])
-        print(
-            "No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
+    all_alignment_reports = create_alignment_report(module_dir, experiment)
     return sequencing_report, all_alignment_reports
 
 def method_two(module_dir, experiment, testing = False, testing_value = None):
@@ -203,55 +212,42 @@ def method_two(module_dir, experiment, testing = False, testing_value = None):
         pickle.dump(experiment_dic, f)
     return sequencing_report, all_alignment_reports
 
-def method_three(module_dir, experiment, testing ):
+def method_three(module_dir, testing ):
+    
     if not testing:
         try:
-            print("choose the file where you store your sequencing report")
+            print("choose the directory with your experiment name and which has the sequencing_report.csv file in its root.")
             while True:
-                f = filedialog.askopenfilename()
-                if os.path.isfile(f):
-                    break
+                f = filedialog.askdirectory()
+                if os.path.isdir(f):
+                    if "sequencing_report.csv" in os.listdir(f):
+                        break
+                    
                 else:
-                    print("Please enter a valid file path")
+                    print("Please enter a valid path to the directory")
         except:
-            f = input("give the path to your file which is the sequencing report")
+            f = input("give the path to the directory with the sequencing_report.csv file in its root.")
             f = os.path.abspath(f)
             while True:
-                if os.path.isfile(f):
-                    break
+                if os.path.isdir(f):
+                    if "sequencing_report.csv" in os.listdir(f):
+                        break
                 else:
-                    print("Please enter a valid file path")
+                    print("Please enter a valid path to the directory")
+        experiment = os.path.basename(f)
+        shutil.copytree(f, os.path.join(module_dir, "my_experiments", experiment))
+        f = os.path.join(f, "sequencing_report.csv")
     else:
-
         f = os.path.join(module_dir,
                         "my_experiments",
                         "test_directory",
                         "sequencing_report.csv")
         experiment = "test_directory"
-    while True:
-        sequencing_report = pd.read_table(f, sep=",")
-        if os.path.isfile(f) :
-            sequencing_report = pd.read_table(f, sep=",")
-            if "Experiment" in sequencing_report:
-                exp_name_path = os.path.join(module_dir,
-                                            "my_experiments",
-                                            experiment,
-                                            "experiment_names.pickle")
-
-                unique_experiments = sequencing_report["Experiment"].unique()
-                experiment_dic = {item: item for item in list(unique_experiments)}
-                with open(exp_name_path, "wb") as f:
-                    pickle.dump(experiment_dic, f)
-                break
-            else:
-                print("Sorry, but we could not find the column Experiment in your sequencing report.\nPlease check if you have this")
-        else:
-            print("Sorry, but the filepath you entered is invalid.")
-    all_alignment_reports = None
-    sequencing_report.to_csv(os.path.join(module_dir,
-                                         "my_experiments",
-                                         experiment,
-                                         "sequencing_report.csv"))
+    sequencing_report = pd.read_table(f, sep=",")
+    if not testing:
+        all_alignment_reports = None
+    else:
+        all_alignment_reports = None
     return sequencing_report,all_alignment_reports, experiment
 
 
@@ -328,7 +324,7 @@ def get_next_step_input(testing=False, testing_value = None):
 def get_choose_method_input(testing, testing_value = None):
     if not testing:
         while True:
-            processing = input("If you want to process your fastq files with mixcr press 1.\nIf you want to upload an already processed sequencing report in table format, press 2.")
+            processing = input("If you want to process your fastq files with mixcr press 1.\nIf you want have processed your files externally and want to upload the directory with the Experiment name and the processing data, press 2.")
             if processing in ["1", "2"]:
                 break
             else:
@@ -345,10 +341,14 @@ def get_experiment_name_input(testing = False):
     return experiment_name  
 
 def upload_new_experiment(module_dir, repo_path, testing, testing_value, paired_end_test, experiment_column):
-    experiment = check_experiment(module_dir, testing)
-    choose_method = get_choose_method_input(testing, testing_value)
+    
+
     
     while True:
+        choose_method = get_choose_method_input(testing, testing_value)
+        if choose_method == "1":
+            experiment = check_experiment(module_dir, testing)
+            
         if choose_method in ["1", "2", "3"]:
             if choose_method == "1":
             
@@ -356,7 +356,7 @@ def upload_new_experiment(module_dir, repo_path, testing, testing_value, paired_
          #   elif choose_method == "2":
           #      sequencing_report, all_alignment_reports = method_two(module_dir, experiment,testing, experiment_column)
             elif choose_method == "2":
-                sequencing_report, all_alignment_reports, experiment = method_three(module_dir, experiment, testing)
+                sequencing_report, all_alignment_reports, experiment = method_three(module_dir, testing)
             break
         else:
             print("Please enter a correct value.")

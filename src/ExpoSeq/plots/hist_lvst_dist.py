@@ -81,5 +81,6 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     ax2.set_xlabel('Binding Value', **font_settings)
     fig2.tight_layout()
     fig.tight_layout()
+    return fig2
 
     
