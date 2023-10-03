@@ -366,7 +366,7 @@ def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = 
                                         file))
         filename = [filename]
 
-        Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment_name, filename, java_heap_size)
+        Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment_name, filename, java_heap_size, threads = threads)
 
         subprocess.run(Commands.prepare_align(method))
         skip_sample = False

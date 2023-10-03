@@ -361,8 +361,15 @@ class PlotManager:
                                  )
                 self.fig.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}.png"))
                 fig2.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}_values.png"))
-
-
+                try:
+                    self.cluster_one_AG(antigen = best_binder[experiment][0],
+                                        specific_experiments = [experiment],
+                                        batch_size = 1000,
+                                        max_ld = 2,
+                                        save_report_path = os.path.join(self.report_path, experiment + f"_{best_binder[experiment][0]}_cluster" + ".xlsx"))
+                    self.save_in_plots(os.path.join("clustering_antigens", experiment + f"_{best_binder[experiment][0]}_cluster"))
+                except:
+                    print("Could not create levenshtein distance cluster for best binder")
         print(f"The pipeline has created some plots in: {self.plot_path}")
         
 
