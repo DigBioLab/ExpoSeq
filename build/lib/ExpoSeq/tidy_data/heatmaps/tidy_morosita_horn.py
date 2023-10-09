@@ -3,24 +3,20 @@ import pandas as pd
 
 
 def cleaning_data(sequencing_report, region_of_interest, protein = True, specific_experiments = False):
- #   new_fraction = 'new_fraction'
     if specific_experiments != False:
         sequencing_report = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:
         pass
-   # new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
-    #sequencing_report[new_fraction] = np.array(new_column)
+
     if protein == True:
-   #     sequencing_report = mapFunc(sequencing_report = sequencing_report,
-    #                                column = 'nSeqCDR3',
-     #                               func = genetic_dogma,
-       #                             column_name = 'peptide_seq')
+
         strand_column =  region_of_interest
     else:
         strand_column = region_of_interest
 
 
     unique_experiments = sequencing_report["Experiment"].unique()
+
     group_columns = ["Experiment", strand_column]
    # column = sequencing_report.groupby(group_columns)[new_fraction].transform('sum')
     #sequencing_report[new_fraction] = column
@@ -31,19 +27,32 @@ def cleaning_data(sequencing_report, region_of_interest, protein = True, specifi
 
 
     unique_sequences = pd.DataFrame(sequencing_report[strand_column].unique()) #nseqcdr3 has to be changed since it is a chosen name for column
+
     unique_sequences.rename(columns={0: strand_column},
                             inplace=True)
     unique_experiments = list(unique_experiments)
-
+    print(unique_experiments)
     for experiment in unique_experiments:
+
         local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strand_column,
                                                                                        "cloneFraction"]]
+        local_data = local_data.sort_values(by="cloneFraction", ascending=False)
+
+        # Calculate the cumulative sum of clone fractions
+        local_data["cumulativeFraction"] = local_data["cloneFraction"].cumsum()
+
+        # Filter rows until the cumulative fraction reaches the threshold
+        filtered_data = local_data[local_data["cumulativeFraction"] <= 0.95]
+
+        local_data = filtered_data[[strand_column,"cloneFraction"]]
 
         unique_sequences = unique_sequences.merge(local_data,
                                                   how='left',
                                                   on = strand_column)
        # unique_sequences = unique_sequences.fillna(0)
         unique_sequences = unique_sequences.rename(columns={"cloneFraction": "cloneFraction" + experiment})
+        # Convert column 'A' to float16
+        unique_sequences[ "cloneFraction" + experiment] = unique_sequences[ "cloneFraction" + experiment].astype('float16')
     unique_sequences.drop(strand_column,
                          inplace=True,
                           axis=1)

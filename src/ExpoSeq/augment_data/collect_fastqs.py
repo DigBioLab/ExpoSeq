@@ -1,7 +1,7 @@
 from tkinter import filedialog
 import os
 from glob import glob
-
+import gzip
 
 
 class CollectFastq():
@@ -91,15 +91,30 @@ class CollectFastq():
             best_pair = (None, None)
             # Pairwise comparison of filenames
             for i, file1 in enumerate(self.forward):
+
+
                 for j, file2 in enumerate(self.backward):
-                    with open(file1, "r") as one:
-                        one_first = one.readline().strip()
-                        one_sub_first = one_first.rfind(":")
-                        one_first_sub = one_first[one_sub_first+1:]
-                    with open(file2, "r") as two:
-                        two_first = two.readline().strip()
-                        two_sub_first = two_first.rfind(":")
-                        two_first_sub = two_first[two_sub_first+1:]
+                    if file1.endswith(".gz"):
+                        with gzip.open(file1, 'rb') as f:
+                            one_first = f.readline().strip().decode('utf-8')
+                            one_sub_first = one_first.rfind(":")
+                            one_first_sub = one_first[one_sub_first + 1:]
+                    else:
+                        with open(file1, "r") as one:
+                            one_first = one.readline().strip()
+                            one_sub_first = one_first.rfind(":")
+                            one_first_sub = one_first[one_sub_first + 1:]
+                    if file2.endswith(".gz"):
+                        with gzip.open(file2, 'rb') as f:
+                            two_first = f.readline().strip().decode('utf-8')
+                            two_sub_first = two_first.rfind(":")
+                            two_first_sub = two_first[two_sub_first + 1:]
+                    else:
+                        with open(file2, "r") as two:
+                            two_first = two.readline().strip()
+                            two_sub_first = two_first.rfind(":")
+                            two_first_sub = two_first[two_sub_first+1:]
+
                     if one_first_sub == two_first_sub:
                         best_pair = [file1, file2]
 

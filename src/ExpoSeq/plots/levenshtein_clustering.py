@@ -99,7 +99,7 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
     if specific_experiments != False:
         report_batch = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:
-        pass
+        report_batch = sequencing_report
     report_batch = report_batch.groupby("Experiment").head(batch_size)
     experiments = report_batch["Experiment"].unique()
     Tot = experiments.shape[0]
@@ -146,8 +146,9 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
 
 
         cm = plt.get_cmap(preferred_cmap)
-        vmin = min(color_values)
+        vmin = 0
         vmax = max(color_values)
+        print(max(color_values))
 
         partition = community.best_partition(G)
         pos = nx.spring_layout(G)
@@ -182,10 +183,11 @@ def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min
         cluster_report_inter.rename(columns={0: f'Clusters_{experiment}_No.'}, inplace=True)
         cluster_report = pd.concat([cluster_report, cluster_report_inter])
         ax.set_title(experiment)
-        #   sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
-        #  cbar = plt.colorbar(sm)
+        sm = plt.cm.ScalarMappable(cmap=preferred_cmap,
+                                   norm=plt.Normalize(vmin=vmin, vmax=vmax))
+        plt.colorbar(sm, ax = ax)
         plot_number = plot_number + 1
-    fig.colorbar(nodes, ax=fig.axes)
+  #  fig.colorbar(nodes)
     return cluster_report
 
 

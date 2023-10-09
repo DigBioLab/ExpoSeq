@@ -11,7 +11,7 @@ import os
 from tkinter import filedialog
 
 from glob import glob
-
+import time
 
 
 class CollectFastq():
@@ -189,14 +189,18 @@ class CreateCommand:
         self.java_heap_size = java_heap_size
         self.module_dir = module_dir
         self.path_to_mixcr = path_to_mixcr
-        self.threads = threads
+        if threads != None:
+            if type(threads) == str:
+                self.threads = threads
+            elif type(threads) == int:
+                self.threads = str(threads)
         self.paired_end_sequencing = paired_end_sequencing
         if paired_end_sequencing:
             self.files = [os.path.normpath(j) for i in files for j in i]
-            basename = os.path.basename(os.path.splitext(files[0][0])[0])
+            basename = os.path.basename(files[0][0]).split(".")[0]
         else:
             self.files = files
-            basename = os.path.basename(os.path.splitext(files[0])[0])
+            basename = os.path.basename(files[0]).split(".")[0]
         self.basename = basename
         self.result = os.path.join(self.module_dir,
                                    "temp",
@@ -308,8 +312,7 @@ class CreateCommand:
         assembly_commands.extend([self.result])
         assembly_commands.extend([self.clones])
         assembly_commands.extend(["--force-overwrite"])
-        if self.threads != None:
-            assembly_commands.extend(["--threads", self.threads])
+
         assembly_commands.extend(["--report", self.assembly_path])
 
         return assembly_commands
@@ -321,15 +324,18 @@ class CreateCommand:
         clones_commands.extend(["-c IGH"])
         clones_commands.extend([self.clones])
         clones_commands.extend(["--force-overwrite"])
-        if self.threads != None:
-            clones_commands.extend(["--threads", self.threads])
         clones_commands.extend([self.table_tsv])
         return clones_commands
 
 
  
 def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None):
-
+    print(path_to_backward)
+    print(path_to_forward)
+    print(experiment_name)
+    print(method)
+    print(threads)
+    print(java_heap_size    )
     module_dir = os.path.abspath("")
     assert os.path.isfile(path_to_mixcr), "File path to mixcr.jar file is incorrect."
     assert path_to_forward != path_to_backward, "Directory to forward and backward files needs to be different"
@@ -388,8 +394,11 @@ def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = 
                 if skip_sample == False:
                     subprocess.run(Commands.prepare_clones())
                     basename = Commands.basename
-
+                    columns_not_wanted = ['refPoints','allVHitsWithScore', 'allDHitsWithScore',
+                                            'allJHitsWithScore', 'allCHitsWithScore', 'allVAlignments',
+                                            'allDAlignments', 'allJAlignments', 'allCAlignments']
                     clones_sample = pd.read_table(Commands.table_tsv)
+                    clones_sample.drop(columns = columns_not_wanted, inplace = True)
                     clones_sample["Experiment"] = basename
                     sequencing_report = pd.concat([sequencing_report, clones_sample])
 
@@ -440,15 +449,11 @@ threads = args.threads
 method = args.method
 java_heap_size = args.java_heap_size
 
+start_time = time.time()
 # Call the function
 mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  method,threads,  java_heap_size)
 #PlotManager(experiment = experiment_name)
-
-
-
-
-
-
-
-
+end_time = time.time()
+execution_time = end_time - start_time
+print(f"Execution Time: {execution_time} seconds")
   

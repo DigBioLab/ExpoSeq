@@ -1,11 +1,11 @@
 Metadata-Version: 2.1
 Name: ExpoSeq
-Version: 4.0.1
+Version: 4.0.6
 Summary: A pacakge which provides various ways to analyze NGS data from phage display campaigns
 Home-page: https://github.com/nilshof01/ExpoSeq
 Author: Nils Hofmann
 Author-email: n.hofmann.99@web.de
-License: Apache License 2.0
+License: LICENCE
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE

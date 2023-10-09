@@ -12,7 +12,7 @@ def cleaning(sample_name, report, chosen_seq_length, region_string, method):
     aminoacids = "ACDEFGHIKLMNPQRSTVWY"
 
     compDict = {aa: chosen_seq_length*[0] for aa in aminoacids}
-    sequences = local_report[local_report.aaSeqCDR3.astype(str).str.len() == chosen_seq_length]["aaSeqCDR3"]
+    sequences = local_report[local_report[region_string].astype(str).str.len() == chosen_seq_length][region_string]
     length_filtered_seqs = sequences.shape[0]
     for seq in sequences:
         for aa_position in range(len(seq)):

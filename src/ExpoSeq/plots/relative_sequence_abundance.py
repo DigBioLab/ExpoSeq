@@ -64,9 +64,9 @@ def relative_sequence_abundance_all(fig, sequencing_report, samples, font_settin
 
         adapted_fontsize = 10 - int(Cols) + 2
         font_settings["fontsize"] = adapted_fontsize
-        ax.set_ylabel("Clones",
+        ax.set_ylabel("Clone Fraction",
                       **font_settings)  # Y label
-        ax.set_xlabel('Clone Fraction',
+        ax.set_xlabel('Clones',
                       **font_settings)  # X label
 
         ax.set_ylim(0, np.max(np.array(fraction) + np.max(np.array(fraction) * 0.1)))

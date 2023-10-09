@@ -48,6 +48,7 @@ def check_mixcr(path_to_mixcr, data, settings_dir, testing = False):
                 break
     else:
         pass
+    return path_to_mixcr
 
 def process_mixcr(experiment, method, testing, paired_end_sequencing):
     pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
@@ -101,7 +102,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         data = f.read()
     data = literal_eval(data)
     path_to_mixcr = data["mixcr_path"]
-    check_mixcr(path_to_mixcr, data, settings_dir)
+    path_to_mixcr = check_mixcr(path_to_mixcr, data, settings_dir)
 
     sequencing_report = pd.DataFrame([])
     while True:
@@ -114,43 +115,31 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             print("Please enter the amount as integer")
 
     for filename in files:
-
         for file in os.listdir(os.path.join(module_dir, "temp")):
             os.remove(os.path.join(module_dir,
                                    "temp",
                                    file))
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))
-        skip_sample = False
+        subprocess.run(Commands.prepare_assembly())
+        subprocess.run(Commands.prepare_clones())
+        basename = Commands.basename
         try:
-            align_quality, percent_quality = Commands.read_aligned_reads()
-            if align_quality < 1000 and align_quality >10:
-                print(f"Only {align_quality} reads could be aligned ({percent_quality}).")
-            if align_quality < 10:
-                print("Too less reads were aligned. Please choose the correct mixcr method.")
-                skip_sample = True
-            if skip_sample == False:
-                subprocess.run(Commands.prepare_assembly())
-                assembly_qual, realtive_assembly_quality = Commands.read_clones()
-                if assembly_qual < 1000 and realtive_assembly_quality > 10:
-                    print(f"Only {assembly_qual} reads could be assembled ({realtive_assembly_quality}).")
-                if assembly_qual < 10:
-                    print("Too less reads were assembled. Please choose the correct ")
-                    skip_sample = True
-                if skip_sample == False:
-                    subprocess.run(Commands.prepare_clones())
-                    basename = Commands.basename
-                    clones_sample = pd.read_table(Commands.table_tsv)
-                    clones_sample["Experiment"] = basename
-                    sequencing_report = pd.concat([sequencing_report, clones_sample])
 
-                    for file in os.listdir(os.path.join(module_dir, "temp")):
-                        os.remove(os.path.join(module_dir,
-                                            "temp",
-                                            file))
+            columns_not_wanted = ['refPoints', 'allVHitsWithScore', 'allDHitsWithScore',
+                                  'allJHitsWithScore', 'allCHitsWithScore', 'allVAlignments',
+                                  'allDAlignments', 'allJAlignments', 'allCAlignments']
+            clones_sample = pd.read_table(Commands.table_tsv)
+            clones_sample.drop(columns=columns_not_wanted, inplace=True)
+            clones_sample["Experiment"] = basename
+            sequencing_report = pd.concat([sequencing_report, clones_sample])
+
+            for file in os.listdir(os.path.join(module_dir, "temp")):
+                os.remove(os.path.join(module_dir,
+                                       "temp",
+                                       file))
         except:
-            print(f"File {filename} could not be processed. Please check if you have chosen the correct mixcr method or verify that the sequencing was successful.")
-
+            print(f"Processing for {basename} failed")
 
     if not testing:
         

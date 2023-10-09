@@ -143,7 +143,10 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
                   method=method,
                   testing = testing,
                   paired_end_sequencing=paired_end)
-
+    repo_path = os.path.join(module_dir,
+                             "my_experiments",
+                             experiment,
+                             "sequencing_report.csv")
     with open(repo_path, "rb") as f:
         sequencing_report = pd.read_table(f, sep=",")
     all_alignment_reports = create_alignment_report(module_dir, experiment)

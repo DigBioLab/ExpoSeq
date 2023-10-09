@@ -36,8 +36,8 @@ class MyFigure:
     def update_plot(self):
         self.ax = self.fig.gca()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-       # figManager = plt.get_current_fig_manager()
-      #  figManager.window.showMaximized()
+        figManager = plt.get_current_fig_manager()
+        figManager.window.showMaximized()
         self.tighten()
 
     def tighten(self):
@@ -188,14 +188,15 @@ class PlotManager:
             binding_report = reports.BindingReport(self.module_dir,
                                                    self.experiment)
             self.binding_data = binding_report.ask_binding_data()
+
         self.Report = reports.SequencingReport(self.sequencing_report)
         experiment_path = self.Settings.get_experiment_path(self.experiment)
-        self.unique_experiments = self.Report.get_exp_names(experiment_path)
+        self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
         self.Report.prepare_seq_report(self.region_string,
                                        divisible_by=divisible_by,
                                        length_threshold=length_threshold,
                                        min_read_count=min_read_count)
-        self.Report.map_exp_names(self.unique_experiments)
+       # self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
         self.sequencing_report = self.Report.sequencing_report
         self.font_settings = self.Settings.read_font_settings()
@@ -204,7 +205,7 @@ class PlotManager:
         self.ControlFigure = MyFigure()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
-        self.experiments_list = list(self.unique_experiments.values())
+        self.experiments_list = self.unique_experiments
         self.region_of_interest = "aaSeq" + self.region_string
         self.preferred_sample = self.experiments_list[0]
         self.change_preferred_antigen()
@@ -266,19 +267,47 @@ class PlotManager:
         """
         :return: returns some plots about quality in /my_experiments/YOUR_EXPERIMENT_NAME/plots. Is called automatically when launching the pipeline.
         """
+        self.plot_path = os.path.join(self.module_dir,
+                                      "my_experiments",
+                                      self.experiment,
+                                      "plots",
+                                      self.region_of_interest)
+        if not os.path.isdir(self.plot_path):
+            os.mkdir(self.plot_path)
         try:
+
+            print("Start preparing morosita horn matrix.")
             mh_save_path = os.path.join(self.report_path, "morosita_horn_identity" + ".xlsx")
-            self.morosita_horn(matrix_save_path = mh_save_path)
-            plt.tight_layout()
-            self.save_in_plots("morosita_horn")
+            if not os.path.isfile(os.path.join(self.plot_path, "morosita_horn.png")):
+                self.morosita_horn(matrix_save_path = mh_save_path)
+                self.save_in_plots("morosita_horn")
         except:
             print("Creating Morosita Horn matrix failed")
+
         try:
-            self.lengthDistribution_multi()
-            plt.tight_layout()
-            self.save_in_plots("length_distribution_multi")
+            print("Start preparing sorensen matrix.")
+            if not os.path.isfile(os.path.join(self.plot_path, "sorensen.png")):
+                self.sorensen()
+                self.save_in_plots("sorensen")
         except:
-            print("Creating Length Distribution of samples failed")
+            print("Creating sorense matrix failed")
+
+        try:
+            print("Start preparing jaccard matrix.")
+            if not os.path.isfile(os.path.join(self.plot_path, "jaccard.png")):
+                self.jaccard()
+                self.save_in_plots("jaccard")
+        except:
+            print("Creating sorense matrix failed")
+        if not os.path.isdir(os.path.join(self.plot_path, "length_distributions")):
+            os.mkdir(os.path.join(self.plot_path, "length_distributions"))
+        try:
+            for experiment in self.experiments_list:
+                self.lengthDistribution_single(experiment)
+                self.save_in_plots(os.path.join("length_distributions", experiment))
+        except:
+            print(f"Length Distribution for {experiment} failed")
+
         try:
             print("Begin with creating mixcr plots. You can find a description about them here:\n https://mixcr.com/mixcr/reference/mixcr-exportPlots/")
             self.export_mixcr_quality()
@@ -289,36 +318,55 @@ class PlotManager:
             print(f".clns files could not be found. Most certainly, you have uploaded the sequencing report.")
         try:
             self.alignment_quality()
-            plt.tight_layout()
             self.save_in_plots("alignment_quality")
         except:
             print("Alignment reports could not be found")
+
+        if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
+            os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
         for i in self.experiments_list:
-            self.rarefraction_curves(samples = [i])
-            plt.tight_layout()
-            self.save_in_plots("rarefraction_curves_"+i)
+            if not os.path.isfile(os.path.join("rarefraction_curves", "rarefraction_curves_"+i + ".png")):
+                self.rarefraction_curves(samples = [i])
+                self.save_in_plots(os.path.join("rarefraction_curves", "rarefraction_curves_"+i))
        # self.relative_abundance_multi()
        # plt.tight_layout()
         #self.save_in_plots("relative_sequence_abundance_multi")
-        try:
-            self.logoPlot_multi()
-            plt.tight_layout()
-            self.save_in_plots("logo_plot_multi")
-        except:
-            print("Creating Logo plot of multiple samples failed")
+        if not os.path.isdir(os.path.join(self.plot_path, "logo_plots")):
+            os.mkdir(os.path.join(self.plot_path, "logo_plots"))
+
+        for experiment in self.experiments_list:
+            try:
+                if not os.path.isfile(os.path.join(self.plot_path, "logo_plots", experiment)):
+                    self.logoPlot_single(sample = experiment)
+                    self.save_in_plots(os.path.join("logo_plots", experiment))
+            except:
+                print(f"Logo Plot for {experiment} failed")
+
+    #    try:
+     #       if not os.path.isfile(os.path.join(self.plot_path, "logo_plot_multi.png")):
+      #          self.logoPlot_multi()
+       #         self.save_in_plots("logo_plot_multi")
+       #     else:
+        #        pass
+        #except:
+         #   print("Creating Logo plot of multiple samples failed")
         print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
             os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
 
             for single_experiment in self.experiments_list:
                 try:
-                    self.levenshtein_dendrogram(sample = single_experiment, max_cluster_dist = 1)
-                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
-                    self.basic_cluster(samples = [single_experiment],
-                                       max_ld = 2,
-                                       batch_size=1000,
-                                       save_report_path = os.path.join(self.report_path, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
-                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
+                    if not os.path.isfile(os.path.join(self.plot_path, "sequence_cluster", single_experiment + "ls_dendro.png")):
+                        self.levenshtein_dendrogram(sample = single_experiment, max_cluster_dist = 1)
+                        self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_dendro"))
+                    if not os.path.isfile(os.path.join(self.plot_path,
+                                                       "sequence_cluster",
+                                                       single_experiment + "ls_cluster.png")):
+                        self.basic_cluster(samples = [single_experiment],
+                                           max_ld = 2,
+                                           batch_size=1000,
+                                           save_report_path = os.path.join(self.report_path, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
+                        self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
                 except:
                     print(f"Sequence clustering failed at: {single_experiment}")
         threshold_identity = 0.2
@@ -331,12 +379,16 @@ class PlotManager:
                 break
             else:
                 threshold_identity -= 0.01
+        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding")):
+            os.mkdir(os.path.join(self.plot_path, "sequence_embedding"))
+        print("Start sequence embedding of samples")
         for single_experiment in list(overlapping_samples.keys()):
-            try:
-                self.embedding_tsne(samples = overlapping_samples[single_experiment])
-                self.save_in_plots(single_experiment + "embedding_tsne")
-            except:
-                print(f"Clustering with TSNE failed for {single_experiment}.")
+            if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding", single_experiment + "embedding_tsne.png")):
+                try:
+                    self.embedding_tsne(samples = overlapping_samples[single_experiment], strands = False)
+                    self.save_in_plots(os.path.join("sequence_embedding", single_experiment + "embedding_tsne"))
+                except:
+                    print(f"Clustering with TSNE failed for {single_experiment}.")
         best_binder = self.get_best_binder()    
         if best_binder == None:
             print("No binding data was found. Thus, no binding plots can be created.")
@@ -347,30 +399,47 @@ class PlotManager:
             experiment_keys = list(best_binder.keys())
             print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n2500 iterations are used for tsne.")
             for experiment in experiment_keys:
-                self.tsne_cluster_AG(sample = experiment,
-                                     antigen = best_binder[experiment],
-                                     save_report_path = os.path.join(self.report_path, experiment + "_best_binder[experiment]" + ".xlsx"))
-                self.save_in_plots(os.path.join( "clustering_antigens", experiment + "tsne_cluster_AG"))
+                try:
+                    if not os.path.isfile(os.path.join(self.plot_path, "clustering_antigens", experiment + "tsne_cluster_AG.png")):
+                        self.tsne_cluster_AG(sample = experiment,
+                                             antigen = best_binder[experiment],
+                                             antigen_names = False,
+                                             save_report_path = os.path.join(self.report_path, experiment + f"_best_binder{experiment}" + ".xlsx"))
+                        self.save_in_plots(os.path.join( "clustering_antigens", experiment + "tsne_cluster_AG"))
+                except:
+                    print(f"Cluster based on sequence embedding combined with binding data failed for: {experiment}")
             dendro_path = os.path.join(self.plot_path,"clustering_antigens", "dendro_binding")
             if not os.path.isdir(dendro_path):
                 os.mkdir(dendro_path)
-            print("Create dendrogram with binding data and levenshtein distance of 2 and batch size of 1000.")
+            ls_cluster_path = os.path.join(self.plot_path, "clustering_antigens", "ls_binding_cluster")
+            if not os.path.isdir(ls_cluster_path):
+                os.mkdir(ls_cluster_path)
+            print("Create dendrogram with binding data and levenshtein distance of 2 and batch size of 300 for the dendrogram and 1000 for the network plots.")
             for experiment in experiment_keys:
-                fig2 = self.dendro_bind(sample = experiment,
-                                 antigens = best_binder[experiment],
-                                 )
-                self.fig.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}.png"))
-                fig2.savefig(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", "clustering_antigens", "dendro_binding", experiment + f"_{best_binder[experiment]}_values.png"))
+                try:
+                    self.dendro_bind(sample = experiment,
+                                     antigens = best_binder[experiment],
+                                     batch_size=300
+                                     )
+                    self.save_in_plots(os.path.join("clustering_antigens","dendro_binding", experiment + "cluster_dendrogram"))
+                except:
+                    print(f"Dendrogram with binding data failed for {experiment}")
                 try:
                     self.cluster_one_AG(antigen = best_binder[experiment][0],
                                         specific_experiments = [experiment],
                                         batch_size = 1000,
                                         max_ld = 2,
-                                        save_report_path = os.path.join(self.report_path, experiment + f"_{best_binder[experiment][0]}_cluster" + ".xlsx"))
-                    self.save_in_plots(os.path.join("clustering_antigens", experiment + f"_{best_binder[experiment][0]}_cluster"))
+                                        preferred_cmap = "RdPu",
+                                        save_report_path = os.path.join(self.report_path, experiment + f"_ls_binding_cluster" + ".xlsx"))
+                    self.save_in_plots(os.path.join("clustering_antigens","ls_binding_cluster", experiment + f"_ls_binding_cluster"))
                 except:
                     print("Could not create levenshtein distance cluster for best binder")
         print(f"The pipeline has created some plots in: {self.plot_path}")
+        try:
+            self.relative_abundance_multi()
+            self.ControlFigure.tighten()
+        except:
+            print("Plotting relative clone frequency failed.")
         
 
     def change_preferred_antigen(self, antigen=None):
@@ -458,7 +527,7 @@ class PlotManager:
         """
         :return: prints the names of your samples, so you can insert them in lists or similar for the analysis with some plots
         """
-        print(list(self.unique_experiments.values()))
+        print(self.experiments_list)
 
     def save(self, enter_filename, dpi=300, format="png"):
         """
@@ -657,7 +726,7 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.ControlFigure.tighten()
+      #  self.ControlFigure.tighten()
 
     def lengthDistribution_single(self, sample=None):
         """
@@ -729,7 +798,7 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.ControlFigure.tighten()
+      #  self.ControlFigure.tighten()
 
     def rel_seq_abundance(self, samples=None, max_levenshtein_distance=0, length_filter=0, batch=3000):
         """
@@ -847,7 +916,8 @@ class PlotManager:
         assert type(antigen) == str, "You have to give a string as input for the antigen"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
-        assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
+        if specific_experiments != False:
+            assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
         self.ControlFigure.clear_fig()
         cluster_report = levenshtein_clustering.cluster_single_AG(self.ControlFigure.fig,
                                                  self.sequencing_report,
@@ -1136,8 +1206,9 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.ControlFigure.tighten()
-        return fig2
+      #  self.ControlFigure.tighten()
+        plt.close(fig2)
+
 
     def MSA_design(self, samples=None, batch_size=500):
         """

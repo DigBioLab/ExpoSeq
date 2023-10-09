@@ -10,10 +10,10 @@ class CreateCommand:
         self.paired_end_sequencing = paired_end_sequencing
         if paired_end_sequencing:
             self.files = [os.path.normpath(j) for i in files for j in i]
-            basename = os.path.basename(os.path.splitext(files[0][0])[0])
+            basename = os.path.basename(files[0][0]).split(".")[0]
         else:
             self.files = files
-            basename = os.path.basename(os.path.splitext(files[0])[0])
+            basename = os.path.basename(files[0]).split(".")[0]
         self.basename = basename
         self.result = os.path.join(self.module_dir,
                                    "temp",
