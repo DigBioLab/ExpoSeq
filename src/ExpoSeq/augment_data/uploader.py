@@ -327,7 +327,7 @@ def get_next_step_input(testing=False, testing_value = None):
 def get_choose_method_input(testing, testing_value = None):
     if not testing:
         while True:
-            processing = input("If you want to process your fastq files with mixcr press 1.\nIf you want have processed your files externally and want to upload the directory with the Experiment name and the processing data, press 2.")
+            processing = input("If you want to process your fastq files with mixcr press 1.\nIf you have processed your files externally and want to upload the directory with the Experiment name and the processing data, press 2.")
             if processing in ["1", "2"]:
                 break
             else:
@@ -344,9 +344,6 @@ def get_experiment_name_input(testing = False):
     return experiment_name  
 
 def upload_new_experiment(module_dir, repo_path, testing, testing_value, paired_end_test, experiment_column):
-    
-
-    
     while True:
         choose_method = get_choose_method_input(testing, testing_value)
         if choose_method == "1":

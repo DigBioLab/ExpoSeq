@@ -15,7 +15,9 @@ def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist,
     aa_clustered = get_clustered_sequences(aa, max_cluster_dist)
     # Create the distance matrix using the filtered list of sequences
     levenshtein_distance_matrix = create_distance_matrix(aa_clustered)
-
+    if levenshtein_distance_matrix.shape[0] == 0:
+        print("0 matches were found please increase the batch size or the levenshtein distance")
+        return
     # Convert to condensed form and create the dendrogram
     condensed_matrix = squareform(levenshtein_distance_matrix, checks=False)
     linked = linkage(condensed_matrix, 'single')

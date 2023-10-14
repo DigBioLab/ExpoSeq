@@ -3,9 +3,9 @@ from numpy import unique
 import networkx as nx
 import math
 import pandas as pd
-from ExpoSeq.tidy_data.clustering import cleaning
+from ..tidy_data.clustering import cleaning
 import community
-from ExpoSeq.plots.layout_finder import best_layout
+from .layout_finder import best_layout
 
 def calculate_nodesize(sample_report, region_string, G):
     nodesize = []
@@ -33,8 +33,10 @@ def clusterSeq(ax, sequencing_report, samples: list, max_ld, min_ld, batch_size,
                region_string, label_type="numbers"):
     sample_report = sequencing_report.loc[sequencing_report["Experiment"].isin(samples)]
     sample_report = sample_report.groupby("Experiment").head(batch_size)
+    
     G = cleaning(sample_report, max_ld, min_ld, region_string)
     # remove nodes that are not connected to any other nodes
+    print(G)
     G_deg = G.degree()
     to_remove = [n for (n, deg) in G_deg if deg == 0]
     G.remove_nodes_from(to_remove)
@@ -75,7 +77,7 @@ def clusterSeq(ax, sequencing_report, samples: list, max_ld, min_ld, batch_size,
 
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title(f"Connected components of {samples}", **font_settings)
+    ax.set_title(f"Connected components of {', '.join(samples)}", **font_settings)
     font_settings["fontsize"] = original_fontsize
     ax.set_axis_off()
 

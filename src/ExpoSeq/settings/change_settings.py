@@ -17,6 +17,7 @@ class Settings:
         self.colorbar_settings_path = os.path.join(self.module_dir,
                                                     "settings",	
                                                     "colorbar.txt")
+        self.automation = False
         
     def check_dirs(self):
         if not os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
@@ -28,6 +29,24 @@ class Settings:
         if not os.path.isdir(os.path.join(self.module_dir, "settings")):
             print("create settings directory")
             os.mkdir(os.path.join(self.module_dir, "settings"))
+            
+    def check_dirs_automation(self, experiment, region_of_interest):
+        experiment_path = os.path.join(self.module_dir, "my_experiments", experiment)
+        report_path = os.path.join(experiment_path, "reports_pipeline")
+        if not os.path.isdir(report_path):
+            os.mkdir(report_path)
+        if not os.path.isdir(os.path.join(experiment_path, "plots")):
+            os.mkdir(os.path.join(experiment_path, "plots"))
+        plot_path = os.path.join(experiment_path, "plots", region_of_interest)
+        mixcr_plots_path = os.path.join(plot_path, "mixcr_plots")
+        if not os.path.isdir(plot_path):
+            os.mkdir(plot_path)
+            self.automation = True
+            if not os.path.isdir(mixcr_plots_path):
+                os.mkdir(mixcr_plots_path)
+                
+        return plot_path, mixcr_plots_path, experiment_path, report_path
+            
             
     def create_global_vars(self):
         global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}

@@ -8,6 +8,23 @@ All plots can be called with 'plot' followed by the name of the plot, separated 
 To analyze a specific sample or investigate possible options, use 'help()' and 'plot' followed by the name of the plot.
 
 -----------------------
+Important Variables
+-----------------------
+
+- plot.sequencing_report 
+    Contains the processed and trimmed NGS data.
+- plot.binding_data
+    Contains the uploaded binding data.
+- plot.Report.origin_seq_report
+    Contains the raw NGS data from mixcr which is not trimmed.
+- plot.ControlFigure.fig
+    Is the matplotlib figure object
+- plot.ControlFigure.ax
+    Is the matplotlib axis object
+- plot.alignment_report
+    A dataframe which contains the data from all alignment reports.
+
+-----------------------
 Plot Commands
 -----------------------
 - plot.alignment_quality(): 
@@ -77,10 +94,10 @@ Non-Plot Commands
     Allows you to add more binding data to the pipeline.
 
 - plot.change_preferred_antigen(): 
-    Sets the antigen you'd like to analyze in the plots.
+    Sets the antigen you'd like to analyze in the default plots.
 
 - plot.change_preferred_sample(): 
-    Sets the sample you'd like to analyze in the plots.
+    Sets the sample you'd like to analyze in the default plots.
 
 - plot.change_preferred_region(): 
     Sets the region you'd like to analyze in the plots.
@@ -105,5 +122,9 @@ Non-Plot Commands
 
 - plot.change_experiment_names(): 
     Allows you to change the names of the samples.
+    
+- plot.chat()
+    Allows you to use artifical intelligence to investigate your data without coding. 
+    
 '''
     print(instructions)

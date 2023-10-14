@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+
 def calculate_entropy(probs):
     """Calculate Shannon entropy."""
     return -np.sum([p * np.log2(p) if p > 0 else 0 for p in probs])
@@ -34,6 +35,7 @@ def cleaning(sample_name, report, chosen_seq_length, region_string, method):
     else:
         aa_distribution = pd.DataFrame.from_dict(compDict)
         aa_distribution = aa_distribution.divide(aa_distribution.sum(axis=1), axis=0)
+        aa_distribution.astype("float16")
     return aa_distribution, chosen_seq_length, length_filtered_seqs
 
 

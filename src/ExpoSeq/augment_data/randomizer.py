@@ -85,11 +85,12 @@ def create_sequencing_report(num_experiments = 30, mean_length = 48, stddev_leng
                     "cloneId": cloneid,
                     "aaSeqCDR3": aminoacid_seqs_new,
                     "nSeqCDR3": sequences_new,
-                    "clonesFraction": fractions_new,
+                    "cloneFraction": fractions_new,
                     "readCount": readsCount_new,
                     "lengthOfCDR3": length_cdr3_new}
             intermediate_frame = pd.DataFrame(data)
             sequencing_report = pd.concat([sequencing_report, intermediate_frame])
+    sequencing_report['readFraction'] = 0
     return sequencing_report
 
 
@@ -114,7 +115,7 @@ def create_binding_report(sequencing_report, num_antigen):
     for i in range(len(split_lists)):
         part_binding = split_lists[i][0]
         part_aaSeq = split_lists[i][1]
-        data = {"aaSeqCDR3": part_aaSeq, "Epitope " + str(i): part_binding}
+        data = {"aaSeqCDR3": part_aaSeq, "Antigen " + str(i): part_binding}
         intermediate_binding = pd.DataFrame(data)
         if i == 0:
             binding_data = intermediate_binding

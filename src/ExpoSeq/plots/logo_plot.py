@@ -74,6 +74,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                                 chosen_seq_length,
                                 region_string,
                                 method)
+
     logo_plot = logomaker.Logo(aa_distribution,
                                shade_below=.5,
                                fade_below=.5,
@@ -87,16 +88,20 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                            rotation=0)
     original_fontsize = font_settings["fontsize"]
     if method == "bits":
-        ax.set_xlabel('information (bits)')
+        ax.set_ylabel('information (bits)',  **font_settings)
+        ax.set_xlabel("Position on sequence", **font_settings)
     else:
-        ax.set_xlabel("Frequency", **font_settings)
-    ax.set_ylabel("Position on sequence", **font_settings)
+        ax.set_ylabel("Frequency", **font_settings)
+        ax.set_xlabel("Position on sequence", **font_settings)
     font_settings["fontsize"] = 22
    # plt.title("Logo Plot of " + sample + " with sequence length " + str(chosen_seq_length), **font_settings)
     font_settings["fontsize"] = original_fontsize
     labels_true = list(range(0, chosen_seq_length))
     numbers_true = list(range(1, chosen_seq_length + 1))
     plt.xticks(labels_true, numbers_true)
+    plt.title(sample,
+            pad=12,
+            **font_settings)
     if highlight_specific_pos != False:
         logo_plot.highlight_position(p=5,
                                      color='gold',

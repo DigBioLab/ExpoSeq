@@ -9,3 +9,11 @@ build/
 .idea/
 temp/
 .fasta
+*.png
+pandasai.log
+cache
+exports
+myfastasequences
+try_outs
+dist
+build

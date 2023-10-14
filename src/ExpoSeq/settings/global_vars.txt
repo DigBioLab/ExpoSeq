@@ -1,1 +1,1 @@
-{'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
+{'mixcr_path': '', 'last_experiment': '', 'api': '', 'ai_platform': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}

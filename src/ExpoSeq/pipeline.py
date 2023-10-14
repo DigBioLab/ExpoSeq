@@ -3,160 +3,24 @@ from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
-from ast import literal_eval
 import pandas as pd
 import pickle
 import os
-from ExpoSeq.augment_data.randomizer import create_sequencing_report, create_binding_report
-from .design.multi_seq_align import MSA
-from ExpoSeq.settings import change_settings, change_save_settings, reports, plot_styler
-from tkinter import filedialog
+from .augment_data.randomizer import create_sequencing_report, create_binding_report
+from .settings import change_settings, change_save_settings, reports, plot_styler
 import subprocess
 import glob
-from ExpoSeq.augment_data.uploader import create_alignment_report
-from ExpoSeq.settings.general_instructions import print_instructions
-from ExpoSeq.tidy_data.heatmaps.read_matrix import read_matrix
-from ExpoSeq.augment_data.mixcr_nils import check_mixcr
-
-class MyFigure:
-    def __init__(self):
-        self.fig = plt.figure(1, figsize = (12, 10))
-        self.ax = self.fig.gca()
-        self.plot_type = "multi"
-
-    def check_fig(self, ):
-        if not plt.fignum_exists(1):
-            self.fig = plt.figure(1)
-
-    def clear_fig(self):
-        self.fig.clear()
-        if self.plot_type == "single":
-            self.ax = self.fig.gca()
-
-    def update_plot(self):
-        self.ax = self.fig.gca()
-        self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        self.tighten()
-
-    def tighten(self):
-        plt.tight_layout()
+from .augment_data.uploader import create_alignment_report
+from .settings.general_instructions import print_instructions
+from .tidy_data.heatmaps.read_matrix import read_matrix
+from .augment_data.mixcr_nils import check_mixcr
+from .settings.aumotative_report import AumotativeReport
+from .settings.figure import MyFigure, save_matrix
 
 
-def save_matrix(matrix, path = None):
-    if path == None:
-        while True:
-            save_matrix = input("Do you want to save the generated data? (Y/n)")
-            if save_matrix in ["Y", "y", "N", "n"]:
-                break
-            else:
-                print("Please enter Y or n")
-        if save_matrix.lower() in ["Y", "y"]:
-            while True:
-                filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
-                if not os.path.isfile(filename_matrix):
-                    matrix.to_excel(path + ".xlsx")
-                    break
-                else:
-                    print("This file already exists. Please choose another name.")
-    else:
-        matrix.to_excel(path)
-
-
-
-class Directories:
-    def __init__(self):
-        self.module_dir = os.path.abspath("")
-        self.common_vars = os.path.join(self.module_dir, "settings", "global_vars.txt")
-        self.font_settings_path = os.path.join(self.module_dir, "settings", "font_settings.txt")
-        self.legend_settings_path = os.path.join(self.module_dir,
-                                                 "settings",
-                                                 "legend_settings.txt")
-        self.colorbar_path = os.path.join(self.module_dir,
-                                          "settings",
-                                          "colorbar.txt")
-
-    def check_dirs(self):
-        if not os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
-            print("create my_experiments directory")
-            os.mkdir(os.path.join(self.module_dir, "my_experiments"))
-        if not os.path.isdir(os.path.join(self.module_dir, "temp")):
-            print("create temp directory")
-            os.mkdir(os.path.join(self.module_dir, "temp"))
-        if not os.path.isdir(os.path.join(self.module_dir, "settings")):
-            print("create settings directory")
-            os.mkdir(os.path.join(self.module_dir, "settings"))
-
-    def create_global_params(self):
-        common_vars = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': '',
-                       'clustalw_path': ''}
-        with open(self.common_vars, "w") as f:
-            f.write(str(common_vars))
-
-    def create_font_settings(self):
-        font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
-        with open(os.path.join(self.module_dir, "settings", "font_settings.txt"), "w") as f:
-            f.write(str(font_settings))
-
-    def create_legend_settings(self):
-        legend_settings = {'loc': 'upper right', 'bbox_to_anchor': (1, 1), 'ncols': 1, 'fontsize': 16, 'frameon': True,
-                           'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
-        with open(os.path.join(self.module_dir, "settings", "legend_settings.txt"), "w") as f:
-            f.write(str(legend_settings))
-
-    def create_colorbar_settings(self):
-        colorbar = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
-        with open(self.colorbar_path, "w") as f:
-            f.write(str(colorbar))
-
-    def read_global_params(self):
-        if not os.path.isfile(self.common_vars):
-            self.create_global_params()
-        with open(self.common_vars, "r") as f:
-            global_params = f.read()
-        global_params = literal_eval(global_params)
-        return global_params
-
-    def read_font_settings(self):
-        if not os.path.isfile(self.font_settings_path):
-            self.create_font_settings()
-        with open(self.font_settings_path, "r") as f:
-            font_settings = f.read()
-        font_settings = literal_eval(font_settings)
-        return font_settings
-
-    def read_legend_settings(self):
-        if not os.path.isfile(self.legend_settings_path):
-            self.create_legend_settings()
-        with open(self.legend_settings_path, "r") as f:
-            legend_settings = f.read()
-        legend_settings = literal_eval(legend_settings)
-        return legend_settings
-
-    def read_colorbar_settings(self):
-        if not os.path.isfile(self.colorbar_path):
-            self.create_colorbar_settings()
-        with open(self.colorbar_path, "r") as f:
-            colorbar_settings = f.read()
-        colorbar_settings = literal_eval(colorbar_settings)
-        return colorbar_settings
-
-    def get_experiment_path(self, experiment):
-        experiment_path = os.path.join(self.module_dir,
-                                       "my_experiments",
-                                       experiment,
-                                       "experiment_names.pickle")
-        return experiment_path
-
-
-
-
-
-# Call the function to print the instructions
 
 class PlotManager:
-    def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=9,
+    def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=6,
                  min_read_count=3):
         self.is_test = test_version
         self.Settings = change_settings.Settings()
@@ -172,6 +36,7 @@ class PlotManager:
             self.binding_data = create_binding_report(self.sequencing_report,
                                                       num_antigen=test_panrou_num)
             self.region_string = "CDR3"
+            self.region_of_interest = 'aaSeq' + self.region_string
         else:
             if experiment == None:
                 self.sequencing_report, self.alignment_report, self.experiment = upload()
@@ -189,8 +54,17 @@ class PlotManager:
                                                    self.experiment)
             self.binding_data = binding_report.ask_binding_data()
 
+        # check general settings and load them
+            self.region_of_interest = "aaSeq" + self.region_string
+            self.plot_path, self.mixcr_plots_path, self.experiment_path, self.report_path = self.Settings.check_dirs_automation(self.experiment,
+                                                                                                                                self.region_of_interest)
+        self.font_settings = self.Settings.read_font_settings()
+        self.legend_settings = self.Settings.read_legend_settings()
+        self.colorbar_settings = self.Settings.read_colorbar_settings()
+        #experiment_path = self.Settings.get_experiment_path(self.experiment)
+        
         self.Report = reports.SequencingReport(self.sequencing_report)
-        experiment_path = self.Settings.get_experiment_path(self.experiment)
+
         self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
         self.Report.prepare_seq_report(self.region_string,
                                        divisible_by=divisible_by,
@@ -199,30 +73,44 @@ class PlotManager:
        # self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
         self.sequencing_report = self.Report.sequencing_report
-        self.font_settings = self.Settings.read_font_settings()
-        self.legend_settings = self.Settings.read_legend_settings()
-        self.colorbar_settings = self.Settings.read_colorbar_settings()
+
         self.ControlFigure = MyFigure()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.experiments_list = self.unique_experiments
-        self.region_of_interest = "aaSeq" + self.region_string
         self.preferred_sample = self.experiments_list[0]
         self.change_preferred_antigen()
-        print_instructions()
-        self.report_path = os.path.join(self.module_dir, "my_experiments", self.experiment, "reports_pipeline")
-        if not os.path.isdir(self.report_path):
-            os.mkdir(self.report_path)
-        if not os.path.isdir(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots")):
-            os.mkdir(os.path.join(self.module_dir, "my_experiments", self.experiment, "plots"))
-        self.plot_path = os.path.join(self.module_dir, "my_experiments", self.experiment, "plots", self.region_of_interest)
-        self.mixcr_plots_path = os.path.join(self.plot_path, "mixcr_plots")
-        if not os.path.isdir(self.plot_path):
-            os.mkdir(self.plot_path)
-            if not os.path.isdir(self.mixcr_plots_path):
-                os.mkdir(self.mixcr_plots_path)
+        self.Automation = None
+        if self.Settings.automation == True:
             self.full_analysis()
+        print_instructions()
 
+    def export_sequencing_report(self):
+        self.sequencing_report.to_csv(os.path.join(self.experiment_path, "sequencing_report_processed.csv"))
+        print(f"Lowest peptide sequence length: {self.sequencing_report['aaSeqCDR3'].str.len().min()}")
+        print(f"lowest read count: {self.sequencing_report['readCount'].min()}")
+        
+    def chat(self,):
+        """
+        :return: starts a conversation with your data. Be creative! You can ask any question and even create plots :)
+        """
+        if self.Automation == None:
+            if self.binding_data is not None:
+                merged_reprot = self.merge_bind_seq_report()
+                print("Your data looks like: \n")
+                merged_reprot.head(10)
+                self.Automation = AumotativeReport(merged_reprot,
+                                                   self.Report.origin_seq_report,
+                                                   self.global_params)
+            else:
+                print("Your data looks like: \n")
+                self.sequencing_report.head(10)
+                self.Automation = AumotativeReport(self.sequencing_report,
+                                                self.Report.origin_seq_report,
+                                                self.global_params)
+            
+
+        self.Automation.chat_()
 
     def save_in_plots(self, enter_filename):
         plt.savefig(fname = os.path.join(self.plot_path, enter_filename + f".png"), dpi = 300,  format="png")
@@ -455,13 +343,13 @@ class PlotManager:
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.preferred_sample = sample
 
-    def change_filter(self, divisible_by=3, length_threshold=9, min_read_count=0):
+    def change_filter(self, divisible_by=3, length_threshold_aa=6, min_read_count=2):
         """
         :param divisible_by: filter all sequences which are not divisible by this value
         :param length_threshold: filter out all sequences which are shorter than this value
         :min_read_count: filter out all sequences which have less clones/reads than this value
         """
-        self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold, min_read_count)
+        self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold_aa, min_read_count)
         self.sequencing_report = self.Report.sequencing_report
 
     def change_region(self):
@@ -505,13 +393,15 @@ class PlotManager:
 
         # self.binding_data.to_csv("binding_data.csv")
 
-    def merge_bind_seq_report(self):
+    def merge_bind_seq_report(self, merge_technique = "left"):
         """
-        :return: merges the binding data with the sequencing report.
+        :param: merge_technique: default "left". You can choose between "left", "right", "inner" and "outer" for the merge technique.
+        :return: a python variable which contains the merged sequencing report and binding report which can be saved with report.to_csv("filename.csv")
         """
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
 
-        merged_reports = pd.merge(self.sequencing_report, self.binding_data, on="aaSeqCDR3", how="outer")
+        merged_reports = pd.merge(self.sequencing_report, self.binding_data, on="aaSeqCDR3", how=merge_technique)
+        merged_reports.fillna(0, inplace=True)
         return merged_reports
 
     def print_antigens(self):
@@ -1210,23 +1100,23 @@ class PlotManager:
         plt.close(fig2)
 
 
-    def MSA_design(self, samples=None, batch_size=500):
-        """
-        :params samples: the samples you would like to analyze. The input is a list.
-        :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
-        :return: Creates a multiple sequence alignment of the sequences of the samples you have chosen. The sequences are ordered by their frequency and they are chosen equally based on the given batch size from the different samples. The output is an interface with an overview of the MSA and the option to design a sequence based on the MSA and the findings of the analysis.
-        """
-        if samples == None:
-            samples = [self.experiments_list[0]]
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
-        incorrect_samples = [x for x in samples if x not in self.experiments_list]
-        assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-
-        msa = MSA(self.region_of_interest,
-                  self.Report,
-                  self.Settings,
-                  self.module_dir)
-        msa = msa.run_MSA(batch_size, samples)
+ #   def MSA_design(self, samples=None, batch_size=500):
+  #      """
+   #     :params samples: the samples you would like to analyze. The input is a list.
+    #    :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
+    #    :return: Creates a multiple sequence alignment of the sequences of the samples you have chosen. The sequences are ordered by their frequency and they are chosen equally based on the given batch size from the different samples. The output is an interface with an overview of the MSA and the option to design a sequence based on the MSA and the findings of the analysis.
+    #    """
+    #    if samples == None:
+    #        samples = [self.experiments_list[0]]
+    #    assert type(samples) == list, "You have to give a list with the samples you want to analyze"
+    #    incorrect_samples = [x for x in samples if x not in self.experiments_list]
+    #    assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
+#
+#        msa = MSA(self.region_of_interest,
+ #                 self.Report,
+  #                self.Settings,
+   #               self.module_dir)
+    #    msa = msa.run_MSA(batch_size, samples)
 
     def validate_mixcr_path(self):
         path_to_mixcr = self.global_params["mixcr_path"]

@@ -50,8 +50,10 @@ class SequencingReport:
         
 
     def trim_data(self, region_string, divisible_by = 3,length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
-
-        sequencing_report = self.sequencing_report.groupby("Experiment").apply(lambda group: group.drop_duplicates(subset=["nSeq" + region_string], keep="first")).reset_index(drop=True)
+        length_threshold = length_threshold - 1
+        if min_read_count > 0:
+            min_read_count = min_read_count - 1
+        sequencing_report = self.sequencing_report.groupby("Experiment", group_keys = True).apply(lambda group: group.drop_duplicates(subset=["nSeq" + region_string], keep="first")).reset_index(drop=True)
 
         indexes_to_drop = sequencing_report[sequencing_report["aaSeq" + region_string] == 'region_not_covered'].index
         sequencing_report = sequencing_report.drop(indexes_to_drop)
@@ -67,9 +69,11 @@ class SequencingReport:
         new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
         self.sequencing_report = sequencing_report.copy()
         self.sequencing_report[new_fraction] = np.array(new_column)
+        self.sequencing_report.drop(columns = ["readFraction"], inplace = True)
+        self.sequencing_report.drop(columns = ["index"], inplace = True)
 
     def remove_not_covered(self):
-        self.sequencing_report = self.sequencing_report[~self.sequencing_report.applymap(lambda x: x == "region_not_covered").any(axis=1)]
+        self.sequencing_report = self.sequencing_report[~self.sequencing_report.map(lambda x: x == "region_not_covered").any(axis=1)]
 
     def prepare_seq_report(self, region_string, divisible_by, length_threshold, min_read_count):
 
