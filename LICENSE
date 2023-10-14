@@ -1,11 +1,10 @@
 ExpoSeq License Version 4.0
 
-Copyright (C) 2023 Nils Hofmann/DTU
+Copyright (C) 2023 Nils Hofmann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, copy, and modify the Software, subject to the following conditions:
 
-1. The Software may be used for both academic and industrial purposes.
-2. Redistribution of the Software is permitted provided that the following conditions are met:
+1. Redistribution of the Software is permitted provided that the following conditions are met:
     a) Redistributions must retain the above copyright notice, this list of conditions, and the following disclaimer.
     b) Redistributions are allowed only for academic and open-source projects.
     c) Redistributions for profit or commercial advantage, including consultancy services, are not allowed unless explicitly granted by the copyright holder.
