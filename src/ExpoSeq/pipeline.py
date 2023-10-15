@@ -241,7 +241,9 @@ class PlotManager:
         print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
             os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
-
+            report_seq_cluster = os.path.isdir(os.path.join(self.plot_path, "sequence_cluster", "reports"))
+            if not os.path.isdir(report_seq_cluster):
+                os.mkdir(report_seq_cluster)
             for single_experiment in self.experiments_list:
                 try:
                     if not os.path.isfile(os.path.join(self.plot_path, "sequence_cluster", single_experiment + "ls_dendro.png")):
@@ -253,7 +255,7 @@ class PlotManager:
                         self.basic_cluster(samples = [single_experiment],
                                            max_ld = 2,
                                            batch_size=1000,
-                                           save_report_path = os.path.join(self.report_path, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
+                                           save_report_path = os.path.join(report_seq_cluster, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
                         self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
                 except:
                     print(f"Sequence clustering failed at: {single_experiment}")
@@ -286,13 +288,16 @@ class PlotManager:
                 os.mkdir(clustering_antigens_path)
             experiment_keys = list(best_binder.keys())
             print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n2500 iterations are used for tsne.")
+            report_tsne_cluster = os.path.isdir(os.path.join(self.plot_path, "clustering_antigens", "reports"))
+            if not os.path.isdir(report_tsne_cluster):
+                os.mkdir(report_tsne_cluster)
             for experiment in experiment_keys:
                 try:
                     if not os.path.isfile(os.path.join(self.plot_path, "clustering_antigens", experiment + "tsne_cluster_AG.png")):
                         self.tsne_cluster_AG(sample = experiment,
                                              antigen = best_binder[experiment],
                                              antigen_names = False,
-                                             save_report_path = os.path.join(self.report_path, experiment + f"_best_binder{experiment}" + ".xlsx"))
+                                             save_report_path = os.path.join(report_tsne_cluster, experiment + f"_best_binder{experiment}" + ".xlsx"))
                         self.save_in_plots(os.path.join( "clustering_antigens", experiment + "tsne_cluster_AG"))
                 except:
                     print(f"Cluster based on sequence embedding combined with binding data failed for: {experiment}")
@@ -312,13 +317,16 @@ class PlotManager:
                     self.save_in_plots(os.path.join("clustering_antigens","dendro_binding", experiment + "cluster_dendrogram"))
                 except:
                     print(f"Dendrogram with binding data failed for {experiment}")
+                report_ls_cluster = os.path.isdir(os.path.join(self.plot_path, "clustering_antigens","ls_binding_cluster", "reports"))
+                if not os.path.isdir(report_ls_cluster):
+                    os.mkdir(report_ls_cluster)
                 try:
                     self.cluster_one_AG(antigen = best_binder[experiment][0],
                                         specific_experiments = [experiment],
                                         batch_size = 1000,
                                         max_ld = 2,
                                         preferred_cmap = "RdPu",
-                                        save_report_path = os.path.join(self.report_path, experiment + f"_ls_binding_cluster" + ".xlsx"))
+                                        save_report_path = os.path.join(report_ls_cluster, experiment + f"_ls_binding_cluster" + ".xlsx"))
                     self.save_in_plots(os.path.join("clustering_antigens","ls_binding_cluster", experiment + f"_ls_binding_cluster"))
                 except:
                     print("Could not create levenshtein distance cluster for best binder")
@@ -1046,7 +1054,7 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
-        hist_lvst_dist.levenshtein_dend(self.ControlFigure.ax,
+        linked  = hist_lvst_dist.levenshtein_dend(self.ControlFigure.ax,
                                         self.sequencing_report,
                                         sample,
                                         batch_size,
@@ -1057,6 +1065,7 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
+        
 
     def dendro_bind(self, sample=None, antigens=None, max_cluster_dist=2, batch_size=1000, ascending=True):
         """
@@ -1098,6 +1107,7 @@ class PlotManager:
                                            self.ControlFigure.plot_type)
       #  self.ControlFigure.tighten()
         plt.close(fig2)
+        return fig2
 
 
  #   def MSA_design(self, samples=None, batch_size=500):
