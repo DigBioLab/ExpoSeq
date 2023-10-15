@@ -73,7 +73,7 @@ class SequencingReport:
         self.sequencing_report.drop(columns = ["index"], inplace = True)
 
     def remove_not_covered(self):
-        self.sequencing_report = self.sequencing_report[~self.sequencing_report.map(lambda x: x == "region_not_covered").any(axis=1)]
+        self.sequencing_report = self.sequencing_report[~self.sequencing_report.applymap(lambda x: x == "region_not_covered").any(axis=1)]
 
     def prepare_seq_report(self, region_string, divisible_by, length_threshold, min_read_count):
 
