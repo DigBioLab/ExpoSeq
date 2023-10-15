@@ -33,6 +33,7 @@ def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist,
     title = "Levenshtein Distance between sequences in " + sample 
     ax.set_title(title,pad = 12, **font_settings)
     plt.tight_layout()
+\
 
 
 def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_size,max_cluster_dist,font_settings, region_string, ascending ):
@@ -59,6 +60,9 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     linked = linkage(condensed_matrix, 'single')
     
     aa_clustered, binding_seqs, seq_val = label_bind_seqs(mix,region_string, aa_clustered, antigens, )
+    if len(binding_seqs) == 0:
+        print("No matches between your binding data and your sequences were found. Please increase the batch size or change the antigen.")
+        return
     binding_seqs_sorted, binding_values_sorted = sort_binding_seqs(binding_seqs, seq_val, ascending)
 
 
@@ -83,6 +87,7 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     ax2.set_xlabel('Binding Value', **font_settings)
     fig2.tight_layout()
     fig.tight_layout()
+    
     return fig2
 
     
