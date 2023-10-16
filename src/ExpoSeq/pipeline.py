@@ -16,7 +16,7 @@ from .tidy_data.heatmaps.read_matrix import read_matrix
 from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
-
+from .settings.markdown_builder import create_quarto
 
 
 class PlotManager:
@@ -85,6 +85,16 @@ class PlotManager:
             self.full_analysis()
         print_instructions()
 
+
+
+    def create_report(self):
+        print("Install quarto from: https://quarto.org/docs/get-started/")
+        print("You also might to install Jupyter. In general, I recommend to use VS code for this purpose.")
+        print(f"This function should only be called after the initial automation, since it relies on the file structure in {self.plot_path}\nAlso do not change the names of the directories or files")
+        subprocess.run(["quarto", "check"])
+        create_quarto(self.experiment, self.plot_path, self.binding_data, self.experiments_list)
+        subprocess.run(["quarto", "render", self.experiment + ".qmd"])
+        
     def export_sequencing_report(self):
         self.sequencing_report.to_csv(os.path.join(self.experiment_path, "sequencing_report_processed.csv"))
         print(f"Lowest peptide sequence length: {self.sequencing_report['aaSeqCDR3'].str.len().min()}")
@@ -109,7 +119,6 @@ class PlotManager:
                                                 self.Report.origin_seq_report,
                                                 self.global_params)
             
-
         self.Automation.chat_()
 
     def save_in_plots(self, enter_filename):
@@ -210,6 +219,16 @@ class PlotManager:
         except:
             print("Alignment reports could not be found")
 
+
+        try:
+            print("create rarefraction curves of all samples")
+            self.rarefraction_curves(self.experiments_list)
+            self.save_in_plots("rarefraction_all")
+            
+            
+        except:
+            print("creating rarefraction plot of all samples failed")
+            
         if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
             os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
         for i in self.experiments_list:
