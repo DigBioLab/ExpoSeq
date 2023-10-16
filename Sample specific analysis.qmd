@@ -1,0 +1,819 @@
+---title: Sample specific analysisformat:
+ html:
+     toc: true
+     grid:
+---
+
+## Sample specific quality analysis
+
+### Quality analysis for NG-28545_Library_1_F10_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F10_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F10_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F10_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F11_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F11_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F12_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F12_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F12_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F12_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F1_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F1_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F1_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F1_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F2_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F2_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F3_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F3_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F5_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F5_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F6_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F6_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F7_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F7_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F7_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F7_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F8_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F8_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F8_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F8_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_1_F9_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_1_F9_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_1_F9_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_1_F9_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F11_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F11_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F12_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F12_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F12_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F12_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F2_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F2_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F3_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F3_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F5_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F5_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F6_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F6_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F8_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F8_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F8_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F8_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_2_F9_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_2_F9_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_2_F9_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_2_F9_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_3_F11_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_3_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_3_F11_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_3_F11_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_3_F2_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_3_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_3_F2_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_3_F2_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_3_F3_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_3_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_3_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_3_F3_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_3_F7_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_3_F7_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_3_F7_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_3_F7_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_4_F1_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_4_F1_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_4_F1_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_4_F1_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_4_F3_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_4_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_4_F3_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_4_F3_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_4_F5_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_4_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_4_F5_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_4_F5_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Quality analysis for NG-28545_Library_4_F6_2
+
+::: {layout="[[1, 1], [1]]"}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\length_distributions\NG-28545_Library_4_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_NG-28545_Library_4_F6_2.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\logo_plots\NG-28545_Library_4_F6_2.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+# Sequence Clusters
+
+### Sequence Similarity of NG-28545_Library_1_F10_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F10_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F10_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F10_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F11_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F11_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F11_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F11_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F12_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F12_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F12_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F12_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F1_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F1_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F1_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F1_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F2_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F2_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F2_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F2_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F3_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F3_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F3_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F5_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F5_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F5_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F5_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F6_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F6_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F6_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F6_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F7_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F7_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F7_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F7_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F8_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F8_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F8_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F8_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_1_F9_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F9_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F9_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F9_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F11_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F11_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F11_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F11_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F12_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F12_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F12_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F12_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F2_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F2_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F2_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F2_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F3_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F3_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F3_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F5_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F5_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F5_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F5_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F6_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F6_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F6_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F6_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F8_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F8_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F8_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F8_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_2_F9_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F9_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F9_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F9_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_3_F11_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F11_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F11_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F11_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_3_F2_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F2_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F2_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F2_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_3_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F3_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F3_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F3_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_3_F7_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F7_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F7_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F7_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_4_F1_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F1_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F1_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F1_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_4_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F3_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F3_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F3_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_4_F5_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F5_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F5_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F5_2ls_cluster.xlsx)
+
+
+
+:::
+
+### Sequence Similarity of NG-28545_Library_4_F6_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F6_2ls_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F6_2ls_dendro.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F6_2ls_cluster.xlsx)
+
+
+
+:::

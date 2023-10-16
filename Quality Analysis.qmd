@@ -1,0 +1,38 @@
+---title: Quality Analysisformat:
+ html:
+     toc: true
+     grid:
+---
+
+# Basic Overview
+
+## Identity between samples
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\jaccard.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\morosita_horn.png)
+
+test description
+
+:::
+
+{{< pagebreak >}}
+
+
+
+## Alignment Quality of samples
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\alignment_quality.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\rarefraction_all.png)
+
+Aligment Quality
+
+:::
+
+- *If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.*
+- *If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.*
