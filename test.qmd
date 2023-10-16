@@ -1,15 +1,13 @@
-
 ---
-title: "test"
+title: test
 format:
-        html:
-                toc: true
-
-jupyter: python3
+     html:
+         toc: true
+         toc-location: left
+         toc-expand: 2
 ---
-        
 
-# Quality Analysis
+# Basic Overview
 
 ## Identity between samples
 
@@ -41,10 +39,6 @@ Aligment Quality
 
 - *If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.*
 - *If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.*
-
-{{< pagebreak >}}
-
-
 
 ## Sample specific quality analysis
 
@@ -482,7 +476,9 @@ Aligment Quality
 
 # Sequence Clusters
 
-### Sequence Similarity of NG-28545_Library_1_F10_2
+## Levenshtein distance based
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F10_2
 
 ::: {layout-ncol=2}
 
@@ -490,13 +486,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F10_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F10_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F11_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CAKDLYYYDSSGYYSDAFDIW       |
+|  1 |            1 |             1 | CATSPGYCTGGVCYTWGYYYYGMDVW  |
+|  2 |            2 |             2 | CVRDLAATGLDVW               |
+|  3 |            3 |             3 | CAGDLTSGYCSGGSCYTNYYYYGMDVW |
+|  4 |            4 |             4 | CARDGGAYCSSTSCYSGGYYYYYMDVW |
+|  5 |            5 |             5 | CARSSPSGEFGTW               |
+|  6 |            6 |             6 | CAKGSYSNYEDGSYYYGMDVW       |
+|  7 |            7 |             5 | CARSSPFGEFGTW               |
+|  8 |            8 |             7 | CATHYYYGMDVW                |
+|  9 |            9 |             8 | CARGGYCSGGSCYEKYYFDYW       |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F11_2
 
 ::: {layout-ncol=2}
 
@@ -504,13 +515,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F11_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F11_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F12_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                  |
+|---:|-------------:|--------------:|:---------------------------|
+|  0 |            0 |             0 | CARDLSTIFVYERMSGWFDPW      |
+|  1 |            1 |             1 | CARGGYCSGGSCYEKYYFDYW      |
+|  2 |            2 |             2 | CARIPGYCSGGSCYEGHYGMDVW    |
+|  3 |            3 |             3 | CAGGIYCSGGSCYHNDYW         |
+|  4 |            4 |             4 | CARDLYDSSGYSDYDAFDIW       |
+|  5 |            5 |             1 | CARGGYCSGGNCYEKYYFDYW      |
+|  6 |            6 |             5 | CAREGYCSGGSCYEGDAFDIW      |
+|  7 |            7 |             6 | CATEVSGSHYHW               |
+|  8 |            8 |             7 | CAREMAGYCSGGSCYSGGDDAFDIW  |
+|  9 |            9 |             8 | CTREISEYCSGGSCYSNYYYYYMDVW |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F12_2
 
 ::: {layout-ncol=2}
 
@@ -518,13 +544,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F12_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F12_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F1_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CAREPKAGYSSGWYDIGAFDVW      |
+|  1 |            1 |             1 | CARDLSTIFVYERMSGWFDPW       |
+|  2 |            2 |            64 | CARGGYCSGGSCYEKYYFDYW       |
+|  3 |            3 |            64 | CARGGYCSGGNCYEKYYFDYW       |
+|  4 |            4 |            41 | CAGGIYCSGGSCYHNDYW          |
+|  5 |            5 |             4 | CTREISEYCSGGSCYSNYYYYYMDVW  |
+|  6 |            6 |             5 | CARELTGYCSGGSCYSYYYYYYGMDVW |
+|  7 |            7 |             6 | CARGRLGSSGWYEVGYYYYYYGMDVW  |
+|  8 |            8 |             7 | CAKSAMYSSGYYLDFDYW          |
+|  9 |            9 |             8 | CARDRYCSGGSCYTDAYFDYW       |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F1_2
 
 ::: {layout-ncol=2}
 
@@ -532,13 +573,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F1_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F1_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F2_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences              |
+|---:|-------------:|--------------:|:-----------------------|
+|  0 |            0 |            21 | CTRGRHSAFDIW           |
+|  1 |            1 |             1 | CARGDIVVVPAAIAYYYYMDVW |
+|  2 |            2 |             2 | CAREAQDAFDIW           |
+|  3 |            3 |             3 | CARGGYCSGGSCYEKYYFDYW  |
+|  4 |            4 |             4 | CARTGYGSGSPYAFDIW      |
+|  5 |            5 |             5 | CAKTRDASWYGLFDYW       |
+|  6 |            6 |             6 | CARHRSGYDDAFDIW        |
+|  7 |            7 |            21 | CARGRANAFDIW           |
+|  8 |            8 |             7 | CARAHKYPHLW            |
+|  9 |            9 |            21 | CARGRYSAFDIW           |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F2_2
 
 ::: {layout-ncol=2}
 
@@ -546,13 +602,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F2_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F2_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F3_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences              |
+|---:|-------------:|--------------:|:-----------------------|
+|  0 |            0 |             0 | CARGDIVVVPAAIAYYYYMDVW |
+|  1 |            1 |             1 | CARGGYCSGGSCYEKYYFDYW  |
+|  2 |            2 |             6 | CAREAQDAFDIW           |
+|  3 |            3 |             3 | CTRGRHSAFDIW           |
+|  4 |            4 |             4 | CARSVLYGMDVW           |
+|  5 |            5 |             5 | CARRTSANVLDYW          |
+|  6 |            6 |             6 | CAREAPAFDIW            |
+|  7 |            7 |             7 | CVRQLGGTFDIW           |
+|  8 |            8 |             8 | CAHRRDDNSGWWNSGDFDIW   |
+|  9 |            9 |             9 | CTRTWSGYVDVW           |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F3_2
 
 ::: {layout-ncol=2}
 
@@ -560,13 +631,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F3_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F3_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F5_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CATSPGYCTGGVCYTWGYYYYGMDVW  |
+|  1 |            1 |             1 | CAGDLTSGYCSGGSCYTNYYYYGMDVW |
+|  2 |            2 |             2 | CARDGGAYCSSTSCYSGGYYYYYMDVW |
+|  3 |            3 |             3 | CATVRGYCSGGSCYSGYW          |
+|  4 |            4 |             4 | CATSGPIKCTNGVCYTLDYYYYGMDVW |
+|  5 |            5 |             5 | CATDLPECTNGVCYTNYYYYGMDVW   |
+|  6 |            6 |             6 | CATDLPYCSGGSCYENAFDIW       |
+|  7 |            7 |            11 | CARDIRYCSGGSCYSYYYYYGMDVW   |
+|  8 |            8 |             8 | CATRPGYCGGGVCYLRGNYYGMDVW   |
+|  9 |            9 |             9 | CARVGGRDSFDVW               |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F5_2
 
 ::: {layout-ncol=2}
 
@@ -574,13 +660,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F5_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F5_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F6_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CAKDLYYYDSSGYYSDAFDIW       |
+|  1 |            1 |             1 | CATSPGYCTGGVCYTWGYYYYGMDVW  |
+|  2 |            2 |             2 | CAGDLTSGYCSGGSCYTNYYYYGMDVW |
+|  3 |            3 |             3 | CARSSPSGEFGTW               |
+|  4 |            4 |             4 | CARDGGAYCSSTSCYSGGYYYYYMDVW |
+|  5 |            5 |             3 | CARSSPFGEFGTW               |
+|  6 |            6 |             5 | CARGGYCSGGSCYEKYYFDYW       |
+|  7 |            7 |             6 | CARDIRYCSGGSCYSYYYYYGMDVW   |
+|  8 |            8 |             7 | CATDLPECTNGVCYTNYYYYGMDVW   |
+|  9 |            9 |             8 | CATDLPYCSGGSCYENAFDIW       |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F6_2
 
 ::: {layout-ncol=2}
 
@@ -588,13 +689,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F6_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F6_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F7_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                  |
+|---:|-------------:|--------------:|:---------------------------|
+|  0 |            0 |             0 | CARGGYCSGGSCYEKYYFDYW      |
+|  1 |            1 |             3 | CARDLYDSSGYSDYDAFDIW       |
+|  2 |            2 |             2 | CAGGIYCSGGSCYHNDYW         |
+|  3 |            3 |             3 | CARDRGYDSSGYYEYDAFDIW      |
+|  4 |            4 |             4 | CATSPGYCTGGVCYTWGYYYYGMDVW |
+|  5 |            5 |             5 | CARDSPDCSGGSCYSEYYGMDVW    |
+|  6 |            6 |             0 | CARGGYCSGGNCYEKYYFDYW      |
+|  7 |            7 |             6 | CARGRLGSSGWYEVGYYYYYYGMDVW |
+|  8 |            8 |             7 | CARVVHCTNGVCYLGYYGMDVW     |
+|  9 |            9 |             8 | CARDQGYCSGGSCYSGDYYYGMGVW  |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F7_2
 
 ::: {layout-ncol=2}
 
@@ -602,13 +718,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F7_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F7_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F8_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CARGGYCSGGSCYEKYYFDYW       |
+|  1 |            1 |             0 | CARGGYCSGGNCYEKYYFDYW       |
+|  2 |            2 |             1 | CARERGYYCTNGVCYSEDYYYYGMDVW |
+|  3 |            3 |             2 | CAGGIYCSGGSCYHNDYW          |
+|  4 |            4 |             3 | CAREAQDAFDIW                |
+|  5 |            5 |             4 | CARDGGYCSGGSCYSAYYYYGMDVW   |
+|  6 |            6 |             5 | CTRGRHSAFDIW                |
+|  7 |            7 |             6 | CARDRGCGSFDYW               |
+|  8 |            8 |            14 | CARQLGAFDIW                 |
+|  9 |            9 |             8 | CARGDIVVVPAAIAYYYYMDVW      |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F8_2
 
 ::: {layout-ncol=2}
 
@@ -616,13 +747,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F8_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F8_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_1_F9_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CATSPGYCTGGVCYTWGYYYYGMDVW  |
+|  1 |            1 |             1 | CAGDLTSGYCSGGSCYTNYYYYGMDVW |
+|  2 |            2 |             2 | CARDGGAYCSSTSCYSGGYYYYYMDVW |
+|  3 |            3 |             3 | CAKDLYYYDSSGYYSDAFDIW       |
+|  4 |            4 |             4 | CARSNYDFWSGYIGYYYYGMDVW     |
+|  5 |            5 |             5 | CATDLPYCSGGSCYENAFDIW       |
+|  6 |            6 |             6 | CATDLPECTNGVCYTNYYYYGMDVW   |
+|  7 |            7 |             7 | CATVRGYCSGGSCYSGYW          |
+|  8 |            8 |            18 | CARDIRYCSGGSCYSYYYYYGMDVW   |
+|  9 |            9 |             9 | CATVNYCTGGVCYTWGYYYYGMDVW   |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_1_F9_2
 
 ::: {layout-ncol=2}
 
@@ -630,13 +776,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_1_F9_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_1_F9_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F11_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                   |
+|---:|-------------:|--------------:|:----------------------------|
+|  0 |            0 |             0 | CATSPGYCTGGVCYTWGYYYYGMDVW  |
+|  1 |            1 |             1 | CAGDLTSGYCSGGSCYTNYYYYGMDVW |
+|  2 |            2 |             2 | CARDGGAYCSSTSCYSGGYYYYYMDVW |
+|  3 |            3 |             3 | CAKDLYYYDSSGYYSDAFDIW       |
+|  4 |            4 |             4 | CAKGSYSNYEDGSYYYGMDVW       |
+|  5 |            5 |             5 | CARSNYDFWSGYIGYYYYGMDVW     |
+|  6 |            6 |             6 | CATDLPECTNGVCYTNYYYYGMDVW   |
+|  7 |            7 |             7 | CATDLPYCSGGSCYENAFDIW       |
+|  8 |            8 |             8 | CATVRGYCSGGSCYSGYW          |
+|  9 |            9 |             9 | CATSGPIKCTNGVCYTLDYYYYGMDVW |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F11_2
 
 ::: {layout-ncol=2}
 
@@ -644,13 +805,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F11_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F11_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F12_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences           |
+|---:|-------------:|--------------:|:--------------------|
+|  0 |            0 |             0 | CVAIKYSTAYYW        |
+|  1 |            1 |             1 | CARDGFTDYYYGMDVW    |
+|  2 |            2 |             2 | CARPTRDAFDIW        |
+|  3 |            3 |             3 | CARDGEWELLGDYYGMDVW |
+|  4 |            4 |             4 | CATSKRGDDAFDIW      |
+|  5 |            5 |             5 | CARLSGSYGDAFDIW     |
+|  6 |            6 |             6 | CARGETDYQRNYYYYMDVW |
+|  7 |            7 |             7 | CARLESAGMDVW        |
+|  8 |            8 |             8 | CATESNSYYYYYGMDVW   |
+|  9 |            9 |             4 | CATSNRGDDAFDIW      |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F12_2
 
 ::: {layout-ncol=2}
 
@@ -658,13 +834,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F12_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F12_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F2_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences       |
+|---:|-------------:|--------------:|:----------------|
+|  0 |            0 |             0 | CAKGGAAVDYW     |
+|  1 |            1 |             7 | CATYSYYYYGMDVW  |
+|  2 |            2 |            39 | CATDRAYGMGVW    |
+|  3 |            3 |             3 | CARLSGSYGDAFDIW |
+|  4 |            4 |             4 | CATSKRGDDAFDIW  |
+|  5 |            5 |             5 | CARFRSGYVDYW    |
+|  6 |            6 |             7 | CATVPAYYYGMDVW  |
+|  7 |            7 |             7 | CATGWAYYYGMDVW  |
+|  8 |            8 |             8 | CAREGDSKYVW     |
+|  9 |            9 |             7 | CATGGSYYYGMDVW  |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F2_2
 
 ::: {layout-ncol=2}
 
@@ -672,13 +863,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F2_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F2_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F3_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences              |
+|---:|-------------:|--------------:|:-----------------------|
+|  0 |            0 |             0 | CAREAQDAFDIW           |
+|  1 |            1 |             1 | CARGDIVVVPAAIAYYYYMDVW |
+|  2 |            2 |             2 | CTRGRHSAFDIW           |
+|  3 |            3 |             3 | CVAIKYSTAYYW           |
+|  4 |            4 |             4 | CARVLTEGMDVW           |
+|  5 |            5 |             0 | CARPTRDAFDIW           |
+|  6 |            6 |             6 | CAHRRDDNSGWWNSGDFDIW   |
+|  7 |            7 |             7 | CARGAAVFDYW            |
+|  8 |            8 |             8 | CARDGFTDYYYGMDVW       |
+|  9 |            9 |             9 | CATYSYYYYGMDVW         |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F3_2
 
 ::: {layout-ncol=2}
 
@@ -686,13 +892,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F3_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F3_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F5_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences         |
+|---:|-------------:|--------------:|:------------------|
+|  0 |            0 |             0 | CATGGSYYYGMDVW    |
+|  1 |            1 |             0 | CATVPAYYYGMDVW    |
+|  2 |            2 |            10 | CARDTTGDYAFDIW    |
+|  3 |            3 |             2 | CARDSRGPGYYMGVW   |
+|  4 |            4 |             3 | CARDSSGWYYFDYW    |
+|  5 |            5 |             4 | CATPDTRTGGVFGSPYW |
+|  6 |            6 |             5 | CVAIKYSTAYYW      |
+|  7 |            7 |             6 | CARENDYYYMDVW     |
+|  8 |            8 |             7 | CARGSVGDGYYFDYW   |
+|  9 |            9 |             8 | CARDPYGMDVW       |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F5_2
 
 ::: {layout-ncol=2}
 
@@ -700,13 +921,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F5_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F5_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F6_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences              |
+|---:|-------------:|--------------:|:-----------------------|
+|  0 |            0 |             0 | CVAIKYSTAYYW           |
+|  1 |            1 |             2 | CARPTRDAFDIW           |
+|  2 |            2 |             2 | CAREAQDAFDIW           |
+|  3 |            3 |             3 | CTRGRHSAFDIW           |
+|  4 |            4 |             4 | CARGDIVVVPAAIAYYYYMDVW |
+|  5 |            5 |             5 | CAKTRDASWYGLFDYW       |
+|  6 |            6 |             6 | CARLSGSYGDAFDIW        |
+|  7 |            7 |             7 | CATYSYYYYGMDVW         |
+|  8 |            8 |             8 | CARAHKYPHLW            |
+|  9 |            9 |             9 | CARHGDSRYVW            |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F6_2
 
 ::: {layout-ncol=2}
 
@@ -714,13 +950,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F6_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F6_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F8_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences      |
+|---:|-------------:|--------------:|:---------------|
+|  0 |            0 |             0 | CATYSYYYYGMDVW |
+|  1 |            1 |             1 | CARDGDLGMDVW   |
+|  2 |            2 |             0 | CATGGSYYYGMDVW |
+|  3 |            3 |             0 | CATVPAYYYGMDVW |
+|  4 |            4 |             0 | CATGWAYYYGMNVW |
+|  5 |            5 |             0 | CATGWAYYYGMDVW |
+|  6 |            6 |             2 | CATDRAYGMGVW   |
+|  7 |            7 |             0 | CATASGYYYGMDVW |
+|  8 |            8 |             0 | CATASGYYYGVDVW |
+|  9 |            9 |             3 | CAVGGSFVAFDIW  |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F8_2
 
 ::: {layout-ncol=2}
 
@@ -728,13 +979,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F8_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F8_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_2_F9_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences        |
+|---:|-------------:|--------------:|:-----------------|
+|  0 |            0 |             0 | CARPTRDAFDIW     |
+|  1 |            1 |             1 | CVAIKYSTAYYW     |
+|  2 |            2 |             2 | CARDGFTDYYYGMDVW |
+|  3 |            3 |             2 | CARDSTLDYYYGMDVW |
+|  4 |            4 |            17 | CATVPAYYYGMDVW   |
+|  5 |            5 |            17 | CATYSYYYYGMDVW   |
+|  6 |            6 |            18 | CARDHELYMDVW     |
+|  7 |            7 |             6 | CARDVYGMDVW      |
+|  8 |            8 |            17 | CATGGSYYYGMDVW   |
+|  9 |            9 |            28 | CARLESAGMDVW     |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_2_F9_2
 
 ::: {layout-ncol=2}
 
@@ -742,13 +1008,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_2_F9_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_2_F9_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_3_F11_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences        |
+|---:|-------------:|--------------:|:-----------------|
+|  0 |            0 |             0 | CVAIKYSTAYYW     |
+|  1 |            1 |             1 | CARPTRDAFDIW     |
+|  2 |            2 |             3 | CATYSYYYYGMDVW   |
+|  3 |            3 |             3 | CATVPAYYYGMDVW   |
+|  4 |            4 |             3 | CATGGSYYYGMDVW   |
+|  5 |            5 |            27 | CARDGFTDYYYGMDVW |
+|  6 |            6 |             3 | CATASGYYYGMDVW   |
+|  7 |            7 |             3 | CATGWAYYYGMDVW   |
+|  8 |            8 |             3 | CATGWAYYYGMNVW   |
+|  9 |            9 |            27 | CARDSTLDYYYGMDVW |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_3_F11_2
 
 ::: {layout-ncol=2}
 
@@ -756,13 +1037,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F11_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F11_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_3_F2_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences        |
+|---:|-------------:|--------------:|:-----------------|
+|  0 |            0 |             0 | CAKADDAFDIW      |
+|  1 |            1 |             1 | CAVVGATWGEAFDIW  |
+|  2 |            2 |            12 | CAREQVYGMDVW     |
+|  3 |            3 |             6 | CARALYGMDVW      |
+|  4 |            4 |             4 | CASLRGDYGYYGMDVW |
+|  5 |            5 |             5 | CARVGENEAFDIW    |
+|  6 |            6 |             6 | CARDSHGMDVW      |
+|  7 |            7 |             7 | CASGSGSLDYW      |
+|  8 |            8 |             8 | CASALAGDAFDIW    |
+|  9 |            9 |             9 | CARWGDAFDIW      |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_3_F2_2
 
 ::: {layout-ncol=2}
 
@@ -770,13 +1066,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F2_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F2_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_3_F3_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                |
+|---:|-------------:|--------------:|:-------------------------|
+|  0 |            0 |             0 | CARITMGDLDFDLW           |
+|  1 |            1 |             1 | CARSGSSGWIYYGMDVW        |
+|  2 |            2 |            36 | CARVEAGMDVW              |
+|  3 |            3 |             3 | CARDSSSWSYFDYW           |
+|  4 |            4 |             4 | CARDLPPSVGEGGDYYYYYGMDVW |
+|  5 |            5 |             0 | CARITMGDLDFDPW           |
+|  6 |            6 |            36 | CARAAHGMDVW              |
+|  7 |            7 |             5 | CARDLGGKDYYYYGMDVW       |
+|  8 |            8 |             6 | CARERYSSSWYVTDYYYYYMDVW  |
+|  9 |            9 |             7 | CAADITGPFDYW             |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_3_F3_2
 
 ::: {layout-ncol=2}
 
@@ -784,13 +1095,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F3_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F3_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_3_F7_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences          |
+|---:|-------------:|--------------:|:-------------------|
+|  0 |            0 |             1 | CARAAHGMDVW        |
+|  1 |            1 |             1 | CARVEAGMDVW        |
+|  2 |            2 |             2 | CARDLGGKDYYYYGMDVW |
+|  3 |            3 |             3 | CARVGGRDSFDVW      |
+|  4 |            4 |             4 | CAREGDGVYFQHW      |
+|  5 |            5 |             5 | CARSGSSGWIYYGMDVW  |
+|  6 |            6 |             6 | CARITMGDLDFDLW     |
+|  7 |            7 |             7 | CARGGTGDDAFDIW     |
+|  8 |            8 |             3 | CARVGGRDSFDIW      |
+|  9 |            9 |             8 | CARPSGYYLDAFDIW    |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_3_F7_2
 
 ::: {layout-ncol=2}
 
@@ -798,13 +1124,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_3_F7_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_3_F7_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_4_F1_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences          |
+|---:|-------------:|--------------:|:-------------------|
+|  0 |            0 |             0 | CASPYATLRDAFDIW    |
+|  1 |            1 |            23 | CARAAHGMDVW        |
+|  2 |            2 |             2 | CARDLGGKDYYYYGMDVW |
+|  3 |            3 |             3 | CARPKYSNYVEDAFDIW  |
+|  4 |            4 |             4 | CARVGGRDSFDVW      |
+|  5 |            5 |             5 | CARSGSSGWIYYGMDVW  |
+|  6 |            6 |             6 | CAKEEEGDSMGYW      |
+|  7 |            7 |             7 | CARDSRGSFDYW       |
+|  8 |            8 |             8 | CARITMGDLDFDLW     |
+|  9 |            9 |             9 | CAREGDGVYFQHW      |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_4_F1_2
 
 ::: {layout-ncol=2}
 
@@ -812,13 +1153,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F1_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F1_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_4_F3_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences        |
+|---:|-------------:|--------------:|:-----------------|
+|  0 |            0 |             0 | CATPDNWNYGGAVSRW |
+|  1 |            1 |             1 | CARNFDSGLDYW     |
+|  2 |            2 |             3 | CATVPAYYYGMDVW   |
+|  3 |            3 |             3 | CATYSYYYYGMDVW   |
+|  4 |            4 |             3 | CATGGSYYYGMDVW   |
+|  5 |            5 |             4 | CAQQGSWNYYYGMDVW |
+|  6 |            6 |             3 | CATGWAYYYGMDVW   |
+|  7 |            7 |             3 | CATDGGYYGMDVW    |
+|  8 |            8 |             5 | CATDYDFWSGYPYW   |
+|  9 |            9 |             6 | CAYYDYGGNGFDYW   |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_4_F3_2
 
 ::: {layout-ncol=2}
 
@@ -826,13 +1182,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F3_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F3_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_4_F5_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences                  |
+|---:|-------------:|--------------:|:---------------------------|
+|  0 |            0 |             0 | CARDDDRSGNAFDIW            |
+|  1 |            1 |             1 | CARVEAGMDVW                |
+|  2 |            2 |             2 | CARQGSWDYEKYFDLW           |
+|  3 |            3 |             3 | CARVGGRDSFDVW              |
+|  4 |            4 |             4 | CARGFSYADYW                |
+|  5 |            5 |             5 | CATDPPKTAMVRGAVNYYYYYGMDVW |
+|  6 |            6 |             6 | CARGSAGDYW                 |
+|  7 |            7 |             7 | CARAAHGMDVW                |
+|  8 |            8 |            22 | CARDDYYYYGMDVW             |
+|  9 |            9 |             9 | CVRGRYDFWSGYPAANWFDPW      |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_4_F5_2
 
 ::: {layout-ncol=2}
 
@@ -840,13 +1211,28 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F5_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F5_2ls_cluster.xlsx)
-
 
 
 :::
 
-### Sequence Similarity of NG-28545_Library_4_F6_2
+|    |   Unnamed: 0 |   Cluster No. | Sequences      |
+|---:|-------------:|--------------:|:---------------|
+|  0 |            0 |             0 | CARVGGRDSFDVW  |
+|  1 |            1 |             1 | CARAARDGYKDYW  |
+|  2 |            2 |             2 | CARVEAGMDVW    |
+|  3 |            3 |             8 | CARDGGSFDYW    |
+|  4 |            4 |             0 | CARVGGRDSFDIW  |
+|  5 |            5 |             4 | CARIPIPGDYFGYW |
+|  6 |            6 |             8 | CAKGGAAVDYW    |
+|  7 |            7 |             5 | CARGFSYADYW    |
+|  8 |            8 |             8 | CARGATGFDYW    |
+|  9 |            9 |             6 | CARDSGSYSDYW   |
+
+{{< pagebreak >}}
+
+
+
+### Sequence Similarity based on Levenshtein Distance of NG-28545_Library_4_F6_2
 
 ::: {layout-ncol=2}
 
@@ -854,8 +1240,1437 @@ Aligment Quality
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\NG-28545_Library_4_F6_2ls_dendro.png)
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_cluster\reports\NG-28545_Library_4_F6_2ls_cluster.xlsx)
-
 
 
 :::
+
+|    |   Unnamed: 0 |   Cluster No. | Sequences      |
+|---:|-------------:|--------------:|:---------------|
+|  0 |            0 |             0 | CARVEAGMDVW    |
+|  1 |            1 |             1 | CARVGGRDSFDVW  |
+|  2 |            2 |             2 | CTRAGGYNAFDIW  |
+|  3 |            3 |             1 | CARVGGRDSFDIW  |
+|  4 |            4 |             6 | CARGGGSMDYW    |
+|  5 |            5 |             4 | CARIPIPGDYFGYW |
+|  6 |            6 |             5 | CARGATGFDYW    |
+|  7 |            7 |             6 | CARDGGSFDYW    |
+|  8 |            8 |             0 | CARVDYGMDVW    |
+|  9 |            9 |             0 | CARSYYGMDVW    |
+
+{{< pagebreak >}}
+
+
+
+## Sequence Similarity between samples
+
+### Global Sequence similarity for NG-28545_Library_1_F10_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F10_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F11_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F12_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F12_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F1_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F1_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F2_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F3_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F5_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F6_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F7_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F8_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F8_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_1_F9_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_1_F9_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F11_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F12_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F12_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F2_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F3_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F5_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F6_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F8_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F8_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_2_F9_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_2_F9_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_3_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_3_F11_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_3_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_3_F2_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_3_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_3_F3_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_3_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_3_F7_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_4_F1_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_4_F1_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_4_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_4_F3_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_4_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_4_F5_2embedding_tsne.png)
+
+:::
+
+### Global Sequence similarity for NG-28545_Library_4_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\sequence_embedding\NG-28545_Library_4_F6_2embedding_tsne.png)
+
+:::
+
+# Cluster Antigens
+
+## Cluster with embedding
+
+### Sequence embedding of NG-28545_Library_1_F10_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F10_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |      tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|-----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   7.29862 |   6.6918   |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -52.3363  |  13.9732   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -33.961   | -24.542    |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -72.9863  |  -0.804204 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -47.3525  |   0.370524 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -54.9434  |  -4.7102   | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -66.8348  |   8.06751  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  32.73    |  -1.19388  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  63.0097  |  10.0333   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  66.7413  |  -8.7219   | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F11_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   8.32647 | -16.3858  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 |  46.6434  |  -5.22378 |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 |  31.9916  | -27.3147  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 |  65.4229  |  11.3341  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 |  60.3476  |  12.9898  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 |  60.4266  |  10.2288  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 |  55.2306  |  -7.53872 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 | -37.7344  |  16.8057  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 | -22.9797  |  -5.03351 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 | -23.8222  | -16.3054  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F12_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F12_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   2.18128 | -16.6065  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -37.0065  |  14.916   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -36.7433  | -20.9012  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -57.4744  |  14.5612  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -59       |   8.18471 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -60.6342  |   9.30203 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -42.6227  |  16.7534  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  45.6037  |  21.6997  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  44.958   |   4.42702 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  52.6548  |  -1.31225 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F1_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F1_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  27.3753 | -19.5879  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -18.6914 |  23.7249  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -32.5687 | -25.5982  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -43.3399 |  26.4595  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -38.3372 |   6.13962 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -48.8172 |  26.6173  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -34.8107 |  33.0721  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  47.3345 |  22.0585  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  57.4619 |   4.044   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  49.4196 |   9.66268 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F2_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |      tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|-----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   1.35107 |  -7.68381  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -18.8118  |   5.33279  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -34.7408  | -21.0978   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -35.9414  |  18.9136   |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -29.9339  |  26.3276   | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -32.2177  |  27.8222   | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -35.6603  |   4.31179  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  57.172   |   0.295128 | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  60.8086  |  12.2831   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  53.2752  |   4.08309  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F3_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  11.1457 |  32.4675  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -53.4515 |  18.5652  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -18.6743 | -24.8879  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -72.7519 |  -4.20163 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -45.0563 | -14.8658  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -53.9297 | -12.6216  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -74.6952 |   3.24136 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  68.3402 |   2.63198 | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  36.9885 |  -4.27805 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  61.4275 | -15.3663  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F5_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  14.4954 |   4.59727 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -45.4287 |  20.1835  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -31.7891 | -26.12    |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -71.5957 |   1.32587 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -49.4449 |  -4.82751 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -52.7576 |  -4.74582 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -51.2242 |  21.4234  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  70.5604 |   6.79443 | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  66.2401 |  -7.74442 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  64.6452 | -14.2227  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F6_2tsne_cluster_AG.png)
+
+:::
+
+|      |      tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|-----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   0.386162 | -15.7275  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -41.756    |   9.1741  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -30.6696   |  31.3224  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -63.3916   | -20.8807  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -60.1501   | -15.0509  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -61.9283   | -13.3485  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -52.0065   |   4.56487 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  58.3287   | -22.4469  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  41.3288   | -12.8822  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  60.8602   |  -5.30679 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F7_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  13.8749 | -19.2983  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -60.7398 |  -4.20709 |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -29.7342 |  31.6682  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -44.4745 | -25.9642  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -37.7837 | -21.0485  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -36.3748 | -17.5006  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -59.9044 |  -9.06445 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  65.0537 | -10.2921  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  58.0021 | -16.3642  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  58.3748 | -26.407   | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F8_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F8_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |      tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|-----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   9.56283 |   4.80697  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -41.2458  | -14.7056   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -38.9368  |  26.4495   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -71.1027  |  -2.12051  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -47.5918  |   1.58457  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -50.7483  |   0.48943  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -45.4922  | -14.39     | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  42.4537  | -20.1611   | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  38.5495  |  11.415    | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  62.6242  |  -0.482618 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_1_F9_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_1_F9_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -1.06949 |   3.27871 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -61.1513  |   1.866   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -38.6438  |  25.5029  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -48.3315  | -16.9292  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -40.9938  | -14.2252  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -43.1838  |  -8.70285 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -59.0321  |  -8.87944 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  36.52    | -21.4724  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  41.1424  |  11.6245  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  57.9787  | -12.757   | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F11_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  14.3064 | -20.6209  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -67.9618 |  -7.30856 |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -31.3886 |  42.042   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -55.9612 |  15.5428  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -33.8665 |   2.74945 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -36.4725 |   4.95552 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -64.7056 |  -7.73476 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  78.5628 |  -6.31968 | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  52.4162 | -16.5692  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  56.5992 | -20.8363  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F12_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F12_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  10.932  |  -6.41256 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -37.0755 | -20.8893  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -32.6478 |  36.5591  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -71.4179 |  -9.37775 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -54.2486 |  14.5069  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -59.2863 |  10.7208  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -59.8282 | -37.5409  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  38.9232 | -37.7405  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  72.524  | -28.1691  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  63.1691 | -11.3512  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F2_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -3.07185 |  -6.25419 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -42.0063  |  13.0801  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -15.1539  |  41.9882  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -58.6351  |  -2.20678 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -35.9499  | -16.5727  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -54.4096  |   5.96661 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -45.0612  |   6.78132 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  45.6982  | -49.1568  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  47.2711  | -33.003   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  50.0883  | -33.6093  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F3_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   1.48995 |  -8.51873 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -48.119   | -31.2413  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -25.4598  |  37.3879  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -82.2359  |   6.91111 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -61.3103  |  10.6043  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -66.4663  |  18.6289  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -38.487   | -29.2443  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  56.2884  | -33.9108  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  72.4072  | -28.2262  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  73.85    |  -9.14421 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F5_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   1.1331 |   9.27039 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -49.7594 | -26.591   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -36.5923 |  33.548   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -51.3438 | -34.5058  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -42.4937 |  -3.15468 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -51.2716 |  -1.5679  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -50.8495 | -10.9912  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  60.0517 | -31.3625  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  39.0044 | -25.6109  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  50.7994 | -14.8692  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F6_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |      tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|-----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  36.9183 | -10.6533   |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -70.1408 |  -3.5325   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -21.3463 |  42.0446   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -60.3203 | -22.2209   |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -39.3283 | -13.4242   | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -54.3619 | -18.192    | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -75.1244 |   2.72552  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  58.3273 | -26.9078   | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  64.7384 |  -0.254628 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  74.2129 |   6.84902  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F8_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F8_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   6.21584 |   8.57481 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -52.6194  |  26.9799  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -31.2056  | -40.1877  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -77.9676  |   6.5828  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -67.2185  | -19.1039  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -62.8433  | -14.9724  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -44.6264  |  34.9884  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  57.3363  |  34.1255  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  62.5491  |  11.6749  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  74.525   |  16.3012  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_2_F9_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_2_F9_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   3.40482 |   5.56703 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -53.1883  |  33.7053  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -38.9313  | -40.9719  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -90.6297  |   5.15589 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -68.7768  |  -9.78564 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -78.4486  | -10.4927  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -43.4656  |  38.8352  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  48.129   |  31.8329  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  76.2767  |  29.4004  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  83.8051  |  -4.10961 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_3_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_3_F11_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  17.0665  |  26.8509  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -42.2269  |  16.228   |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -25.6261  |  38.2465  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -28.5681  | -23.0079  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 |  -9.13857 |   2.0326  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -29.368   |  -1.23015 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -40.8913  |   1.23882 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  43.4769  | -21.4045  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  40.0429  |  -3.01766 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  49.3802  | -19.4323  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_3_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_3_F2_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |      tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|-----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -7.7936  |   8.69553  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -36.2749  |   8.21783  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 |  -7.96773 |  26.6978   |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -55.956   |  -3.72078  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -51.3323  | -13.3539   | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -57.7029  |  -8.28847  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -48.9088  |  15.0217   | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  66.6602  |   0.691481 | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  41.7474  |  12.4957   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  47.195   |  17.8169   | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_3_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_3_F3_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  13.0482 |  17.675   |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -37.092  |  13.1756  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -22.0875 | -27.0669  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -54.4821 |  -5.30389 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -35.3005 |  -8.7414  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -46.1312 | -11.1014  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -46.4627 |  21.2926  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  62.1604 |   7.6307  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  58.6548 | -15.607   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  60.9686 |  -1.89545 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_3_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_3_F7_2tsne_cluster_AG.png)
+
+:::
+
+|      |       tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|------------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |   0.0704769 |   5.47222 |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -34.0877    |  18.0339  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -37.6949    | -31.8299  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -50.3516    |   1.00093 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -42.9389    |  -7.31658 | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -51.6457    |  -2.71143 | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -38.5963    |  20.6531  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  60.4777    |  15.5934  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  50.2214    | -15.6185  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  59.6681    |   5.44224 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_4_F1_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_4_F1_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -5.34246 |  50.9089  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -55.0125  |   5.77975 |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -39.8879  |  21.7657  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -46.7707  |   3.76571 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -38.8844  | -19.8353  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -43.272   | -17.8089  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -88.1222  |   3.7568  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  58.5404  |  17.476   | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  77.0247  | -17.108   | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  63.5615  | -21.2858  | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_4_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_4_F3_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -4.58787 | -28.3235  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -64.6844  |  10.1784  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -45.8929  | -31.3481  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -48.6954  |   4.60993 |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -42.2981  |  18.0856  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -41.4828  |  21.236   | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -64.6657  |   3.4226  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  70.0153  |   7.8657  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  44.221   |  -7.19918 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  63.3695  |  -4.39019 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_4_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_4_F5_2tsne_cluster_AG.png)
+
+:::
+
+|      |    tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|---------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 | -10.903  | -42.047   |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -38.5917 |   9.02683 |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -48.1173 | -22.0122  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -40.0679 |  23.9148  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -48.4617 |  37.0003  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -44.2995 |  31.1226  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -46.0708 |  16.7679  | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  67.6605 |  20.1236  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  40.0562 |  -2.91721 | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  58.5803 |  -2.66452 | 800748           | CARVAYYGMDVW          |          1036 |
+
+### Sequence embedding of NG-28545_Library_4_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\NG-28545_Library_4_F6_2tsne_cluster_AG.png)
+
+:::
+
+|      |     tsne1 |     tsne2 |          binding | sequences             |   sequence_id |
+|-----:|----------:|----------:|-----------------:|:----------------------|--------------:|
+| 1046 |  -6.18239 |  43.7729  |      1.51141e+06 | CATVDPFGFGEIDYW       |          1045 |
+| 1004 | -46.7198  | -11.9042  |      1.38264e+06 | CAKESSSSPGAFDIW       |          1003 |
+| 1012 | -45.0771  |  21.4516  |      1.13786e+06 | CARDQGGNGWFDPW        |          1011 |
+| 1022 | -39.6723  | -11.0656  |      1.12127e+06 | CARELQSVAGPFDIW       |          1021 |
+| 1018 | -29.5597  | -23.2646  | 919710           | CAREATYYYDSSGYTDAFDIW |          1017 |
+| 1020 | -28.948   | -25.8328  | 914009           | CAREGDGYSYGAFDIW      |          1019 |
+| 1045 | -61.1715  |  -1.20158 | 911973           | CATSSTEQLYRGSGAFDIW   |          1044 |
+| 1047 |  59.4835  | -28.2086  | 873034           | CATVPAYYYGMDVW        |          1046 |
+| 1007 |  47.8993  | -12.8613  | 845233           | CARDLDERFSTGMDVW      |          1006 |
+| 1037 |  63.7365  |  -7.35393 | 800748           | CARVAYYGMDVW          |          1036 |
+
+## Cluster binding data based on levenshtein distance
+
+### LS-Distance cluster for NG-28545_Library_1_F10_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F10_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F10_2_No. | Sequences_NG-28545_Library_1_F10_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CAKDLYYYDSSGYYSDAFDIW                |
+|  1 |            1 |                                       1 | CATSPGYCTGGVCYTWGYYYYGMDVW           |
+|  2 |            2 |                                       2 | CVRDLAATGLDVW                        |
+|  3 |            3 |                                       3 | CAGDLTSGYCSGGSCYTNYYYYGMDVW          |
+|  4 |            4 |                                       4 | CARDGGAYCSSTSCYSGGYYYYYMDVW          |
+|  5 |            5 |                                       5 | CARSSPSGEFGTW                        |
+|  6 |            6 |                                       6 | CAKGSYSNYEDGSYYYGMDVW                |
+|  7 |            7 |                                       5 | CARSSPFGEFGTW                        |
+|  8 |            8 |                                       7 | CATHYYYGMDVW                         |
+|  9 |            9 |                                       8 | CARGGYCSGGSCYEKYYFDYW                |
+
+### LS-Distance cluster for NG-28545_Library_1_F11_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F11_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F11_2_No. | Sequences_NG-28545_Library_1_F11_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CARDLSTIFVYERMSGWFDPW                |
+|  1 |            1 |                                       1 | CARGGYCSGGSCYEKYYFDYW                |
+|  2 |            2 |                                      59 | CARIPGYCSGGSCYEGHYGMDVW              |
+|  3 |            3 |                                      49 | CAGGIYCSGGSCYHNDYW                   |
+|  4 |            4 |                                      13 | CARDLYDSSGYSDYDAFDIW                 |
+|  5 |            5 |                                       1 | CARGGYCSGGNCYEKYYFDYW                |
+|  6 |            6 |                                       5 | CAREGYCSGGSCYEGDAFDIW                |
+|  7 |            7 |                                       6 | CATEVSGSHYHW                         |
+|  8 |            8 |                                       7 | CAREMAGYCSGGSCYSGGDDAFDIW            |
+|  9 |            9 |                                       8 | CTREISEYCSGGSCYSNYYYYYMDVW           |
+
+### LS-Distance cluster for NG-28545_Library_1_F12_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F12_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F12_2_No. | Sequences_NG-28545_Library_1_F12_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CAREPKAGYSSGWYDIGAFDVW               |
+|  1 |            1 |                                       1 | CARDLSTIFVYERMSGWFDPW                |
+|  2 |            2 |                                       2 | CARGGYCSGGSCYEKYYFDYW                |
+|  3 |            3 |                                       2 | CARGGYCSGGNCYEKYYFDYW                |
+|  4 |            4 |                                      43 | CAGGIYCSGGSCYHNDYW                   |
+|  5 |            5 |                                       4 | CTREISEYCSGGSCYSNYYYYYMDVW           |
+|  6 |            6 |                                       5 | CARELTGYCSGGSCYSYYYYYYGMDVW          |
+|  7 |            7 |                                       6 | CARGRLGSSGWYEVGYYYYYYGMDVW           |
+|  8 |            8 |                                       7 | CAKSAMYSSGYYLDFDYW                   |
+|  9 |            9 |                                       8 | CARDRYCSGGSCYTDAYFDYW                |
+
+### LS-Distance cluster for NG-28545_Library_1_F1_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F1_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_1_F1_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F1_2_No. | Sequences_NG-28545_Library_1_F1_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CTRGRHSAFDIW                        |
+|  1 |            1 |                                      1 | CARGDIVVVPAAIAYYYYMDVW              |
+|  2 |            2 |                                      2 | CAREAQDAFDIW                        |
+|  3 |            3 |                                      3 | CARGGYCSGGSCYEKYYFDYW               |
+|  4 |            4 |                                      4 | CARTGYGSGSPYAFDIW                   |
+|  5 |            5 |                                      5 | CAKTRDASWYGLFDYW                    |
+|  6 |            6 |                                      6 | CARHRSGYDDAFDIW                     |
+|  7 |            7 |                                      0 | CARGRANAFDIW                        |
+|  8 |            8 |                                      7 | CARAHKYPHLW                         |
+|  9 |            9 |                                      0 | CARGRYSAFDIW                        |
+
+### LS-Distance cluster for NG-28545_Library_1_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F2_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F2_2_No. | Sequences_NG-28545_Library_1_F2_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARGDIVVVPAAIAYYYYMDVW              |
+|  1 |            1 |                                      1 | CARGGYCSGGSCYEKYYFDYW               |
+|  2 |            2 |                                     11 | CAREAQDAFDIW                        |
+|  3 |            3 |                                      3 | CTRGRHSAFDIW                        |
+|  4 |            4 |                                      4 | CARSVLYGMDVW                        |
+|  5 |            5 |                                      5 | CARRTSANVLDYW                       |
+|  6 |            6 |                                     11 | CAREAPAFDIW                         |
+|  7 |            7 |                                      7 | CVRQLGGTFDIW                        |
+|  8 |            8 |                                      8 | CAHRRDDNSGWWNSGDFDIW                |
+|  9 |            9 |                                      9 | CTRTWSGYVDVW                        |
+
+### LS-Distance cluster for NG-28545_Library_1_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F3_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F3_2_No. | Sequences_NG-28545_Library_1_F3_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                     10 | CATSPGYCTGGVCYTWGYYYYGMDVW          |
+|  1 |            1 |                                      1 | CAGDLTSGYCSGGSCYTNYYYYGMDVW         |
+|  2 |            2 |                                      2 | CARDGGAYCSSTSCYSGGYYYYYMDVW         |
+|  3 |            3 |                                      3 | CATVRGYCSGGSCYSGYW                  |
+|  4 |            4 |                                      4 | CATSGPIKCTNGVCYTLDYYYYGMDVW         |
+|  5 |            5 |                                      5 | CATDLPECTNGVCYTNYYYYGMDVW           |
+|  6 |            6 |                                      6 | CATDLPYCSGGSCYENAFDIW               |
+|  7 |            7 |                                     12 | CARDIRYCSGGSCYSYYYYYGMDVW           |
+|  8 |            8 |                                      8 | CATRPGYCGGGVCYLRGNYYGMDVW           |
+|  9 |            9 |                                      9 | CARVGGRDSFDVW                       |
+
+### LS-Distance cluster for NG-28545_Library_1_F5_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F5_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F5_2_No. | Sequences_NG-28545_Library_1_F5_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CAKDLYYYDSSGYYSDAFDIW               |
+|  1 |            1 |                                     32 | CATSPGYCTGGVCYTWGYYYYGMDVW          |
+|  2 |            2 |                                      2 | CAGDLTSGYCSGGSCYTNYYYYGMDVW         |
+|  3 |            3 |                                      3 | CARSSPSGEFGTW                       |
+|  4 |            4 |                                      4 | CARDGGAYCSSTSCYSGGYYYYYMDVW         |
+|  5 |            5 |                                      3 | CARSSPFGEFGTW                       |
+|  6 |            6 |                                      5 | CARGGYCSGGSCYEKYYFDYW               |
+|  7 |            7 |                                     24 | CARDIRYCSGGSCYSYYYYYGMDVW           |
+|  8 |            8 |                                      7 | CATDLPECTNGVCYTNYYYYGMDVW           |
+|  9 |            9 |                                      8 | CATDLPYCSGGSCYENAFDIW               |
+
+### LS-Distance cluster for NG-28545_Library_1_F6_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F6_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F6_2_No. | Sequences_NG-28545_Library_1_F6_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARGGYCSGGSCYEKYYFDYW               |
+|  1 |            1 |                                      3 | CARDLYDSSGYSDYDAFDIW                |
+|  2 |            2 |                                      2 | CAGGIYCSGGSCYHNDYW                  |
+|  3 |            3 |                                      3 | CARDRGYDSSGYYEYDAFDIW               |
+|  4 |            4 |                                      4 | CATSPGYCTGGVCYTWGYYYYGMDVW          |
+|  5 |            5 |                                      5 | CARDSPDCSGGSCYSEYYGMDVW             |
+|  6 |            6 |                                      0 | CARGGYCSGGNCYEKYYFDYW               |
+|  7 |            7 |                                      6 | CARGRLGSSGWYEVGYYYYYYGMDVW          |
+|  8 |            8 |                                      7 | CARVVHCTNGVCYLGYYGMDVW              |
+|  9 |            9 |                                      8 | CARDQGYCSGGSCYSGDYYYGMGVW           |
+
+### LS-Distance cluster for NG-28545_Library_1_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F7_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F7_2_No. | Sequences_NG-28545_Library_1_F7_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARGGYCSGGSCYEKYYFDYW               |
+|  1 |            1 |                                      0 | CARGGYCSGGNCYEKYYFDYW               |
+|  2 |            2 |                                      1 | CARERGYYCTNGVCYSEDYYYYGMDVW         |
+|  3 |            3 |                                      2 | CAGGIYCSGGSCYHNDYW                  |
+|  4 |            4 |                                      3 | CAREAQDAFDIW                        |
+|  5 |            5 |                                      4 | CARDGGYCSGGSCYSAYYYYGMDVW           |
+|  6 |            6 |                                     27 | CTRGRHSAFDIW                        |
+|  7 |            7 |                                      6 | CARDRGCGSFDYW                       |
+|  8 |            8 |                                     14 | CARQLGAFDIW                         |
+|  9 |            9 |                                      8 | CARGDIVVVPAAIAYYYYMDVW              |
+
+### LS-Distance cluster for NG-28545_Library_1_F8_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F8_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F8_2_No. | Sequences_NG-28545_Library_1_F8_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CATSPGYCTGGVCYTWGYYYYGMDVW          |
+|  1 |            1 |                                      1 | CAGDLTSGYCSGGSCYTNYYYYGMDVW         |
+|  2 |            2 |                                      2 | CARDGGAYCSSTSCYSGGYYYYYMDVW         |
+|  3 |            3 |                                      3 | CAKDLYYYDSSGYYSDAFDIW               |
+|  4 |            4 |                                      4 | CARSNYDFWSGYIGYYYYGMDVW             |
+|  5 |            5 |                                      5 | CATDLPYCSGGSCYENAFDIW               |
+|  6 |            6 |                                      6 | CATDLPECTNGVCYTNYYYYGMDVW           |
+|  7 |            7 |                                      7 | CATVRGYCSGGSCYSGYW                  |
+|  8 |            8 |                                     36 | CARDIRYCSGGSCYSYYYYYGMDVW           |
+|  9 |            9 |                                      9 | CATVNYCTGGVCYTWGYYYYGMDVW           |
+
+### LS-Distance cluster for NG-28545_Library_1_F9_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_1_F9_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_1_F9_2_No. | Sequences_NG-28545_Library_1_F9_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                     37 | CATSPGYCTGGVCYTWGYYYYGMDVW          |
+|  1 |            1 |                                     25 | CAGDLTSGYCSGGSCYTNYYYYGMDVW         |
+|  2 |            2 |                                      2 | CARDGGAYCSSTSCYSGGYYYYYMDVW         |
+|  3 |            3 |                                      3 | CAKDLYYYDSSGYYSDAFDIW               |
+|  4 |            4 |                                      4 | CAKGSYSNYEDGSYYYGMDVW               |
+|  5 |            5 |                                      5 | CARSNYDFWSGYIGYYYYGMDVW             |
+|  6 |            6 |                                     49 | CATDLPECTNGVCYTNYYYYGMDVW           |
+|  7 |            7 |                                      7 | CATDLPYCSGGSCYENAFDIW               |
+|  8 |            8 |                                      8 | CATVRGYCSGGSCYSGYW                  |
+|  9 |            9 |                                      9 | CATSGPIKCTNGVCYTLDYYYYGMDVW         |
+
+### LS-Distance cluster for NG-28545_Library_2_F11_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F11_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F11_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F11_2_No. | Sequences_NG-28545_Library_2_F11_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CVAIKYSTAYYW                         |
+|  1 |            1 |                                       1 | CARDGFTDYYYGMDVW                     |
+|  2 |            2 |                                       2 | CARPTRDAFDIW                         |
+|  3 |            3 |                                       3 | CARDGEWELLGDYYGMDVW                  |
+|  4 |            4 |                                       4 | CATSKRGDDAFDIW                       |
+|  5 |            5 |                                       5 | CARLSGSYGDAFDIW                      |
+|  6 |            6 |                                       6 | CARGETDYQRNYYYYMDVW                  |
+|  7 |            7 |                                       7 | CARLESAGMDVW                         |
+|  8 |            8 |                                       8 | CATESNSYYYYYGMDVW                    |
+|  9 |            9 |                                       4 | CATSNRGDDAFDIW                       |
+
+### LS-Distance cluster for NG-28545_Library_2_F12_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F12_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F12_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F12_2_No. | Sequences_NG-28545_Library_2_F12_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CAKGGAAVDYW                          |
+|  1 |            1 |                                       7 | CATYSYYYYGMDVW                       |
+|  2 |            2 |                                       2 | CATDRAYGMGVW                         |
+|  3 |            3 |                                       3 | CARLSGSYGDAFDIW                      |
+|  4 |            4 |                                       4 | CATSKRGDDAFDIW                       |
+|  5 |            5 |                                       5 | CARFRSGYVDYW                         |
+|  6 |            6 |                                       7 | CATVPAYYYGMDVW                       |
+|  7 |            7 |                                       7 | CATGWAYYYGMDVW                       |
+|  8 |            8 |                                       8 | CAREGDSKYVW                          |
+|  9 |            9 |                                       7 | CATGGSYYYGMDVW                       |
+
+### LS-Distance cluster for NG-28545_Library_2_F2_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F2_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F2_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F2_2_No. | Sequences_NG-28545_Library_2_F2_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      5 | CAREAQDAFDIW                        |
+|  1 |            1 |                                      1 | CARGDIVVVPAAIAYYYYMDVW              |
+|  2 |            2 |                                     22 | CTRGRHSAFDIW                        |
+|  3 |            3 |                                      3 | CVAIKYSTAYYW                        |
+|  4 |            4 |                                      4 | CARVLTEGMDVW                        |
+|  5 |            5 |                                      5 | CARPTRDAFDIW                        |
+|  6 |            6 |                                      6 | CAHRRDDNSGWWNSGDFDIW                |
+|  7 |            7 |                                      7 | CARGAAVFDYW                         |
+|  8 |            8 |                                      8 | CARDGFTDYYYGMDVW                    |
+|  9 |            9 |                                      9 | CATYSYYYYGMDVW                      |
+
+### LS-Distance cluster for NG-28545_Library_2_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F3_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F3_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F3_2_No. | Sequences_NG-28545_Library_2_F3_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CATGGSYYYGMDVW                      |
+|  1 |            1 |                                      0 | CATVPAYYYGMDVW                      |
+|  2 |            2 |                                     17 | CARDTTGDYAFDIW                      |
+|  3 |            3 |                                      2 | CARDSRGPGYYMGVW                     |
+|  4 |            4 |                                      3 | CARDSSGWYYFDYW                      |
+|  5 |            5 |                                      4 | CATPDTRTGGVFGSPYW                   |
+|  6 |            6 |                                      5 | CVAIKYSTAYYW                        |
+|  7 |            7 |                                      6 | CARENDYYYMDVW                       |
+|  8 |            8 |                                      7 | CARGSVGDGYYFDYW                     |
+|  9 |            9 |                                      8 | CARDPYGMDVW                         |
+
+### LS-Distance cluster for NG-28545_Library_2_F5_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F5_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F5_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F5_2_No. | Sequences_NG-28545_Library_2_F5_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CVAIKYSTAYYW                        |
+|  1 |            1 |                                      2 | CARPTRDAFDIW                        |
+|  2 |            2 |                                      2 | CAREAQDAFDIW                        |
+|  3 |            3 |                                      3 | CTRGRHSAFDIW                        |
+|  4 |            4 |                                      4 | CARGDIVVVPAAIAYYYYMDVW              |
+|  5 |            5 |                                      5 | CAKTRDASWYGLFDYW                    |
+|  6 |            6 |                                      6 | CARLSGSYGDAFDIW                     |
+|  7 |            7 |                                      7 | CATYSYYYYGMDVW                      |
+|  8 |            8 |                                      8 | CARAHKYPHLW                         |
+|  9 |            9 |                                      9 | CARHGDSRYVW                         |
+
+### LS-Distance cluster for NG-28545_Library_2_F6_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F6_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F6_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F6_2_No. | Sequences_NG-28545_Library_2_F6_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CATYSYYYYGMDVW                      |
+|  1 |            1 |                                      1 | CARDGDLGMDVW                        |
+|  2 |            2 |                                      0 | CATGGSYYYGMDVW                      |
+|  3 |            3 |                                      0 | CATVPAYYYGMDVW                      |
+|  4 |            4 |                                      0 | CATGWAYYYGMNVW                      |
+|  5 |            5 |                                      0 | CATGWAYYYGMDVW                      |
+|  6 |            6 |                                      2 | CATDRAYGMGVW                        |
+|  7 |            7 |                                      0 | CATASGYYYGMDVW                      |
+|  8 |            8 |                                      0 | CATASGYYYGVDVW                      |
+|  9 |            9 |                                      3 | CAVGGSFVAFDIW                       |
+
+### LS-Distance cluster for NG-28545_Library_2_F8_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F8_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F8_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F8_2_No. | Sequences_NG-28545_Library_2_F8_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARPTRDAFDIW                        |
+|  1 |            1 |                                      1 | CVAIKYSTAYYW                        |
+|  2 |            2 |                                      2 | CARDGFTDYYYGMDVW                    |
+|  3 |            3 |                                      2 | CARDSTLDYYYGMDVW                    |
+|  4 |            4 |                                      3 | CATVPAYYYGMDVW                      |
+|  5 |            5 |                                      3 | CATYSYYYYGMDVW                      |
+|  6 |            6 |                                      4 | CARDHELYMDVW                        |
+|  7 |            7 |                                      5 | CARDVYGMDVW                         |
+|  8 |            8 |                                      3 | CATGGSYYYGMDVW                      |
+|  9 |            9 |                                      6 | CARLESAGMDVW                        |
+
+### LS-Distance cluster for NG-28545_Library_2_F9_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_2_F9_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_2_F9_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_2_F9_2_No. | Sequences_NG-28545_Library_2_F9_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CVAIKYSTAYYW                        |
+|  1 |            1 |                                      1 | CARPTRDAFDIW                        |
+|  2 |            2 |                                      2 | CATYSYYYYGMDVW                      |
+|  3 |            3 |                                      2 | CATVPAYYYGMDVW                      |
+|  4 |            4 |                                      2 | CATGGSYYYGMDVW                      |
+|  5 |            5 |                                      3 | CARDGFTDYYYGMDVW                    |
+|  6 |            6 |                                      2 | CATASGYYYGMDVW                      |
+|  7 |            7 |                                      2 | CATGWAYYYGMDVW                      |
+|  8 |            8 |                                      2 | CATGWAYYYGMNVW                      |
+|  9 |            9 |                                      3 | CARDSTLDYYYGMDVW                    |
+
+### LS-Distance cluster for NG-28545_Library_3_F11_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_3_F11_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_3_F11_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_3_F11_2_No. | Sequences_NG-28545_Library_3_F11_2   |
+|---:|-------------:|----------------------------------------:|:-------------------------------------|
+|  0 |            0 |                                       0 | CAKADDAFDIW                          |
+|  1 |            1 |                                       1 | CAVVGATWGEAFDIW                      |
+|  2 |            2 |                                       2 | CAREQVYGMDVW                         |
+|  3 |            3 |                                       3 | CARALYGMDVW                          |
+|  4 |            4 |                                       4 | CASLRGDYGYYGMDVW                     |
+|  5 |            5 |                                       5 | CARVGENEAFDIW                        |
+|  6 |            6 |                                       3 | CARDSHGMDVW                          |
+|  7 |            7 |                                       6 | CASGSGSLDYW                          |
+|  8 |            8 |                                       7 | CASALAGDAFDIW                        |
+|  9 |            9 |                                       5 | CARWGDAFDIW                          |
+
+### LS-Distance cluster for NG-28545_Library_3_F2_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_3_F2_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_3_F2_2_No. | Sequences_NG-28545_Library_3_F2_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARITMGDLDFDLW                      |
+|  1 |            1 |                                      1 | CARSGSSGWIYYGMDVW                   |
+|  2 |            2 |                                      5 | CARVEAGMDVW                         |
+|  3 |            3 |                                      3 | CARDSSSWSYFDYW                      |
+|  4 |            4 |                                      4 | CARDLPPSVGEGGDYYYYYGMDVW            |
+|  5 |            5 |                                      0 | CARITMGDLDFDPW                      |
+|  6 |            6 |                                      5 | CARAAHGMDVW                         |
+|  7 |            7 |                                      6 | CARDLGGKDYYYYGMDVW                  |
+|  8 |            8 |                                      7 | CARERYSSSWYVTDYYYYYMDVW             |
+|  9 |            9 |                                      8 | CAADITGPFDYW                        |
+
+### LS-Distance cluster for NG-28545_Library_3_F3_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_3_F3_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_3_F3_2_No. | Sequences_NG-28545_Library_3_F3_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARAAHGMDVW                         |
+|  1 |            1 |                                      0 | CARVEAGMDVW                         |
+|  2 |            2 |                                      2 | CARDLGGKDYYYYGMDVW                  |
+|  3 |            3 |                                      3 | CARVGGRDSFDVW                       |
+|  4 |            4 |                                      4 | CAREGDGVYFQHW                       |
+|  5 |            5 |                                      5 | CARSGSSGWIYYGMDVW                   |
+|  6 |            6 |                                      6 | CARITMGDLDFDLW                      |
+|  7 |            7 |                                      7 | CARGGTGDDAFDIW                      |
+|  8 |            8 |                                      3 | CARVGGRDSFDIW                       |
+|  9 |            9 |                                      8 | CARPSGYYLDAFDIW                     |
+
+### LS-Distance cluster for NG-28545_Library_3_F7_2
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_3_F7_2_ls_binding_cluster.png)
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_3_F7_2_No. | Sequences_NG-28545_Library_3_F7_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CASPYATLRDAFDIW                     |
+|  1 |            1 |                                      1 | CARAAHGMDVW                         |
+|  2 |            2 |                                      2 | CARDLGGKDYYYYGMDVW                  |
+|  3 |            3 |                                      3 | CARPKYSNYVEDAFDIW                   |
+|  4 |            4 |                                      4 | CARVGGRDSFDVW                       |
+|  5 |            5 |                                      5 | CARSGSSGWIYYGMDVW                   |
+|  6 |            6 |                                      6 | CAKEEEGDSMGYW                       |
+|  7 |            7 |                                      7 | CARDSRGSFDYW                        |
+|  8 |            8 |                                      8 | CARITMGDLDFDLW                      |
+|  9 |            9 |                                      9 | CAREGDGVYFQHW                       |
+
+### LS-Distance cluster for NG-28545_Library_4_F1_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_4_F1_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_4_F1_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_4_F1_2_No. | Sequences_NG-28545_Library_4_F1_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CATPDNWNYGGAVSRW                    |
+|  1 |            1 |                                      1 | CARNFDSGLDYW                        |
+|  2 |            2 |                                      2 | CATVPAYYYGMDVW                      |
+|  3 |            3 |                                      2 | CATYSYYYYGMDVW                      |
+|  4 |            4 |                                      2 | CATGGSYYYGMDVW                      |
+|  5 |            5 |                                      3 | CAQQGSWNYYYGMDVW                    |
+|  6 |            6 |                                      2 | CATGWAYYYGMDVW                      |
+|  7 |            7 |                                      2 | CATDGGYYGMDVW                       |
+|  8 |            8 |                                      4 | CATDYDFWSGYPYW                      |
+|  9 |            9 |                                     14 | CAYYDYGGNGFDYW                      |
+
+### LS-Distance cluster for NG-28545_Library_4_F3_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_4_F3_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_4_F3_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_4_F3_2_No. | Sequences_NG-28545_Library_4_F3_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARDDDRSGNAFDIW                     |
+|  1 |            1 |                                      1 | CARVEAGMDVW                         |
+|  2 |            2 |                                      2 | CARQGSWDYEKYFDLW                    |
+|  3 |            3 |                                      3 | CARVGGRDSFDVW                       |
+|  4 |            4 |                                      4 | CARGFSYADYW                         |
+|  5 |            5 |                                      5 | CATDPPKTAMVRGAVNYYYYYGMDVW          |
+|  6 |            6 |                                      6 | CARGSAGDYW                          |
+|  7 |            7 |                                      7 | CARAAHGMDVW                         |
+|  8 |            8 |                                      8 | CARDDYYYYGMDVW                      |
+|  9 |            9 |                                      9 | CVRGRYDFWSGYPAANWFDPW               |
+
+### LS-Distance cluster for NG-28545_Library_4_F5_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_4_F5_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_4_F5_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_4_F5_2_No. | Sequences_NG-28545_Library_4_F5_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                      0 | CARVGGRDSFDVW                       |
+|  1 |            1 |                                      1 | CARAARDGYKDYW                       |
+|  2 |            2 |                                      2 | CARVEAGMDVW                         |
+|  3 |            3 |                                      3 | CARDGGSFDYW                         |
+|  4 |            4 |                                      0 | CARVGGRDSFDIW                       |
+|  5 |            5 |                                      4 | CARIPIPGDYFGYW                      |
+|  6 |            6 |                                      3 | CAKGGAAVDYW                         |
+|  7 |            7 |                                      5 | CARGFSYADYW                         |
+|  8 |            8 |                                      6 | CARGATGFDYW                         |
+|  9 |            9 |                                      7 | CARDSGSYSDYW                        |
+
+### LS-Distance cluster for NG-28545_Library_4_F6_2
+
+::: {layout-ncol=2}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\ls_binding_cluster\NG-28545_Library_4_F6_2_ls_binding_cluster.png)
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\clustering_antigens\dendro_binding\NG-28545_Library_4_F6_2cluster_dendrogram.png)
+
+Cluster visualizations based on LS-distance
+
+:::
+
+|    |   Unnamed: 0 |   Clusters_NG-28545_Library_4_F6_2_No. | Sequences_NG-28545_Library_4_F6_2   |
+|---:|-------------:|---------------------------------------:|:------------------------------------|
+|  0 |            0 |                                     25 | CARVEAGMDVW                         |
+|  1 |            1 |                                      1 | CARVGGRDSFDVW                       |
+|  2 |            2 |                                      2 | CTRAGGYNAFDIW                       |
+|  3 |            3 |                                      1 | CARVGGRDSFDIW                       |
+|  4 |            4 |                                      3 | CARGGGSMDYW                         |
+|  5 |            5 |                                      4 | CARIPIPGDYFGYW                      |
+|  6 |            6 |                                      5 | CARGATGFDYW                         |
+|  7 |            7 |                                      3 | CARDGGSFDYW                         |
+|  8 |            8 |                                     25 | CARVDYGMDVW                         |
+|  9 |            9 |                                     25 | CARSYYGMDVW                         |
