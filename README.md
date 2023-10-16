@@ -8,7 +8,7 @@ Make sure you have installed [Python](https://www.python.org/downloads/) on your
 ```
 pip install ExpoSeq
 ```
- Ensure that you have python > 3.8 installed.
+ Ensure that you have python > 3.9 installed.
 
 To get started, please download and follow the instructions for MiXCR at their [official documentation](https://docs.milaboratories.com/mixcr/getting-started/installation/ )
 You can also only use the test version of ExpoSeq without installing it.
