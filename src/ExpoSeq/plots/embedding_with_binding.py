@@ -4,7 +4,7 @@ from sgt.SGT import SGT
 from sklearn.decomposition import PCA
 import numpy as np
 from sklearn.manifold import TSNE
-
+from textwrap import wrap
 
 def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, toxin_names, pca_components, perplexity, iterations_tsne, font_settings, colorbar_settings, extra_figure, region_of_interest):
     report = sequencing_report[sequencing_report["Experiment"] == sample]
@@ -84,8 +84,8 @@ def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, to
                 n = 0
                 ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=8)
         n += 1
-
-    fig.suptitle("Sequence Embedding on t-SNE Space for Sample " + sample, **font_settings)
+    title = "\n".join(wrap("t-SNE embedding of " + sample, 40))
+    fig.suptitle(title, **font_settings)
 
     return tsne_results
 

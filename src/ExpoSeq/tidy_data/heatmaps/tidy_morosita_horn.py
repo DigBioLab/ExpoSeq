@@ -31,7 +31,6 @@ def cleaning_data(sequencing_report, region_of_interest, protein = True, specifi
     unique_sequences.rename(columns={0: strand_column},
                             inplace=True)
     unique_experiments = list(unique_experiments)
-    print(unique_experiments)
     for experiment in unique_experiments:
 
         local_data = sequencing_report[sequencing_report["Experiment"] == experiment][[strand_column,

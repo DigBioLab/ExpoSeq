@@ -2,7 +2,7 @@ from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from Bio import SeqIO
 import numpy as np
-
+from textwrap import wrap
 from Bio.Align import substitution_matrices
 # Load the BLOSUM62 matrix from Biopython
 blosum = np.array(substitution_matrices.load("BLOSUM62"), dtype=int)

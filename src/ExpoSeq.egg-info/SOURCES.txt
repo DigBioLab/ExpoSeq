@@ -46,12 +46,15 @@ src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
 src/ExpoSeq/plots/usq_plot.py
 src/ExpoSeq/settings/__init__.py
+src/ExpoSeq/settings/aumotative_report.py
 src/ExpoSeq/settings/available_presets.py
 src/ExpoSeq/settings/blosum_62.txt
 src/ExpoSeq/settings/change_save_settings.py
 src/ExpoSeq/settings/change_settings.py
 src/ExpoSeq/settings/check_dirs.py
 src/ExpoSeq/settings/colorbar.txt
+src/ExpoSeq/settings/directory_manager.py
+src/ExpoSeq/settings/figure.py
 src/ExpoSeq/settings/font_settings.txt
 src/ExpoSeq/settings/general_instructions.py
 src/ExpoSeq/settings/global_vars.txt

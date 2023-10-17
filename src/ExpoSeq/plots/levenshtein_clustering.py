@@ -6,6 +6,7 @@ import pandas as pd
 from ..tidy_data.clustering import cleaning
 import community
 from .layout_finder import best_layout
+from textwrap import wrap
 
 def calculate_nodesize(sample_report, region_string, G):
     nodesize = []
@@ -36,7 +37,6 @@ def clusterSeq(ax, sequencing_report, samples: list, max_ld, min_ld, batch_size,
     
     G = cleaning(sample_report, max_ld, min_ld, region_string)
     # remove nodes that are not connected to any other nodes
-    print(G)
     G_deg = G.degree()
     to_remove = [n for (n, deg) in G_deg if deg == 0]
     G.remove_nodes_from(to_remove)
