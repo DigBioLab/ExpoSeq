@@ -1,7 +1,7 @@
 from ExpoSeq.tidy_data.tidy_rel_sequence_abun import cleaning
 import numpy as np
 from ExpoSeq.plots.layout_finder import best_layout
-
+from textwrap import wrap
     
 
 def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_distance,length_filter,batch,region_string, font_settings, legend_settings):
@@ -34,7 +34,8 @@ def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_d
     ax.legend(**legend_settings)
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title("Sequence Abundance of given samples",
+    title = "\n".join(wrap("Sequence Abundance of given samples", 40))
+    ax.set_title(title,
                  pad = 12,
                  **font_settings)
     font_settings["fontsize"] = original_fontsize

@@ -3,7 +3,7 @@ import logomaker
 from ExpoSeq.tidy_data.tidy_seqlogoPlot import cleaning
 import numpy as np
 from ExpoSeq.plots.layout_finder import best_layout
-
+from textwrap import wrap
 
 
 class LogoPlot:
@@ -99,7 +99,8 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
     labels_true = list(range(0, chosen_seq_length))
     numbers_true = list(range(1, chosen_seq_length + 1))
     plt.xticks(labels_true, numbers_true)
-    plt.title(sample,
+    title = "\n".join(wrap(sample, 40))
+    plt.title(title,
             pad=12,
             **font_settings)
     if highlight_specific_pos != False:

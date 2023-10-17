@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from ExpoSeq.tidy_data.barplot import cleaning_data
 import numpy as np
 import matplotlib
-
+from textwrap import wrap
 
 def barplot(ax, all_alignment_reports, sequencing_report_all,font_settings, legend_settings, apply_log):
     matplotlib.use("Qt5Agg")
@@ -29,7 +29,8 @@ def barplot(ax, all_alignment_reports, sequencing_report_all,font_settings, lege
     plt.tight_layout()
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title("Alignment Quality of the analyzed samples",pad = 12, **font_settings)
+    title = "\n".join(wrap("Alignment Quality of the analyzed samples", 40))
+    ax.set_title(title,pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize
 
 

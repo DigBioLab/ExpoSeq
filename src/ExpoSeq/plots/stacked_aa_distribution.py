@@ -1,5 +1,7 @@
 from ExpoSeq.tidy_data.tidy_stacked_aa_distr import cleaning
 import matplotlib.pyplot as plt
+from textwrap import wrap
+
 
 def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settings,region_string):
 
@@ -39,8 +41,10 @@ def stacked_aa_distr(ax, sequencing_report, sample, region, protein, font_settin
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
     if protein == True:
-        ax.set_title("Distribution of Aminoacids per Position for your sequences",pad = 12, **font_settings)
+        title = "\n".join(wrap("Stacked Amino Acid Distribution of " + sample, 40))
+        ax.set_title(title,pad = 12, **font_settings)
     else:
-        ax.set_title("Distribution of Nucleotides per Position for your sequences",pad = 12, **font_settings)
+        title = "\n".join(wrap("Stacked Nucleotide Distribution of " + sample, 40))
+        ax.set_title(title,pad = 12, **font_settings)
     ax.set_xticklabels([*range(region[0], region[1]+1)], rotation=0, ha='center')
     font_settings["fontsize"] = original_fontsize

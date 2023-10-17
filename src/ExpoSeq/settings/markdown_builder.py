@@ -2,6 +2,8 @@ import os
 import pandas as pd
 from tabulate import tabulate
 import glob
+import markdown
+
 
 class QuartoBuilder:
     def __init__(self, title):
@@ -105,6 +107,13 @@ class QuartoBuilder:
         self.next_row()
         self.content += ":::"
         
+    def md_to_text(self, md_file):
+        self.next_row()
+        with open(md_file, "r") as f:
+            markdown_text = f.read()
+        text = markdown.markdown(markdown_text)
+        self.content += text
+        
     def add_table(self, filename, top_,cols = None, max_column = None, ):
         self.next_row()
         df = pd.read_excel(filename)
@@ -168,10 +177,16 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     assert os.path.isdir(os.path.join(plot_path, "logo_plots")), f"The directory {os.path.join(plot_path, 'logo_plots')} does not exist"
     Builder = QuartoBuilder(experiment)
     Builder.create_headline("Basic Overview")
+    
+    Builder.md_to_text(os.path.join("settings", "rarefraction_curves_desc.md"))
+    Builder.md_to_text(os.path.join("settings", "alignment_plot.md"))
+    Builder.md_to_text(os.path.join("settings", "morosita_horn.md"))
+    Builder.md_to_text(os.path.join("settings", "logo_plot.md"))
+    #Builder.
     Builder.create_headline("Identity between samples", section = "##")
     Builder.add_figure_horizontal(2, [r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\jaccard.png", r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\morosita_horn.png"], "test description")
     Builder.add_page()
-    Builder.create_headline("Alignment Quality of samples", section = "##")
+    Builder.create_headline("Sequencing Quality of samples", section = "##")
     figure_alignment = os.path.join(plot_path, "alignment_quality.png")
     figure_rarefraction = os.path.join(plot_path, "rarefraction_all.png")
     text_alignment = "- *If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.*\n- *If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.*"
@@ -197,6 +212,10 @@ def create_quarto(experiment, plot_path, binding_data, samples):
 
     ls_clusters_dir = os.path.join(plot_path, "sequence_cluster")
     Builder.create_headline("Sequence Clusters")
+    Builder.md_to_text(os.path.join("settings", "levenshtein_cluster.md"))
+    Builder.md_to_text(os.path.join("settings", "dendrogram_cluster.md"))
+    Builder.md_to_text(os.path.join("settings", "sequence_embedding.md"))
+    
     report_seq_cluster = os.path.join(ls_clusters_dir, "reports")
     Builder.create_headline("Levenshtein distance based", section="##")
     for sample in samples:
@@ -236,6 +255,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "dendro_binding")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'dendro_binding')} does not exist"
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "reports")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'reports')} does not exist"
         Builder.create_headline("Cluster Antigens")
+        Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
         embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
         embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
         Builder.create_headline("Cluster with embedding", section = "##")
@@ -266,7 +286,9 @@ def create_quarto(experiment, plot_path, binding_data, samples):
             if ls_file != None:
                 Builder.create_headline(f"LS-Distance cluster for {sample}", section = "###")
                 if dendro_file != None:
-                    Builder.add_figure_horizontal(ncol = 2, picture_paths=[ls_file, dendro_file], figure_description="Cluster visualizations based on LS-distance")
+                    Builder.add_figure(ls_file)
+                    Builder.add_figure(dendro_file)
+              #      Builder.add_figure_horizontal(ncol = 2, picture_paths=[ls_file, dendro_file], figure_description="Cluster visualizations based on LS-distance")
                 else:
                     Builder.add_figure(ls_file)
                 try:

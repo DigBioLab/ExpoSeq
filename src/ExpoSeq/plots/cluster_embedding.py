@@ -1,6 +1,6 @@
 import pandas as pd
 from ExpoSeq.tidy_data.tidy_cluster_embedding import tidy_embed
-
+from textwrap import wrap
 def show_difference(sequencing_report, list_experiments,strands, batch_size, pca_components, perplexity, iterations_tsne,region_string, ax, legend_settings, font_settings):
     tsne_results, aminoacids, experiments_batch = tidy_embed(sequencing_report,
                                                               batch_size,
@@ -28,5 +28,6 @@ def show_difference(sequencing_report, list_experiments,strands, batch_size, pca
                         )
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
-    ax.set_title("Sequence Embedding for given Samples", pad= 12, **font_settings)
+    title = "\n".join(wrap("t-SNE embedding of for given samples", 40))
+    ax.set_title(title, pad= 12, **font_settings)
     font_settings["fontsize"] = original_fontsize
