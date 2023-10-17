@@ -4,8 +4,7 @@ from scipy.spatial.distance import squareform
 import pandas as pd
 import warnings
 from ..tidy_data.tidy_dendro import create_distance_matrix, get_clustered_sequences, label_bind_seqs, sort_binding_seqs
-
-
+from textwrap import wrap
 
 
 def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist, font_settings, region_string):
@@ -30,10 +29,9 @@ def levenshtein_dend(ax, sequencing_report, sample, batch_size,max_cluster_dist,
                 )
     ax.set_xlabel("Levenshtein Distance", **font_settings)
     ax.set_ylabel("Sequences", **font_settings)
-    title = "Levenshtein Distance between sequences in " + sample 
+    title = "\n".join(wrap("Levenshtein Distance between sequences in " + sample, 40))
     ax.set_title(title,pad = 12, **font_settings)
     plt.tight_layout()
-\
 
 
 def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_size,max_cluster_dist,font_settings, region_string, ascending ):
@@ -62,7 +60,8 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     aa_clustered, binding_seqs, seq_val = label_bind_seqs(mix,region_string, aa_clustered, antigens, )
     if len(binding_seqs) == 0:
         print("No matches between your binding data and your sequences were found. Please increase the batch size or change the antigen.")
-        return
+        fig2 = False
+        return fig2
     binding_seqs_sorted, binding_values_sorted = sort_binding_seqs(binding_seqs, seq_val, ascending)
 
 
@@ -76,7 +75,7 @@ def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_si
     ax = plt.gca()
     ax.set_xlabel("Levenshtein Distance", **font_settings)
     ax.set_ylabel("Sequences", **font_settings)
-    title = "Levenshtein Distance between sequences in " + sample
+    title = "\n".join(wrap("Levenshtein Distance between sequences in " + sample, 40))
     
     ax.set_title(title,pad = 12, **font_settings)
     fig.show()

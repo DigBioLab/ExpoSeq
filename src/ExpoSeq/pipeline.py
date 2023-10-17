@@ -9,7 +9,6 @@ import os
 from .augment_data.randomizer import create_sequencing_report, create_binding_report
 from .settings import change_settings, change_save_settings, reports, plot_styler
 import subprocess
-import glob
 from .augment_data.uploader import create_alignment_report
 from .settings.general_instructions import print_instructions
 from .tidy_data.heatmaps.read_matrix import read_matrix
@@ -79,6 +78,7 @@ class PlotManager:
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.experiments_list = self.unique_experiments
         self.preferred_sample = self.experiments_list[0]
+        self.java_heap_size = 1000
         self.change_preferred_antigen()
         self.Automation = None
         if self.Settings.automation == True:
@@ -88,12 +88,17 @@ class PlotManager:
 
 
     def create_report(self):
+        self.Settings.move_markdown_files()
         print("Install quarto from: https://quarto.org/docs/get-started/")
         print("You also might to install Jupyter. In general, I recommend to use VS code for this purpose.")
         print(f"This function should only be called after the initial automation, since it relies on the file structure in {self.plot_path}\nAlso do not change the names of the directories or files")
         subprocess.run(["quarto", "check"])
         create_quarto(self.experiment, self.plot_path, self.binding_data, self.experiments_list)
-        subprocess.run(["quarto", "render", self.experiment + ".qmd"])
+        subprocess.run(["quarto", "render", os.path.join(self.plot_path, self.experiment + ".qmd")])
+        print(f"You can find the html file to the report at: {self.plot_path}")
+
+    def change_java_heap_size(self, new_size):
+        self.java_heap_size = new_size
         
     def export_sequencing_report(self):
         self.sequencing_report.to_csv(os.path.join(self.experiment_path, "sequencing_report_processed.csv"))
@@ -122,7 +127,7 @@ class PlotManager:
         self.Automation.chat_()
 
     def save_in_plots(self, enter_filename):
-        plt.savefig(fname = os.path.join(self.plot_path, enter_filename + f".png"), dpi = 300,  format="png")
+        plt.savefig(fname = os.path.join(self.plot_path, enter_filename + f".png"), dpi = 300,  format="png",  bbox_inches='tight')
 
     def get_best_binder(self):
         if self.binding_data is None:
@@ -164,6 +169,8 @@ class PlotManager:
         """
         :return: returns some plots about quality in /my_experiments/YOUR_EXPERIMENT_NAME/plots. Is called automatically when launching the pipeline.
         """
+        self.plot_path, self.mixcr_plots_path, self.experiment_path, self.report_path = self.Settings.check_dirs_automation(self.experiment,
+                                                                                                                                self.region_of_interest)
         self.plot_path = os.path.join(self.module_dir,
                                       "my_experiments",
                                       self.experiment,
@@ -184,7 +191,8 @@ class PlotManager:
         try:
             print("Start preparing sorensen matrix.")
             if not os.path.isfile(os.path.join(self.plot_path, "sorensen.png")):
-                self.sorensen()
+                sorensen_save_path = os.path.join(self.report_path, "sorensen_identity" + ".xlsx")
+                self.sorensen(matrix_save_path = sorensen_save_path)
                 self.save_in_plots("sorensen")
         except:
             print("Creating sorense matrix failed")
@@ -192,7 +200,8 @@ class PlotManager:
         try:
             print("Start preparing jaccard matrix.")
             if not os.path.isfile(os.path.join(self.plot_path, "jaccard.png")):
-                self.jaccard()
+                jaccard_save_path = os.path.join(self.report_path, "jaccard_identity" + ".xlsx")
+                self.jaccard(matrix_save_path = jaccard_save_path)
                 self.save_in_plots("jaccard")
         except:
             print("Creating sorense matrix failed")
@@ -218,16 +227,6 @@ class PlotManager:
             self.save_in_plots("alignment_quality")
         except:
             print("Alignment reports could not be found")
-
-
-        try:
-            print("create rarefraction curves of all samples")
-            self.rarefraction_curves(self.experiments_list)
-            self.save_in_plots("rarefraction_all")
-            
-            
-        except:
-            print("creating rarefraction plot of all samples failed")
             
         if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
             os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
@@ -260,7 +259,7 @@ class PlotManager:
         print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
             os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
-            report_seq_cluster = os.path.isdir(os.path.join(self.plot_path, "sequence_cluster", "reports"))
+            report_seq_cluster = os.path.join(self.plot_path, "sequence_cluster", "reports")
             if not os.path.isdir(report_seq_cluster):
                 os.mkdir(report_seq_cluster)
             for single_experiment in self.experiments_list:
@@ -307,7 +306,7 @@ class PlotManager:
                 os.mkdir(clustering_antigens_path)
             experiment_keys = list(best_binder.keys())
             print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n2500 iterations are used for tsne.")
-            report_tsne_cluster = os.path.isdir(os.path.join(self.plot_path, "clustering_antigens", "reports"))
+            report_tsne_cluster = os.path.join(self.plot_path, "clustering_antigens", "reports")
             if not os.path.isdir(report_tsne_cluster):
                 os.mkdir(report_tsne_cluster)
             for experiment in experiment_keys:
@@ -327,35 +326,45 @@ class PlotManager:
             if not os.path.isdir(ls_cluster_path):
                 os.mkdir(ls_cluster_path)
             print("Create dendrogram with binding data and levenshtein distance of 2 and batch size of 300 for the dendrogram and 1000 for the network plots.")
+            
+            report_ls_cluster = os.path.join(self.plot_path, "clustering_antigens","ls_binding_cluster", "reports")
+            if not os.path.isdir(report_ls_cluster):
+                os.mkdir(report_ls_cluster)
             for experiment in experiment_keys:
                 try:
-                    self.dendro_bind(sample = experiment,
+                    plt.close('all')
+                    fig = self.dendro_bind(sample = experiment,
                                      antigens = best_binder[experiment],
                                      batch_size=300
                                      )
-                    self.save_in_plots(os.path.join("clustering_antigens","dendro_binding", experiment + "cluster_dendrogram"))
+                    if fig == False:
+                        continue
+                    else:
+                        plt.close(fig)
+                        self.save_in_plots(os.path.join("clustering_antigens","dendro_binding", experiment + "cluster_dendrogram"))
+                        try:
+                            plt.close('all')
+                            self.cluster_one_AG(antigen = best_binder[experiment][0],
+                                                specific_experiments = [experiment],
+                                                batch_size = 1000,
+                                                max_ld = 2,
+                                                preferred_cmap = "Reds",
+                                                save_report_path = os.path.join(report_ls_cluster, experiment + f"_ls_binding_cluster" + ".xlsx"))
+                            self.save_in_plots(os.path.join("clustering_antigens","ls_binding_cluster", experiment + f"_ls_binding_cluster"))
+                        except:
+                            print("Could not create levenshtein distance cluster for best binder")
                 except:
                     print(f"Dendrogram with binding data failed for {experiment}")
-                report_ls_cluster = os.path.isdir(os.path.join(self.plot_path, "clustering_antigens","ls_binding_cluster", "reports"))
-                if not os.path.isdir(report_ls_cluster):
-                    os.mkdir(report_ls_cluster)
-                try:
-                    self.cluster_one_AG(antigen = best_binder[experiment][0],
-                                        specific_experiments = [experiment],
-                                        batch_size = 1000,
-                                        max_ld = 2,
-                                        preferred_cmap = "RdPu",
-                                        save_report_path = os.path.join(report_ls_cluster, experiment + f"_ls_binding_cluster" + ".xlsx"))
-                    self.save_in_plots(os.path.join("clustering_antigens","ls_binding_cluster", experiment + f"_ls_binding_cluster"))
-                except:
-                    print("Could not create levenshtein distance cluster for best binder")
-        print(f"The pipeline has created some plots in: {self.plot_path}")
+
         try:
-            self.relative_abundance_multi()
-            self.ControlFigure.tighten()
+            print("create rarefraction curves of all samples")
+            self.rarefraction_curves(self.experiments_list)
+            self.ControlFigure.fig.tight_layout()
+            self.save_in_plots("rarefraction_all")
         except:
-            print("Plotting relative clone frequency failed.")
-        
+            print("creating rarefraction plot of all samples failed")
+
+        print(f"The pipeline has created some plots in: {self.plot_path}")
 
     def change_preferred_antigen(self, antigen=None):
         if self.binding_data is not None:
@@ -972,7 +981,7 @@ class PlotManager:
                                            self.ControlFigure.plot_type)
         save_matrix(matrix, matrix_save_path)
 
-    def jaccard(self, annotate_cells=False, specific_experiments=False):
+    def jaccard(self, annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
         :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_experiments: give a list with specific samples you would like to analyze
@@ -998,9 +1007,10 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
+
         save_matrix(matrix)
 
-    def sorensen(self, annotate_cells=False, specific_experiments=False):
+    def sorensen(self, annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
         :param annotate_cells: Default is False. If you want to see the values of the matrix, set it to True.
         :param specific_samples: give a list with specific samples you would like to analyze
@@ -1026,7 +1036,7 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix)
+        save_matrix(matrix, matrix_save_path)
 
     def relative(self, annotate_cells=False, specific_experiments=False):
         """
@@ -1125,27 +1135,8 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
       #  self.ControlFigure.tighten()
-        plt.close(fig2)
         return fig2
 
-
- #   def MSA_design(self, samples=None, batch_size=500):
-  #      """
-   #     :params samples: the samples you would like to analyze. The input is a list.
-    #    :params batch_size: Default is 1000. The number of sequences starting with the highest fractions which are used for the analysis from the sample
-    #    :return: Creates a multiple sequence alignment of the sequences of the samples you have chosen. The sequences are ordered by their frequency and they are chosen equally based on the given batch size from the different samples. The output is an interface with an overview of the MSA and the option to design a sequence based on the MSA and the findings of the analysis.
-    #    """
-    #    if samples == None:
-    #        samples = [self.experiments_list[0]]
-    #    assert type(samples) == list, "You have to give a list with the samples you want to analyze"
-    #    incorrect_samples = [x for x in samples if x not in self.experiments_list]
-    #    assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-#
-#        msa = MSA(self.region_of_interest,
- #                 self.Report,
-  #                self.Settings,
-   #               self.module_dir)
-    #    msa = msa.run_MSA(batch_size, samples)
 
     def validate_mixcr_path(self):
         path_to_mixcr = self.global_params["mixcr_path"]
@@ -1156,7 +1147,7 @@ class PlotManager:
         self.validate_mixcr_path()
         path_to_mixcr = self.global_params["mixcr_path"]
         commands = []
-        commands.extend(["java", f"-Xms{500}M", "-jar"])  # enable change of para
+        commands.extend(["java", f"-Xms{self.java_heap_size}M", "-jar"])  # enable change of para
         commands.extend([path_to_mixcr])
         return commands
 
@@ -1166,6 +1157,7 @@ class PlotManager:
         output_file = os.path.join(save_dir, self.experiment + "_alignQc.pdf")
         path_to_tables = os.path.join(self.module_dir, "my_experiments", self.experiment, "clones_result", "*.clns")
         export_plots_commands = self.create_parser()
+        
         export_plots_commands.extend(["exportQc"])
         export_plots_commands.extend(["align"])
         export_plots_commands.extend([path_to_tables])
@@ -1174,30 +1166,31 @@ class PlotManager:
         subprocess.run(export_plots_commands)
         print(f"You can find the result file at: {output_file}")
 
-        for i in glob.glob(path_to_tables):
+    #    for i in glob.glob(path_to_tables):
 
-            name=os.path.basename(i).split(".")[0]
-           # output_file = os.path.join(save_dir, name + "_tags.pdf")
-            #export_plots_commands = self.create_parser()
-            #export_plots_commands.extend(["exportQc"])
-            #export_plots_commands.extend(["tags"])
-            #export_plots_commands.extend([i])
-            #export_plots_commands.extend([output_file])
-            #export_plots_commands.extend(["--force-overwrite"])
-            #subprocess.run(export_plots_commands)
+     #       name=os.path.basename(i).split(".")[0]
+      #      output_file = os.path.join(save_dir, name + "_tags.pdf")
+       #     export_plots_commands = self.create_parser()
+        #    export_plots_commands.extend(["exportQc"])
+         #   export_plots_commands.extend(["tags"])
+         #   export_plots_commands.extend([i])
+         #   export_plots_commands.extend([output_file])
+         #   export_plots_commands.extend(["--force-overwrite"])
+          #  subprocess.run(export_plots_commands)
             #print(f"You can find the result file at: {output_file}")
-            name = os.path.basename(i).split(".")[0]
-            output_file = os.path.join(save_dir, name + "chainUsage.pdf")
-            export_plots_commands = self.create_parser()
-            export_plots_commands.extend(["exportQc"])
-            export_plots_commands.extend(["chainUsage"])
-            export_plots_commands.extend(["--hide-non-functional"])
-            export_plots_commands.extend([i])
-            export_plots_commands.extend([output_file])
-            export_plots_commands.extend(["--force-overwrite"])
-            subprocess.run(export_plots_commands)
-            print(f"You can find the result file at: {output_file}")
-        output_file = os.path.join(save_dir, self.experiment + "_coverage.pdf")
+        #    name = os.path.basename(i).split(".")[0]
+         #   output_file = os.path.join(save_dir, name + "chainUsage.png")
+          #  export_plots_commands = self.create_parser()
+          #  export_plots_commands.extend(["exportQc"])
+           # export_plots_commands.extend(["chainUsage"])
+           # export_plots_commands.extend(["--hide-non-functional"])
+           # export_plots_commands.extend([i])
+           # export_plots_commands.extend([output_file])
+           # export_plots_commands.extend(["--force-overwrite"])
+           # subprocess.run(export_plots_commands)
+           # print(f"You can find the result file at: {output_file}")
+        
+        output_file = os.path.join(save_dir, self.experiment + "_coverage.png")
         export_plots_commands = self.create_parser()
         export_plots_commands.extend(["exportQc"])
         export_plots_commands.extend(["coverage"])
@@ -1215,7 +1208,7 @@ class PlotManager:
             export_plots_commands.extend(["--plotType", plot_type])
 
 
-    def mixcr_explain_diversity(self,plot_name = "cdr3_metrics", plot_save_dir = None, metric = "cdr3metrics",chains = None, plot_type = "violin", output_type = "pdf"):
+    def mixcr_explain_diversity(self,plot_name = "cdr3_metrics", plot_save_dir = None, metric = "cdr3metrics",chains = None, plot_type = "boxplot", output_type = "pdf"):
         """
         :param: metric: Default is cdr3metrics. You can choose between cdr3metrics and diversity. If you choose diversity you will focus on the clone fractions whereas with cdr3metrics you will focus on certain aspects of these chains such as length (https://mixcr.com/mixcr/reference/mixcr-postanalysis/#diversity-measures)
         :param: chains: Default is None. Possible inputs are : IGH, IGL, IGK, TRA, TRB, TRG, TRD, IG. You will choose a specific chain for the analysis.
@@ -1274,6 +1267,7 @@ class PlotManager:
         save_dir = self.mixcr_plots_path
 
         json_dir = os.path.join(self.module_dir, "my_experiments", self.experiment, "pa_individual.json")
+        path_to_tables = os.path.join(self.module_dir, "my_experiments", self.experiment, "clones_result", "*.clns")
         if not os.path.isfile(json_dir):
             export_plots_commands = self.create_parser()
             export_plots_commands.extend(["postanalysis"])
@@ -1289,28 +1283,28 @@ class PlotManager:
         export_plots_commands.extend(["vUsage"])
       #  export_plots_commands.extend(["-f"])
         export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, "vUsage_heatmap.pdf")])
+        export_plots_commands.extend([os.path.join(save_dir, "vUsage_heatmap.png")])
         subprocess.run(export_plots_commands)
         export_plots_commands = self.create_parser()
         export_plots_commands.extend(["exportPlots"])
         export_plots_commands.extend(["jUsage"])
        # export_plots_commands.extend(["-f"])
         export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, "jUsage_heatmap.pdf")])
+        export_plots_commands.extend([os.path.join(save_dir, "jUsage_heatmap.png")])
         subprocess.run(export_plots_commands)
         export_plots_commands = self.create_parser()
         export_plots_commands.extend(["exportPlots"])
-        export_plots_commands.extend(["vjUsage"])
+        export_plots_commands.extend(["vjjUsage"])
        # export_plots_commands.extend(["-f"])
         export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, "vjUsage_heatmap.pdf")])
+        export_plots_commands.extend([os.path.join(save_dir, "vjjUsage_heatmap.png")])
         subprocess.run(export_plots_commands)
         export_plots_commands = self.create_parser()
         export_plots_commands.extend(["exportPlots"])
         export_plots_commands.extend(["isotypeUsage"])
        # export_plots_commands.extend(["-f"])
         export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, "isotypeUsage_heatmap.pdf")])
+        export_plots_commands.extend([os.path.join(save_dir, "isotypeUsage_heatmap.png")])
         subprocess.run(export_plots_commands)
 
 
@@ -1329,14 +1323,23 @@ class PlotManager:
             subprocess.run(export_plots_commands)
         possible_metrics = ["SharedClonotypes", "RelativeDiversity", "F1Index", "F2Index", "JaccardIndex", "Pearson", "PearsonAll"]
 
-        export_plots_commands = self.create_parser()
-        export_plots_commands.extend(["exportPlots"])
-        export_plots_commands.extend(["overlap"])
+        for metric in possible_metrics:
+            export_plots_commands = self.create_parser()
+            export_plots_commands.extend(["exportPlots"])
+            export_plots_commands.extend(["overlap"])
+            export_plots_commands.extend(["--metric", metric])
+            export_plots_commands.extend(["--color-key", "Patient"])
+            export_plots_commands.extend([json_dir])
+            export_plots_commands.extend([os.path.join(save_dir, f"{metric}.png")])
+            subprocess.run(export_plots_commands)
+       # export_plots_commands = self.create_parser()
+       # export_plots_commands.extend(["exportPlots"])
+       # export_plots_commands.extend(["overlap"])
    #     export_plots_commands.extend(["--metric", metric])
        # export_plots_commands.extend(["--color-key", "Patient"])
-        export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, f"overlap.pdf")])
-        subprocess.run(export_plots_commands)
+       # export_plots_commands.extend([json_dir])
+       # export_plots_commands.extend([os.path.join(save_dir, f"overlap.png")])
+       # subprocess.run(export_plots_commands)
 
 
 

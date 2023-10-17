@@ -4,7 +4,7 @@ import seaborn as sns
 from ExpoSeq.tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
 
 import numpy as np
-
+from textwrap import wrap
 
 class MorositaHornMatrix:
     def __init__(self,ax, sequencing_report, region_string, samples,protein, font_settings):
@@ -145,6 +145,7 @@ def plot_heatmap(sequencing_report, protein, heatmap, ax, colorbar_settings, fon
                size=12)
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
+    title = "\n".join(wrap(title, 40))
     ax.set_title(title,pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize
     return matrix   

@@ -3,7 +3,7 @@ import os
 import shutil
 import os
 from ast import literal_eval
-    
+import pkg_resources
 
 
 class Settings:
@@ -46,7 +46,17 @@ class Settings:
                 os.mkdir(mixcr_plots_path)
                 
         return plot_path, mixcr_plots_path, experiment_path, report_path
-            
+    
+    def move_markdown_files(self):
+        destination_folder= os.path.join(self.module_dir, "settings")
+        source = pkg_resources.get_distribution('ExpoSeq')
+        source_folder = os.path.join(source.location,"ExpoSeq", "settings")
+        for filename in os.listdir(source_folder):
+            if filename.endswith('.md'):
+                if not os.path.isfile(os.path.join(destination_folder, filename)):
+                    source_path = os.path.join(source_folder, filename)
+                    destination_path = os.path.join(destination_folder, filename)
+                    shutil.move(source_path, destination_path)
             
     def create_global_vars(self):
         global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
@@ -69,6 +79,7 @@ class Settings:
         with open(self.colorbar_settings_path, "w") as f:
             f.write(str(colorbar_settings))
             
+    
             
     def read_global_vars(self):
         if not os.path.isfile(self.common_vars):

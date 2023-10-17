@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from ExpoSeq.plots.layout_finder import best_layout
+from textwrap import wrap
 
 def length_distribution_single(fig,ax, sequencing_report, sample, font_settings, region_string):
     batch = sequencing_report[sequencing_report["Experiment"] == sample]
@@ -18,7 +19,8 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings,
 
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 20
-    plt.title("Length Distribution of " + sample,
+    title = "\n".join(wrap("Length Distribution of " + sample, 40))
+    plt.title(title,
               pad=12,
               **font_settings)
     font_settings["fontsize"] = original_fontsize
@@ -59,7 +61,8 @@ def length_distribution_multi(fig, sequencing_report, samples, font_settings, re
                       **font_settings)  # X label
 
         n += 1
-    fig.suptitle("Length Distribution of given Samples")
+    title = "\n".join(wrap("Length Distribution of given Samples", 40))
+    fig.suptitle(title)
 
 
 
