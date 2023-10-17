@@ -5,7 +5,7 @@ binding_data.csv
 my_experiments/
 *.xlsx
 alphafold/
-build/
+build
 .idea/
 temp/
 .fasta
@@ -17,3 +17,8 @@ myfastasequences
 try_outs
 dist
 build
+
+*.html
+*.qmd
+
+

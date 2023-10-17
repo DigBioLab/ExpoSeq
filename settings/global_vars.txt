@@ -1,1 +1,1 @@
-{'mixcr_path': '', 'last_experiment': 'test_all_samples', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
+{'mixcr_path': 'C:\\Users\\nilsh\\OneDrive\\Desktop\\DTU\\NGS_pipeline\\mixcr-4.2.0\\mixcr.jar', 'last_experiment': 'test_all_samples', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
