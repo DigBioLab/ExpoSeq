@@ -232,8 +232,11 @@ class PlotManager:
             os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
         for i in self.experiments_list:
             if not os.path.isfile(os.path.join("rarefraction_curves", "rarefraction_curves_"+i + ".png")):
-                self.rarefraction_curves(samples = [i])
-                self.save_in_plots(os.path.join("rarefraction_curves", "rarefraction_curves_"+i))
+                try:
+                    self.rarefraction_curves(samples = [i])
+                    self.save_in_plots(os.path.join("rarefraction_curves", "rarefraction_curves_"+i))
+                except:
+                    pass
        # self.relative_abundance_multi()
        # plt.tight_layout()
         #self.save_in_plots("relative_sequence_abundance_multi")

@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 import random
 from collections import Counter
 import matplotlib
+from textwrap import wrap
 matplotlib.use('Qt5Agg')
+
+
 def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               samples = samples)
@@ -42,6 +45,7 @@ def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
     plt.ylabel("Total Unique Sequences", **font_settings)
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
+    
     title = "\n".join(wrap("Sequencing depth of the given samples", 40))
     plt.title(title,pad = 12, **font_settings)
     font_settings["fontsize"] = original_fontsize

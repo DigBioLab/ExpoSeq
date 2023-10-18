@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-from tabulate import tabulate
 import glob
 import markdown
 
@@ -71,8 +70,7 @@ class QuartoBuilder:
         self.next_row()
         self.content += ":::"
         self.content += " {layout-ncol=" + str(ncol) + "}"
-        self.next_row()
-        figure_width = 100/len(picture_paths) 
+        self.next_row() 
         for index_pic in range(len(picture_paths)):
             if figure_subtitles != None:
                 self.content += f"![{figure_subtitles[index_pic]}]"
@@ -208,6 +206,8 @@ def create_quarto(experiment, plot_path, binding_data, samples):
             for i in [length_distr_single, rarefraction_single, logo_plot_single]:
                 if i != None:
                     Builder.add_figure(i)
+                else: 
+                    pass
         Builder.add_page()
 
     ls_clusters_dir = os.path.join(plot_path, "sequence_cluster")
@@ -225,11 +225,12 @@ def create_quarto(experiment, plot_path, binding_data, samples):
             Builder.create_headline(f"Sequence Similarity based on Levenshtein Distance of {sample}", "###")
             Builder.add_figure_horizontal(ncol = 2, picture_paths=plot_files, figure_description="")
         else:
-            headline_made = False
             Builder.create_headline(f"Sequence Similarity based on Levenshtein Distance of {sample}", "###")
             for i in plot_files:
                 if i != None:
                     Builder.add_figure(i)
+                else:
+                    pass
         try:
             report_file = find_file_with_substring(report_seq_cluster, sample)
             if report_file != None:
