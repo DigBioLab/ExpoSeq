@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>test_randoms</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="test_randoms_files/libs/clipboard/clipboard.min.js"></script>
+<script src="test_randoms_files/libs/quarto-html/quarto.js"></script>
+<script src="test_randoms_files/libs/quarto-html/popper.min.js"></script>
+<script src="test_randoms_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="test_randoms_files/libs/quarto-html/anchor.min.js"></script>
+<link href="test_randoms_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="test_randoms_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="test_randoms_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="test_randoms_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="test_randoms_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#basic-overview" id="toc-basic-overview" class="nav-link active" data-scroll-target="#basic-overview">Basic Overview</a>
+  <ul class="collapse">
+  <li><a href="#identity-between-samples" id="toc-identity-between-samples" class="nav-link" data-scroll-target="#identity-between-samples">Identity between samples</a></li>
+  <li><a href="#sequencing-quality-of-samples" id="toc-sequencing-quality-of-samples" class="nav-link" data-scroll-target="#sequencing-quality-of-samples">Sequencing Quality of samples</a></li>
+  <li><a href="#sample-specific-quality-analysis" id="toc-sample-specific-quality-analysis" class="nav-link" data-scroll-target="#sample-specific-quality-analysis">Sample specific quality analysis</a>
+  <ul class="collapse">
+  <li><a href="#quality-analysis-for-random1_r1_001" id="toc-quality-analysis-for-random1_r1_001" class="nav-link" data-scroll-target="#quality-analysis-for-random1_r1_001">Quality analysis for random1_R1_001</a></li>
+  <li><a href="#quality-analysis-for-random2_r1_001" id="toc-quality-analysis-for-random2_r1_001" class="nav-link" data-scroll-target="#quality-analysis-for-random2_r1_001">Quality analysis for random2_R1_001</a></li>
+  <li><a href="#quality-analysis-for-random3_1_001" id="toc-quality-analysis-for-random3_1_001" class="nav-link" data-scroll-target="#quality-analysis-for-random3_1_001">Quality analysis for random3_1_001</a></li>
+  <li><a href="#quality-analysis-for-random4_r1_001" id="toc-quality-analysis-for-random4_r1_001" class="nav-link" data-scroll-target="#quality-analysis-for-random4_r1_001">Quality analysis for random4_R1_001</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sequence-clusters" id="toc-sequence-clusters" class="nav-link" data-scroll-target="#sequence-clusters">Sequence Clusters</a>
+  <ul class="collapse">
+  <li><a href="#levenshtein-distance-based" id="toc-levenshtein-distance-based" class="nav-link" data-scroll-target="#levenshtein-distance-based">Levenshtein distance based</a>
+  <ul class="collapse">
+  <li><a href="#sequence-similarity-based-on-levenshtein-distance-of-random1_r1_001" id="toc-sequence-similarity-based-on-levenshtein-distance-of-random1_r1_001" class="nav-link" data-scroll-target="#sequence-similarity-based-on-levenshtein-distance-of-random1_r1_001">Sequence Similarity based on Levenshtein Distance of random1_R1_001</a></li>
+  <li><a href="#sequence-similarity-based-on-levenshtein-distance-of-random2_r1_001" id="toc-sequence-similarity-based-on-levenshtein-distance-of-random2_r1_001" class="nav-link" data-scroll-target="#sequence-similarity-based-on-levenshtein-distance-of-random2_r1_001">Sequence Similarity based on Levenshtein Distance of random2_R1_001</a></li>
+  <li><a href="#sequence-similarity-based-on-levenshtein-distance-of-random3_1_001" id="toc-sequence-similarity-based-on-levenshtein-distance-of-random3_1_001" class="nav-link" data-scroll-target="#sequence-similarity-based-on-levenshtein-distance-of-random3_1_001">Sequence Similarity based on Levenshtein Distance of random3_1_001</a></li>
+  <li><a href="#sequence-similarity-based-on-levenshtein-distance-of-random4_r1_001" id="toc-sequence-similarity-based-on-levenshtein-distance-of-random4_r1_001" class="nav-link" data-scroll-target="#sequence-similarity-based-on-levenshtein-distance-of-random4_r1_001">Sequence Similarity based on Levenshtein Distance of random4_R1_001</a></li>
+  </ul></li>
+  <li><a href="#sequence-similarity-between-samples" id="toc-sequence-similarity-between-samples" class="nav-link" data-scroll-target="#sequence-similarity-between-samples">Sequence Similarity between samples</a>
+  <ul class="collapse">
+  <li><a href="#global-sequence-similarity-for-random1_r1_001" id="toc-global-sequence-similarity-for-random1_r1_001" class="nav-link" data-scroll-target="#global-sequence-similarity-for-random1_r1_001">Global Sequence similarity for random1_R1_001</a></li>
+  <li><a href="#global-sequence-similarity-for-random2_r1_001" id="toc-global-sequence-similarity-for-random2_r1_001" class="nav-link" data-scroll-target="#global-sequence-similarity-for-random2_r1_001">Global Sequence similarity for random2_R1_001</a></li>
+  <li><a href="#global-sequence-similarity-for-random3_1_001" id="toc-global-sequence-similarity-for-random3_1_001" class="nav-link" data-scroll-target="#global-sequence-similarity-for-random3_1_001">Global Sequence similarity for random3_1_001</a></li>
+  <li><a href="#global-sequence-similarity-for-random4_r1_001" id="toc-global-sequence-similarity-for-random4_r1_001" class="nav-link" data-scroll-target="#global-sequence-similarity-for-random4_r1_001">Global Sequence similarity for random4_R1_001</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">test_randoms</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="basic-overview" class="level1">
+<h1>Basic Overview</h1>
+<h3 class="anchored">
+Rarefraction curves
+</h3>
+<p>
+The x-axis of the plot shows the total number of sampled sequences, and the y-axis shows the total number of unique sequences.
+</p>
+<p>
+The plot can be interpreted as follows:
+</p>
+<ul>
+<li>
+Samples with higher sequencing depth will have more unique sequences at each point on the x-axis.
+</li>
+<li>
+Samples with lower sequencing depth will have fewer unique sequences at each point on the x-axis.
+</li>
+</ul>
+<p>
+This plot is useful for NGS because it can be used to assess the quality of the sequencing data and to determine whether the sequencing depth is sufficient for the desired application. For example, if you are trying to identify rare variants in a sample, you will need to have a high sequencing depth in order to be confident that the variants are real and not simply sequencing errors.
+</p>
+<p>
+Here are some specific examples of how the plot could be used to interpret NGS data:
+</p>
+<ol>
+<li>
+If you are comparing two samples with different sequencing depths, you can use the plot to see which sample has more unique sequences at each point on the x-axis. This can help you to determine which sample is more likely to contain the variants of interest.
+</li>
+<li>
+If you are trying to determine whether the sequencing depth of a sample is sufficient for a particular application, you can use the plot to compare the sample to other samples that have been used successfully for the same application.
+</li>
+<li>
+If you are seeing a plateau in the number of unique sequences as the sequencing depth increases, this may indicate that you have reached a saturation point and that further sequencing will not yield much new information.
+</li>
+</ol>
+<h3 class="anchored">
+Alignment Quality Plot
+</h3>
+<p>
+The barplot shows the total sequenced reads and aligned reads for each sample. The total sequenced reads is the number of reads that were generated by the NGS sequencer. The aligned reads is the number of reads that were successfully mapped to the reference genome.
+</p>
+<p>
+The plot shows that the total sequenced reads is higher than the aligned reads for all samples. This is because some of the reads may be of low quality or may not map to the reference genome.
+</p>
+<p>
+Furthermore, it shows that the difference between the total sequenced reads and aligned reads is larger for some samples than others. This may be due to a number of factors, such as the quality of the DNA sample, the sequencing platform used, and the alignment parameters used.
+</p>
+<p>
+Use of the barplot for NGS:
+</p>
+<p>
+The barplot can be used to assess the quality of the NGS data and to determine whether the alignment rate is sufficient for the desired application.
+</p>
+<p>
+Specific examples:
+</p>
+<ol>
+<li>
+If you are comparing two samples, you can use the plot to see which sample has a higher alignment rate. This can help you to determine which sample is more likely to contain the variants of interest.
+</li>
+<li>
+If you are trying to determine whether the alignment rate for a sample is sufficient for a particular application, you can compare the sample to other samples that have been used successfully for the same application.
+</li>
+<li>
+If you are seeing a low alignment rate for a sample, this may indicate that there is a problem with the DNA sample, the sequencing platform used, or the mixcr parameters used.
+</li>
+</ol>
+<h3 class="anchored">
+Heatmap based on Morosita-Horn Index
+</h3>
+<p>
+The heatmap shows a matrix which values are calculated based on the morosita horn index. This index captures the degree of identity between two samples which are composed of multiple values of different sizes. This is especially useful for comparing two samples which are composed of different numbers of clones and have a different number of aligned reads. In the context of this heatmap, identity means that two sequences have the same sequence length and the exact same amino acid sequence.
+</p>
+<p>
+The heatmap has several possible applications during the quality control of the sequencing, which are: 1. identification of cross contamination between samples. This can be seen if a high degree of identity can be observed, although the samples were panned against different antigens. 2. Validation of the panning process. This can be seen if a high degree of identity can be observed between samples which were panned against the same antigen in different rounds.
+</p>
+<p>
+<em>Weaknesses</em>: - the morosita horn becomes less accuracte if the number of elements (sequences) is very low in one of the samples
+</p>
+<p>
+<em>Alternatives</em>:
+</p>
+<p>
+The user can analyse the identity between the samples based on: - Jaccard Index - Sorensen-Dice Index
+</p>
+<h3 class="anchored">
+Logo Plot
+</h3>
+<p>
+It shows the frequency of each amino acid at each position in the CDR3 region. The height of each letter in the logo represents the frequency of the amino acid at that position.
+</p>
+<p>
+Sequence logo plots are useful for identifying conserved and variable regions in a protein sequence. Conserved regions are regions where the same amino acids are present in a high proportion of sequences. Variable regions are regions where different amino acids are present at a high frequency.
+</p>
+<p>
+It is important to only choose sequences with the same length when creating a sequence logo plot because this allows for a more accurate comparison of the amino acid distribution at each position in the sequence. If sequences of different lengths are included in the plot, it can be difficult to interpret the results.
+</p>
+<p>
+Here is an example of how the sequence logo plot you provided could be interpreted:
+</p>
+<ol>
+<li>
+The positions with the highest entropy are the most variable positions in the CDR3 region.
+</li>
+<li>
+The positions with the lowest entropy are the most conserved positions in the CDR3 region.
+</li>
+<li>
+The most common amino acids at each position are shown in the center of the logo.
+</li>
+</ol>
+<p>
+Sequence logo plots can be used for a variety of purposes, such as:
+</p>
+<ol>
+<li>
+Identifying conserved and variable regions in a protein sequence.
+</li>
+<li>
+Identifying potential motifs in a protein sequence.
+</li>
+<li>
+Comparing the amino acid distribution in two or more protein sequences.
+</li>
+<li>
+Tracking the evolution of a protein sequence over time.
+</li>
+</ol>
+<section id="identity-between-samples" class="level2">
+<h2 class="anchored" data-anchor-id="identity-between-samples">Identity between samples</h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\jaccard.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\morosita_horn.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p>test description</p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="sequencing-quality-of-samples" class="level2">
+<h2 class="anchored" data-anchor-id="sequencing-quality-of-samples">Sequencing Quality of samples</h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\alignment_quality.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_all.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p>Aligment Quality</p>
+</div>
+</div>
+</div>
+<ul>
+<li><em>If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.</em></li>
+<li><em>If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.</em></li>
+</ul>
+</section>
+<section id="sample-specific-quality-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="sample-specific-quality-analysis">Sample specific quality analysis</h2>
+<section id="quality-analysis-for-random1_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="quality-analysis-for-random1_r1_001">Quality analysis for random1_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\length_distributions\random1_R1_001.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_random1_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\logo_plots\random1_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="quality-analysis-for-random2_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="quality-analysis-for-random2_r1_001">Quality analysis for random2_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\length_distributions\random2_R1_001.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_random2_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\logo_plots\random2_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="quality-analysis-for-random3_1_001" class="level3">
+<h3 class="anchored" data-anchor-id="quality-analysis-for-random3_1_001">Quality analysis for random3_1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\length_distributions\random3_1_001.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_random3_1_001.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\logo_plots\random3_1_001.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="quality-analysis-for-random4_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="quality-analysis-for-random4_r1_001">Quality analysis for random4_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\length_distributions\random4_R1_001.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_curves\rarefraction_curves_random4_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\logo_plots\random4_R1_001.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+</section>
+<section id="sequence-clusters" class="level1">
+<h1>Sequence Clusters</h1>
+<h3 class="anchored">
+Clustering based on levenshtein distance
+</h3>
+<p>
+The Levenshtein distance is a metric that measures the similarity between two strings. It is calculated by counting the minimum number of edits (insertions, deletions, and substitutions) required to transform one string into the other.
+</p>
+<p>
+For example, the Levenshtein distance between the strings “CAT” and “DOG” is 2, because we need to insert the letter “D” and substitute the letter “C” with the letter “G” to transform “CAT” into “DOG”.
+</p>
+<p>
+The Levenshtein distance can be used to analyze peptide sequences in a variety of ways. For example, it can be used to:
+</p>
+<ol>
+<li>
+Identify similar CDR3 regions. This can be useful for identifying antibodies with similar antigen-binding specificities.
+</li>
+<li>
+Detect mutations in CDR3 regions. This can be useful for identifying mutations that may affect the affinity or specificity of an antibody.
+</li>
+<li>
+Cluster CDR3 regions into groups. This can be useful for identifying groups of CDR3 regions with similar antigen-binding specificities.
+</li>
+</ol>
+<p>
+The connected components in the plot (shown by a a network of lines) are groups of CDR3 sequences that are similar to each other, based on a threshold for a levenshtein distance (default = 2). The size of each circle in the plot represents the number of clones for the corresponding CDR3 sequence relative to the clone counts of other sequences.
+</p>
+<p>
+Overall, the plot can be used to get a general overview of the diversity and similarity of the CDR3 sequences in the library.
+</p>
+<p>
+Furthermore, a table is given which has the sorted sequences based on the clone count. That means the top 10 sequences represent the sequences with the highest clone fraction in that sample. This table, coming from a report can be used to identify specificity for a certain antigen based on a density of these sequences in certain clusters.
+</p>
+<p>
+Disadvantages of the levenshtein distance
+</p>
+<ul>
+<li>
+Only captures global similarity of sequences and does not focues on specific regions
+</li>
+<li>
+Does not take any chemical properties or structural properties into account
+</li>
+</ul>
+<h3 class="anchored">
+Sequence Cluster Dendrogram
+</h3>
+<p>
+The dendrogram you provided is a visualization of the similarity between a set of CDR3 heavy chain sequences. The sequences are clustered together based on their Levenshtein distance, which is described in the previous section.
+</p>
+<p>
+The dendrogram can be used to understand the diversity of the CDR3 sequences in a sample. For example, if the dendrogram shows that most of the sequences are clustered together in a few large clusters, this suggests that there is a relatively low level of diversity in the sample. On the other hand, if the dendrogram shows that the sequences are spread out in many small clusters, this suggests that there is a high level of diversity in the sample.
+</p>
+<p>
+The dendrogram can also be used to identify groups of similar sequences. For example, if we want to identify a group of sequences that are likely to have similar antigen-binding specificities, we can look for a cluster of sequences that are close to each other on the dendrogram.
+</p>
+<h3 class="anchored">
+Clustering based on t-SNE
+</h3>
+<p>
+Addressing the limitations of using the levenshtein distance for clustering hcdr3 sequences, a plot which shows the sequences and their whole sequence relation was created to enable a more extensive analysis of the sequences and their binding. To be able to have the sequences as vectors the SGT embedding was applied.
+</p>
+<p>
+This embedding does not capture any chemical properties of the amino acid strand but instead tries to recognize the characteristic relative position of letters within a sequence which enables an identification of patterns between sequences of different lengths. This addresses the variability of the cdr3 sequences and enables to capture the similarity of sequences. Therefore, the sgt embedder was initialized using the package sgt where the parameter length sensitive was set to True and the parameter kappa was assigned with 1 . After the initialization, the embedding creates an output of 400 dimensions per sequence which were reduced to 80 dimensions by using principal component analysis (PCA).
+</p>
+<p>
+Subsequently t-SNE was implemented to show a representative arrangement of the 80 dimensions in the two dimensional space because a further dimension reduction to only two dimensions would insufficiently describe the data globally by using PCA. That is why t-SNE was introduced to be able to show a representative arrangement of the points without losing too much of its information.
+</p>
+<p>
+The plot can be used in variety of ways, such as: 1. Identify similar CDR3 regions 2. learn about the differences between samples 3. identify specific sequence differences for samples which were panned against different antigens.
+</p>
+<section id="levenshtein-distance-based" class="level2">
+<h2 class="anchored" data-anchor-id="levenshtein-distance-based">Levenshtein distance based</h2>
+<section id="sequence-similarity-based-on-levenshtein-distance-of-random1_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="sequence-similarity-based-on-levenshtein-distance-of-random1_r1_001">Sequence Similarity based on Levenshtein Distance of random1_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random1_R1_001ls_cluster.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random1_R1_001ls_dendro.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: right;">Unnamed: 0</th>
+<th style="text-align: right;">Cluster No.</th>
+<th style="text-align: left;">Sequences</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">CNAVHSRWQAMTRW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">CIQSGTDRR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: left;">CNVDLTVVDGRHLPRGDYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">CIQSGTSRR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">CHADLRVRDGVRGDYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">CNAVHSRWQAMTHW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">CAADLFGTRQADLLIYNFR</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">CNAVGADRISGVIYW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">CATRFTTPWDARAPAYYNYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">CAAQVYTSGIYYYSGSYDYW</td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="sequence-similarity-based-on-levenshtein-distance-of-random2_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="sequence-similarity-based-on-levenshtein-distance-of-random2_r1_001">Sequence Similarity based on Levenshtein Distance of random2_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random2_R1_001ls_cluster.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random2_R1_001ls_dendro.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: right;">Unnamed: 0</th>
+<th style="text-align: right;">Cluster No.</th>
+<th style="text-align: left;">Sequences</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">CAADSPSLPDRTAAHSYDYAYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">CAAERVPSAIYTHYEFCVGADEYDYW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">CAADLFGTRQADLLIYNFR</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">CAAGSDYNLDGSW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">CAAESPDLVDRTATHSYDYSYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">CHADIRVRAGVRGDYW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">CGADKFPYSAETMCSIPGGPDLDAW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">CAAESPFLPDRTARHSYDYTYW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">CNAVHSRWQAMTRW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">CAADKFPYAAETMCVIPGGPDADTW</td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="sequence-similarity-based-on-levenshtein-distance-of-random3_1_001" class="level3">
+<h3 class="anchored" data-anchor-id="sequence-similarity-based-on-levenshtein-distance-of-random3_1_001">Sequence Similarity based on Levenshtein Distance of random3_1_001</h3>
+<div class="quarto-layout-panel">
+
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="sequence-similarity-based-on-levenshtein-distance-of-random4_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="sequence-similarity-based-on-levenshtein-distance-of-random4_r1_001">Sequence Similarity based on Levenshtein Distance of random4_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random4_R1_001ls_cluster.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_cluster\random4_R1_001ls_dendro.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: right;">Unnamed: 0</th>
+<th style="text-align: right;">Cluster No.</th>
+<th style="text-align: left;">Sequences</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">CAADSPSLPDRTAAHSYDYAYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">CNAVHSRWQAMTRW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">CIQSGTSRR</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">CIQSGTDRR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">CNAVHSRWQAMTHW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">CNTEEESTGTYYEW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">CAAESPDLVDRTATHSYDYSYW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">CAAERVPSAIYTHYEFCVGADEYDYW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">CAAGSDYNLDGSW</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">CIQSGTDRK</td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="sequence-similarity-between-samples" class="level2">
+<h2 class="anchored" data-anchor-id="sequence-similarity-between-samples">Sequence Similarity between samples</h2>
+<section id="global-sequence-similarity-for-random1_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="global-sequence-similarity-for-random1_r1_001">Global Sequence similarity for random1_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_embedding\random1_R1_001embedding_tsne.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="global-sequence-similarity-for-random2_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="global-sequence-similarity-for-random2_r1_001">Global Sequence similarity for random2_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_embedding\random2_R1_001embedding_tsne.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="global-sequence-similarity-for-random3_1_001" class="level3">
+<h3 class="anchored" data-anchor-id="global-sequence-similarity-for-random3_1_001">Global Sequence similarity for random3_1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_embedding\random3_1_001embedding_tsne.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="global-sequence-similarity-for-random4_r1_001" class="level3">
+<h3 class="anchored" data-anchor-id="global-sequence-similarity-for-random4_r1_001">Global Sequence similarity for random4_R1_001</h3>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sequence_embedding\random4_R1_001embedding_tsne.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

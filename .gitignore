@@ -17,7 +17,5 @@ myfastasequences
 try_outs
 dist
 build
-*.html
-*.qmd
 
 
