@@ -1,1 +1,1 @@
-{'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'ncols': 1, 'fontsize': 8, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
+{'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}

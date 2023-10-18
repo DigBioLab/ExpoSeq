@@ -52,23 +52,7 @@ format:
 - Jaccard Index
 - Sorensen-Dice Index</p>
 
-<h3>Logo Plot</h3>
-<p>It shows the frequency of each amino acid at each position in the CDR3 region. The height of each letter in the logo represents the frequency of the amino acid at that position.</p>
-<p>Sequence logo plots are useful for identifying conserved and variable regions in a protein sequence. Conserved regions are regions where the same amino acids are present in a high proportion of sequences. Variable regions are regions where different amino acids are present at a high frequency.</p>
-<p>It is important to only choose sequences with the same length when creating a sequence logo plot because this allows for a more accurate comparison of the amino acid distribution at each position in the sequence. If sequences of different lengths are included in the plot, it can be difficult to interpret the results.</p>
-<p>Here is an example of how the sequence logo plot you provided could be interpreted:</p>
-<ol>
-<li>The positions with the highest entropy are the most variable positions in the CDR3 region. </li>
-<li>The positions with the lowest entropy are the most conserved positions in the CDR3 region. </li>
-<li>The most common amino acids at each position are shown in the center of the logo.</li>
-</ol>
-<p>Sequence logo plots can be used for a variety of purposes, such as:</p>
-<ol>
-<li>Identifying conserved and variable regions in a protein sequence.</li>
-<li>Identifying potential motifs in a protein sequence.</li>
-<li>Comparing the amino acid distribution in two or more protein sequences.</li>
-<li>Tracking the evolution of a protein sequence over time.</li>
-</ol>
+<p><em>The content generated in this section was writen by Nils Hofmann. The author does not guarantee the correctness of the content.</em></p>
 
 ## Identity between samples
 
@@ -225,6 +209,8 @@ General Sequencing Quality
 1. Identify similar CDR3 regions
 2. learn about the differences between samples
 3. identify specific sequence differences for samples which were panned against different antigens.</p>
+
+<p><em>The content generated in this section was writen by Nils Hofmann. The author does not guarantee the correctness of the content.</em></p>
 
 ## Levenshtein distance based
 
