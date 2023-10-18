@@ -182,10 +182,16 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     Builder = QuartoBuilder(experiment)
     Builder.create_headline("Basic Overview")
     Builder.create_headline("Theory", section = "##")
-    Builder.md_to_text(os.path.join("settings", "rarefraction_curves_desc.md"))
-    Builder.md_to_text(os.path.join("settings", "alignment_plot.md"))
-    Builder.md_to_text(os.path.join("settings", "morosita_horn.md"))
-    Builder.md_to_text(os.path.join("settings", "logo_plot.md"))
+    if os.path.isfile(os.path.join("settings", "rarefraction_curves_desc.md")):
+        Builder.md_to_text(os.path.join("settings", "rarefraction_curves_desc.md"))
+    if os.path.isfile(os.path.join("settings", "alignment_plot.md")):
+        Builder.md_to_text(os.path.join("settings", "alignment_plot.md"))
+    if os.path.isfile(os.path.join("settings", "morosita_horn.md")):
+        Builder.md_to_text(os.path.join("settings", "morosita_horn.md"))
+    if os.path.isfile(os.path.join("settings", "jaccard.md")):
+        Builder.md_to_text(os.path.join("settings", "logo_plot.md"))
+    if os.path.isfile(os.path.join("settings", "signature.md")):
+        Builder.md_to_text(os.path.join("settings", "signature.md"))
     #Builder.
     Builder.create_headline("Identity between samples", section = "##")
     Builder.create_headline("Identity based on Morosita Horn Index", section = "###")
@@ -243,10 +249,14 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     ls_clusters_dir = os.path.join(plot_path, "sequence_cluster")
     Builder.create_headline("Sequence Clusters")
     Builder.create_headline("Theory", section = "##")
-    Builder.md_to_text(os.path.join("settings", "levenshtein_cluster.md"))
-    Builder.md_to_text(os.path.join("settings", "dendrogram_cluster.md"))
-    Builder.md_to_text(os.path.join("settings", "sequence_embedding.md"))
-    
+    if os.path.isfile(os.path.join("settings", "levenshtein_cluster.md")):
+        Builder.md_to_text(os.path.join("settings", "levenshtein_cluster.md"))
+    if os.path.isfile(os.path.join("settings", "dendrogram_cluster.md")):
+        Builder.md_to_text(os.path.join("settings", "dendrogram_cluster.md"))
+    if os.path.isfile(os.path.join("settings", "sequence_embedding.md")):
+        Builder.md_to_text(os.path.join("settings", "sequence_embedding.md"))
+    if os.path.isfile(os.path.join("settings", "signature.md")):
+        Builder.md_to_text(os.path.join("settings", "signature.md"))
     report_seq_cluster = os.path.join(ls_clusters_dir, "reports")
     Builder.create_headline("Levenshtein distance based", section="##")
     for sample in samples:
@@ -288,7 +298,10 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "reports")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'reports')} does not exist"
         Builder.create_headline("Cluster Antigens")
         Builder.create_headline("Theory", section = "##")
-        Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
+        if os.path.isfile(os.path.join("settings", "reports_binding.md")):
+            Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
+        if os.path.isfile(os.path.join("settings", "signature.md")):
+            Builder.md_to_text(os.path.join("settings", "signature.md"))
         embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
         embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
         Builder.create_headline("Cluster with embedding", section = "##")
