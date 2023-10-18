@@ -2,6 +2,7 @@
 title: test_randoms
 format:
      html:
+         self-contained: true
          toc: true
          toc-location: left
          toc-expand: 2
