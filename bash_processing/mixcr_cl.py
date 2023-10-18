@@ -456,4 +456,5 @@ mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  metho
 end_time = time.time()
 execution_time = end_time - start_time
 print(f"Execution Time: {execution_time} seconds")
+print(f"Launch ExpoSeq with from ExpoSeq.pipeline import PlotManager\n plot = PlotManager()\n and press 2 when it asks you for your new experiment.\n Choose the folder in my_experiments/{experiment_name} which will then be copy and pasted in ExpoSeq's working directory.")
   
