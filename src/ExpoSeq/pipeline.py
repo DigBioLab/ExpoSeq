@@ -92,7 +92,9 @@ class PlotManager:
         print("Install quarto from: https://quarto.org/docs/get-started/")
         print("You also might to install Jupyter. In general, I recommend to use VS code for this purpose.")
         print(f"This function should only be called after the initial automation, since it relies on the file structure in {self.plot_path}\nAlso do not change the names of the directories or files")
+        print("Test Quarto")
         subprocess.run(["quarto", "check"])
+        print("Render qmd file")
         create_quarto(self.experiment, self.plot_path, self.binding_data, self.experiments_list)
         subprocess.run(["quarto", "render", os.path.join(self.plot_path, self.experiment + ".qmd")])
         print(f"You can find the html file to the report at: {self.plot_path}")
@@ -176,8 +178,26 @@ class PlotManager:
                                       self.experiment,
                                       "plots",
                                       self.region_of_interest)
+        report_seq_cluster = os.path.join(self.plot_path, "sequence_cluster", "reports")
+        jaccard_report = os.path.join(self.report_path, "jaccard_identity" + ".xlsx")
         if not os.path.isdir(self.plot_path):
             os.mkdir(self.plot_path)
+        if not os.path.isdir(os.path.join(self.plot_path, "length_distributions")):
+            os.mkdir(os.path.join(self.plot_path, "length_distributions"))
+        if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
+            os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
+        if not os.path.isdir(os.path.join(self.plot_path, "logo_plots")):
+            os.mkdir(os.path.join(self.plot_path, "logo_plots"))
+        if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
+            os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
+
+        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding")):
+            os.mkdir(os.path.join(self.plot_path, "sequence_embedding"))
+        
+        if not os.path.isdir(report_seq_cluster):
+            os.mkdir(report_seq_cluster)
+            
+        #plot 
         try:
 
             print("Start preparing morosita horn matrix.")
@@ -187,7 +207,7 @@ class PlotManager:
                 self.save_in_plots("morosita_horn")
         except:
             print("Creating Morosita Horn matrix failed")
-
+        #plot
         try:
             print("Start preparing sorensen matrix.")
             if not os.path.isfile(os.path.join(self.plot_path, "sorensen.png")):
@@ -196,7 +216,7 @@ class PlotManager:
                 self.save_in_plots("sorensen")
         except:
             print("Creating sorense matrix failed")
-
+        #plot
         try:
             print("Start preparing jaccard matrix.")
             if not os.path.isfile(os.path.join(self.plot_path, "jaccard.png")):
@@ -205,15 +225,16 @@ class PlotManager:
                 self.save_in_plots("jaccard")
         except:
             print("Creating sorense matrix failed")
-        if not os.path.isdir(os.path.join(self.plot_path, "length_distributions")):
-            os.mkdir(os.path.join(self.plot_path, "length_distributions"))
-        try:
-            for experiment in self.experiments_list:
+
+        
+        #plot
+        for experiment in self.experiments_list:
+            try:
                 self.lengthDistribution_single(experiment)
                 self.save_in_plots(os.path.join("length_distributions", experiment))
-        except:
-            print(f"Length Distribution for {experiment} failed")
-
+            except:
+                print(f"Length Distribution for {experiment} failed")
+        #mixcr plots 
         try:
             print("Begin with creating mixcr plots. You can find a description about them here:\n https://mixcr.com/mixcr/reference/mixcr-exportPlots/")
             self.export_mixcr_quality()
@@ -222,14 +243,15 @@ class PlotManager:
             self.mixcr_overlap()
         except:
             print(f".clns files could not be found. Most certainly, you have uploaded the sequencing report.")
+        # plot
         try:
             self.alignment_quality()
             self.save_in_plots("alignment_quality")
         except:
             print("Alignment reports could not be found")
             
-        if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
-            os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
+
+        #plot
         for i in self.experiments_list:
             if not os.path.isfile(os.path.join("rarefraction_curves", "rarefraction_curves_"+i + ".png")):
                 try:
@@ -237,12 +259,9 @@ class PlotManager:
                     self.save_in_plots(os.path.join("rarefraction_curves", "rarefraction_curves_"+i))
                 except:
                     pass
-       # self.relative_abundance_multi()
-       # plt.tight_layout()
-        #self.save_in_plots("relative_sequence_abundance_multi")
-        if not os.path.isdir(os.path.join(self.plot_path, "logo_plots")):
-            os.mkdir(os.path.join(self.plot_path, "logo_plots"))
+            
 
+        # plot
         for experiment in self.experiments_list:
             try:
                 if not os.path.isfile(os.path.join(self.plot_path, "logo_plots", experiment)):
@@ -251,55 +270,58 @@ class PlotManager:
             except:
                 print(f"Logo Plot for {experiment} failed")
 
-    #    try:
-     #       if not os.path.isfile(os.path.join(self.plot_path, "logo_plot_multi.png")):
-      #          self.logoPlot_multi()
-       #         self.save_in_plots("logo_plot_multi")
-       #     else:
-        #        pass
-        #except:
-         #   print("Creating Logo plot of multiple samples failed")
-        print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")
-        if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
-            report_seq_cluster = os.path.join(self.plot_path, "sequence_cluster", "reports")
-            if not os.path.isdir(report_seq_cluster):
-                os.mkdir(report_seq_cluster)
-            for single_experiment in self.experiments_list:
-                try:
-                    if not os.path.isfile(os.path.join(self.plot_path, "sequence_cluster", single_experiment + "ls_dendro.png")):
-                        self.levenshtein_dendrogram(sample = single_experiment, max_cluster_dist = 1)
-                        self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_dendro"))
-                    if not os.path.isfile(os.path.join(self.plot_path,
-                                                       "sequence_cluster",
-                                                       single_experiment + "ls_cluster.png")):
-                        self.basic_cluster(samples = [single_experiment],
-                                           max_ld = 2,
-                                           batch_size=1000,
-                                           save_report_path = os.path.join(report_seq_cluster, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
-                        self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
-                except:
-                    print(f"Sequence clustering failed at: {single_experiment}")
+
+        print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")        
+        #plot
+        for single_experiment in self.experiments_list:
+            try:
+                if not os.path.isfile(os.path.join(self.plot_path, "sequence_cluster", single_experiment + "ls_dendro.png")):
+                    self.levenshtein_dendrogram(sample = single_experiment, max_cluster_dist = 1)
+                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_dendro"))
+                if not os.path.isfile(os.path.join(self.plot_path,
+                                                    "sequence_cluster",
+                                                    single_experiment + "ls_cluster.png")):
+                    self.basic_cluster(samples = [single_experiment],
+                                        max_ld = 2,
+                                        batch_size=1000,
+                                        save_report_path = os.path.join(report_seq_cluster, f"{single_experiment}" + "ls_cluster" + ".xlsx"))
+                    self.save_in_plots(os.path.join("sequence_cluster", single_experiment + "ls_cluster"))
+            except:
+                print(f"Sequence clustering failed at: {single_experiment}")
         threshold_identity = 0.2
+        
         while True:
             overlapping_samples = read_matrix(threshold=threshold_identity, path_matrix=mh_save_path)
-            mean_length = sum(len(v) for v in overlapping_samples.values()) / len(overlapping_samples)
-            if mean_length > 2.5:
-                break
-            elif threshold_identity < 0.05:
-                break
+            # if None path_matrix does not exist
+            if overlapping_samples == None:
+                if mh_save_path == jaccard_report:
+                    overlapping_samples = None
+                    break
+                else:  
+                    mh_save_path = jaccard_report
+                    continue
             else:
-                threshold_identity -= 0.01
-        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_embedding"))
+                mean_length = sum(len(v) for v in overlapping_samples.values()) / len(overlapping_samples)
+                if mean_length > 2.5:
+                    break
+                elif threshold_identity < 0.05:
+                    break
+                else:
+                    threshold_identity -= 0.01
+                    
+
         print("Start sequence embedding of samples")
-        for single_experiment in list(overlapping_samples.keys()):
-            if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding", single_experiment + "embedding_tsne.png")):
-                try:
-                    self.embedding_tsne(samples = overlapping_samples[single_experiment], strands = False)
-                    self.save_in_plots(os.path.join("sequence_embedding", single_experiment + "embedding_tsne"))
-                except:
-                    print(f"Clustering with TSNE failed for {single_experiment}.")
+        if overlapping_samples != None:
+            for single_experiment in list(overlapping_samples.keys()):
+                if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding", single_experiment + "embedding_tsne.png")):
+                    try:
+                        self.embedding_tsne(samples = overlapping_samples[single_experiment], strands = False)
+                        self.save_in_plots(os.path.join("sequence_embedding", single_experiment + "embedding_tsne"))
+                    except:
+                        print(f"Clustering with TSNE failed for {single_experiment}.")
+        else: 
+            print("Neither Morosita Horn nor Jaccard matrix was generated, thus no sequence embedding can be created.")
+        
         best_binder = self.get_best_binder()    
         if best_binder == None:
             print("No binding data was found. Thus, no binding plots can be created.")
@@ -312,6 +334,8 @@ class PlotManager:
             report_tsne_cluster = os.path.join(self.plot_path, "clustering_antigens", "reports")
             if not os.path.isdir(report_tsne_cluster):
                 os.mkdir(report_tsne_cluster)
+                
+            #plot
             for experiment in experiment_keys:
                 try:
                     if not os.path.isfile(os.path.join(self.plot_path, "clustering_antigens", experiment + "tsne_cluster_AG.png")):
@@ -323,6 +347,7 @@ class PlotManager:
                 except:
                     print(f"Cluster based on sequence embedding combined with binding data failed for: {experiment}")
             dendro_path = os.path.join(self.plot_path,"clustering_antigens", "dendro_binding")
+            
             if not os.path.isdir(dendro_path):
                 os.mkdir(dendro_path)
             ls_cluster_path = os.path.join(self.plot_path, "clustering_antigens", "ls_binding_cluster")
@@ -333,6 +358,7 @@ class PlotManager:
             report_ls_cluster = os.path.join(self.plot_path, "clustering_antigens","ls_binding_cluster", "reports")
             if not os.path.isdir(report_ls_cluster):
                 os.mkdir(report_ls_cluster)
+            #plot
             for experiment in experiment_keys:
                 try:
                     plt.close('all')
@@ -358,7 +384,7 @@ class PlotManager:
                             print("Could not create levenshtein distance cluster for best binder")
                 except:
                     print(f"Dendrogram with binding data failed for {experiment}")
-
+        #plot
         try:
             print("create rarefraction curves of all samples")
             self.rarefraction_curves(self.experiments_list)
@@ -1011,7 +1037,7 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
 
-        save_matrix(matrix)
+        save_matrix(matrix, matrix_save_path)
 
     def sorensen(self, annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
@@ -1294,13 +1320,6 @@ class PlotManager:
        # export_plots_commands.extend(["-f"])
         export_plots_commands.extend([json_dir])
         export_plots_commands.extend([os.path.join(save_dir, "jUsage_heatmap.png")])
-        subprocess.run(export_plots_commands)
-        export_plots_commands = self.create_parser()
-        export_plots_commands.extend(["exportPlots"])
-        export_plots_commands.extend(["vjjUsage"])
-       # export_plots_commands.extend(["-f"])
-        export_plots_commands.extend([json_dir])
-        export_plots_commands.extend([os.path.join(save_dir, "vjjUsage_heatmap.png")])
         subprocess.run(export_plots_commands)
         export_plots_commands = self.create_parser()
         export_plots_commands.extend(["exportPlots"])

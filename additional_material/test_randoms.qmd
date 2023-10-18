@@ -10,6 +10,8 @@ format:
 
 # Basic Overview
 
+## Theory
+
 <h3>Rarefraction curves</h3>
 <p>The x-axis of the plot shows the total number of sampled sequences, and the y-axis shows the total number of unique sequences.</p>
 <p>The plot can be interpreted as follows:</p>
@@ -70,13 +72,35 @@ format:
 
 ## Identity between samples
 
-::: {layout-ncol=2}
+### Identity based on Morosita Horn Index
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\jaccard.png)
+::: {layout-ncol=1}
 
-![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\morosita_horn.png)
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\morosita_horn.png)
 
-test description
+:::
+
+### Identity based on Jaccard Index
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\jaccard.png)
+
+:::
+
+{{< pagebreak >}}
+
+
+
+### Identity based on Sorensen Index
+
+{{< pagebreak >}}
+
+
+
+::: {layout-ncol=1}
+
+![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\sorensen.png)
 
 :::
 
@@ -92,12 +116,13 @@ test description
 
 ![](C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_randoms\plots\aaSeqCDR3\rarefraction_all.png)
 
-Aligment Quality
+General Sequencing Quality
 
 :::
 
-- *If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.*
-- *If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.*
+{{< pagebreak >}}
+
+
 
 ## Sample specific quality analysis
 
@@ -166,6 +191,8 @@ Aligment Quality
 
 
 # Sequence Clusters
+
+## Theory
 
 <h3>Clustering based on levenshtein distance</h3>
 <p>The Levenshtein distance is a metric that measures the similarity between two strings. It is calculated by counting the minimum number of edits (insertions, deletions, and substitutions) required to transform one string into the other.</p>
