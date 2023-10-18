@@ -142,6 +142,8 @@ class QuartoBuilder:
 
 def check_path_multiple(files:list):
     for i in files:
+        if i == None:
+            return False
         if os.path.isfile(i):
             pass
         else:
@@ -153,8 +155,11 @@ def find_file_with_substring(directory, substring):
         for file in files:
             if substring in file:
                 return os.path.join(root, file)
+    return None
 
 def find_multiple_files_with_substring(directory, substring):
+    if substring == None:
+        return None
     matching_files = []
     all_files = glob.glob(directory + "/*")
     for file in all_files:
@@ -176,22 +181,46 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     assert os.path.isdir(os.path.join(plot_path, "logo_plots")), f"The directory {os.path.join(plot_path, 'logo_plots')} does not exist"
     Builder = QuartoBuilder(experiment)
     Builder.create_headline("Basic Overview")
-    
+    Builder.create_headline("Theory", section = "##")
     Builder.md_to_text(os.path.join("settings", "rarefraction_curves_desc.md"))
     Builder.md_to_text(os.path.join("settings", "alignment_plot.md"))
     Builder.md_to_text(os.path.join("settings", "morosita_horn.md"))
     Builder.md_to_text(os.path.join("settings", "logo_plot.md"))
     #Builder.
     Builder.create_headline("Identity between samples", section = "##")
-    Builder.add_figure_horizontal(2, [r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\jaccard.png", r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\plots\aaSeqCDR3\morosita_horn.png"], "test description")
+    Builder.create_headline("Identity based on Morosita Horn Index", section = "###")
+    morosita_horn_path = find_file_with_substring(plot_path, "morosita_horn")
+    if morosita_horn_path != None:
+        Builder.add_figure(morosita_horn_path)
+    else: pass
+    Builder.create_headline("Identity based on Jaccard Index", section = "###")
+    jaccard_path = find_file_with_substring(plot_path, "jaccard")
+    if jaccard_path != None:
+        Builder.add_figure(jaccard_path)
+    else: pass
     Builder.add_page()
+    Builder.create_headline("Identity based on Sorensen Index", section = "###")
+    sorensen_path = find_file_with_substring(plot_path, "sorensen")
+    Builder.add_page()
+    if sorensen_path != None:
+        Builder.add_figure(sorensen_path)
+    else: pass
+    Builder.add_page()
+    
     Builder.create_headline("Sequencing Quality of samples", section = "##")
     figure_alignment = os.path.join(plot_path, "alignment_quality.png")
     figure_rarefraction = os.path.join(plot_path, "rarefraction_all.png")
-    text_alignment = "- *If some bars are very low, it might indicate that something went wrong during the wet lab process or the sequencing.*\n- *If there is a big proportion of the orange bar, you might have chosen the wrong method for mixcr.*"
-    Builder.add_figure_horizontal(2, [figure_alignment, figure_rarefraction], "Aligment Quality")
-    Builder.add_text(text_alignment)
-
+    
+    if check_path_multiple([figure_alignment, figure_rarefraction]) != False:
+        Builder.add_figure_horizontal(2, [figure_alignment, figure_rarefraction], "General Sequencing Quality")
+    else:
+        for i in [figure_alignment, figure_rarefraction]:
+            if i != None:
+                Builder.add_figure(i)
+            else:
+                pass
+    Builder.add_page()
+    
     Builder.create_headline("Sample specific quality analysis", section = "##")
     length_distribution_path = os.path.join(plot_path, "length_distributions")
     rarefraction_curve_path = os.path.join(plot_path, "rarefraction_curves")
@@ -213,6 +242,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
 
     ls_clusters_dir = os.path.join(plot_path, "sequence_cluster")
     Builder.create_headline("Sequence Clusters")
+    Builder.create_headline("Theory", section = "##")
     Builder.md_to_text(os.path.join("settings", "levenshtein_cluster.md"))
     Builder.md_to_text(os.path.join("settings", "dendrogram_cluster.md"))
     Builder.md_to_text(os.path.join("settings", "sequence_embedding.md"))
@@ -257,6 +287,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "dendro_binding")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'dendro_binding')} does not exist"
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "reports")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'reports')} does not exist"
         Builder.create_headline("Cluster Antigens")
+        Builder.create_headline("Theory", section = "##")
         Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
         embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
         embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
@@ -276,7 +307,8 @@ def create_quarto(experiment, plot_path, binding_data, samples):
                     Builder.add_table(report, top_ = None, cols = cols_choice, max_column = "binding")
                 except:
                     print("Something went wrong with creating the tsne binding plots in the report")
-
+            else:
+                pass
         ls_cluster_binding = os.path.join(plot_path,"clustering_antigens", "ls_binding_cluster")
         
         ls_cluster_binding_report = os.path.join(ls_cluster_binding, "reports")

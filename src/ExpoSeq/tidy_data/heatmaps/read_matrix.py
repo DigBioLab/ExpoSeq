@@ -1,6 +1,9 @@
 import pandas as pd
-
+import os
 def read_matrix(threshold, path_matrix):
+    if not os.path.isfile(path_matrix):
+        result = None
+        return result
     matrix = pd.read_excel(path_matrix, index_col = 0)
     # Create the dictionary with column names and the corresponding row indexes
     result = {}
