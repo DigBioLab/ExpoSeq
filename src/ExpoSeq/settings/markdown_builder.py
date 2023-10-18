@@ -20,6 +20,7 @@ class QuartoBuilder:
         self.content += f"title: {self.title}\n"
         self.content += f"format:"
         self.content += "\n     html:"
+        self.content += "\n         self-contained: true"
         self.content += "\n         toc: true"
         self.content += "\n         toc-location: left"
         self.content += "\n         toc-expand: 2"
