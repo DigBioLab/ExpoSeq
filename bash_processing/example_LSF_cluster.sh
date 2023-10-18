@@ -22,8 +22,8 @@
 #BSUB -N 
 ### -- Specify the output and error file. %J is the job-id -- 
 ### -- -o and -e mean append, -oo and -eo mean overwrite -- 
-#BSUB -o job_output/fastq_processing_test.out 
-#BSUB -e job_output/fastq_processing_test.err 
+#BSUB -o job_output/fastq_processing_test4.out 
+#BSUB -e job_output/fastq_processing_test4.err 
 
 
 module load python3/3.9.11
@@ -33,11 +33,11 @@ module load numpy/1.22.3-python-3.9.11-openblas-0.3.19
 module load pandas/1.0.3-python-3.8.2
 module load openblas/0.3.19
 
-script_name="/zhome/20/8/175218/exposeq_run.py" 
-mixcr_path="/zhome/20/8/175218/mixcr/mixcr.jar"
-sample_name="test2"
-fastq_forward="/zhome/20/8/175218/fastq_files/FastqFiles_test"
-#fastq_reverse="/zhome/20/8/175218/fastq_files/FastqFiles_reverse_test"
+script_name="~/ExpoSeq/bash_processing/mixcr_cl.py" 
+mixcr_path="~/mixcr/mixcr.jar"
+sample_name="test4"
+fastq_forward="~/fastq_files/test_single"
+#fastq_reverse="~/fastq_files/FastqFiles_reverse_test"
 threads=5
 java_heap_size=1000
 
