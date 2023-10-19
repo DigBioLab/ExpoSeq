@@ -3,7 +3,7 @@ import subprocess
 from ast import literal_eval
 import pickle
 import pandas as pd
-from ExpoSeq.augment_data.trimming import trimming
+from ..augment_data.trimming import trimming
 import pkg_resources
 import os
 
@@ -13,9 +13,9 @@ try:
     from tkinter import filedialog
 except:
     pass
-from ExpoSeq.augment_data.create_mixcr_commands import CreateCommand
-from ExpoSeq.augment_data.collect_fastqs import CollectFastq
-from ExpoSeq.settings.check_dirs import check_dirs
+from ..augment_data.create_mixcr_commands import CreateCommand
+from ..augment_data.collect_fastqs import CollectFastq
+from ..settings.check_dirs import check_dirs
 
 def check_mixcr(path_to_mixcr, data, settings_dir, testing = False):
     if path_to_mixcr == "":

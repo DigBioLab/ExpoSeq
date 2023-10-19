@@ -12,5 +12,5 @@ biopython==1.80
 sgt>=2.0.3
 openpyxl
 python-louvain==0.16
-pandasai
+pandasai==1.3.3
 markdown

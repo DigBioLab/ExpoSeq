@@ -53,6 +53,11 @@ class CollectFastq():
             else:
                 break
         sorted(filenames)
+        for file in filenames:
+            if file.endswith(".zip"):
+                raise Exception("Please remove the files which end with .zip. Only raw fastq files or .gz files are valid.")
+            else:
+                pass
         return filenames
 
 
@@ -92,36 +97,53 @@ class CollectFastq():
             # Pairwise comparison of filenames
             for i, file1 in enumerate(self.forward):
 
-
                 for j, file2 in enumerate(self.backward):
+
                     if file1.endswith(".gz"):
                         with gzip.open(file1, 'rb') as f:
-                            one_first = f.readline().strip().decode('utf-8')
-                            one_sub_first = one_first.rfind(":")
-                            one_first_sub = one_first[one_sub_first + 1:]
+                            try:
+                                one_first = f.readline().strip().decode('utf-8')
+                                one_sub_first = one_first.rfind(":")
+                                one_first_sub = one_first[one_sub_first + 1:]
+                            except:
+                                one_first_sub = "R"
                     else:
                         with open(file1, "r") as one:
-                            one_first = one.readline().strip()
-                            one_sub_first = one_first.rfind(":")
-                            one_first_sub = one_first[one_sub_first + 1:]
+                            try:
+                                one_first = one.readline().strip()
+                                one_sub_first = one_first.rfind(":")
+                                one_first_sub = one_first[one_sub_first + 1:]
+                            except:
+                                one_first_sub = ""
                     if file2.endswith(".gz"):
                         with gzip.open(file2, 'rb') as f:
-                            two_first = f.readline().strip().decode('utf-8')
-                            two_sub_first = two_first.rfind(":")
-                            two_first_sub = two_first[two_sub_first + 1:]
+                            try:
+                                two_first = f.readline().strip().decode('utf-8')
+                                two_sub_first = two_first.rfind(":")
+                                two_first_sub = two_first[two_sub_first + 1:]
+                            except:
+                                two_first_sub = ""
                     else:
                         with open(file2, "r") as two:
-                            two_first = two.readline().strip()
-                            two_sub_first = two_first.rfind(":")
-                            two_first_sub = two_first[two_sub_first+1:]
-
+                            try:
+                                two_first = two.readline().strip()
+                                two_sub_first = two_first.rfind(":")
+                                two_first_sub = two_first[two_sub_first+1:]
+                            except:
+                                two_first_sub = ""
                     if one_first_sub == two_first_sub:
                         best_pair = [file1, file2]
+                    else:
+                        best_pair = []
 
-                if not best_pair:
-                    print(f"Could not find match for {file1}")
-                else:
-                    self.paired.append(best_pair)
+
+                    if len(best_pair) == 0:
+                        print(f"Could not find match for {file1}")
+                        self.paired = []
+                        return
+                    else:
+                        self.paired.append(best_pair)
+                        
     def get_files(self,  cmd = False, path_to_forward = None, path_to_backward = None):
         if cmd == False: 
             print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.")
