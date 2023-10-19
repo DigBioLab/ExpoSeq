@@ -36,6 +36,7 @@ After that you will be automatically guided through the data processing and prep
  ┃ ┃ ┗ 📂aaSeqCDR3
 ```
 <br>
+
 If you would like to know more about ExpoSeq's generated data structure, please have a look [here](bash_processing/utilize_all_data.md).
 
 ### Generate automatically a report of your whole analysis (optional)
