@@ -1,6 +1,6 @@
 # Welcome to ExpoSeq
 
-ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from sequencing phage Display panning samples. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  
+ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from highthroughput sequencing of samples from display techniques such as phage display. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  
 
 ## Installation
 
@@ -114,7 +114,7 @@ First pull the folder with the scripts for the processing to your working direct
 git clone https://github.com/nilshof01/ExpoSeq
 ```
 
-I have prepared an example jobscript for working on an LSF cluster. You can have a look under
+I have prepared an example jobscript for working on a LSF cluster. You can have a look under
 ```bash
 cd ExpoSeq/bash_processing
 nano example_LSF_cluster.sh
@@ -149,7 +149,7 @@ As soon as you call it you need to press 2 to upload the directory with the file
 
 ## Talk with your data (optional)
 
-The pipeline has implemented [pandasai](https://docs.pandas-ai.com/en/latest/). This option gives you the opportunity to investigate your data and even create plots without any further knowledge in programming with python. You can call the following command to start the chat with pandasai
+I implemented [pandasai](https://docs.pandas-ai.com/en/latest/) in the pipeline to give you the option to investigate your data and even create plots without any further knowledge in programming with python. You can call the following command to start the chat with pandasai
 <br>
 
 ```python
@@ -157,6 +157,7 @@ plot.chat()
 ```
 The pipeline will prompt you to enter an API. This is necessary, since you need to connect the engine to a large language model. You can obtain the API key from OpenAI. 
 <br>
+
 **NOTE**: All conversations with large language models, such as GPT-3, are ont only highly energy demanding and thus costly but do also have a high environmental footprint. So, please do your research in advance and use this option under consideration of the environment.
 
 
