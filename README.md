@@ -29,11 +29,13 @@ plot = PlotManager()
 
 After that you will be automatically guided through the data processing and preparation. As soon as this has been finished the pipeline will automatically create an analysis of your data and will store the plots in
 <br>
-
 ```
-~/my_experiments/YOUR_EXPERIMENT_NAME/plots/aaSeqCDR3 .
+📦my_experiments
+ ┣ 📂YOUR_EXPERIMENT_NAME
+ ┃ ┣ 📂plots
+ ┃ ┃ ┗ 📂aaSeqCDR3
 ```
-
+<br>
 If you would like to know more about ExpoSeq's generated data structure, please have a look [here](bash_processing/utilize_all_data.md).
 ### Generate automatically a report of your whole analysis (optional)
 
@@ -53,9 +55,15 @@ quarto render YOUR/PATH/TO/FILE.qmd
 
 ## Individualize Plots by using the PlotManager (optional)
 
+<br>
+
 ```
-~/my_experiments/YOUR_EXPERIMENT_NAME/plots/aaSeqCDR3 .
-``` 
+📦my_experiments
+ ┣ 📂YOUR_EXPERIMENT_NAME
+ ┃ ┣ 📂plots
+ ┃ ┃ ┗ 📂aaSeqCDR3
+```
+
 <br>
 If you want to create some plots by yourself, please take a look at the [Jupyter script](ExpoSeq_handsOn.ipynb).
 <br>
@@ -138,9 +146,12 @@ To use multithreading and increase the RAM allocation have a look at the followi
 **NOTE**: If you only want to process forward reads, then you do not need to add the path to the directory with the backward reads. Further, if you would like to analyze paired end sequencing data, please make sure that forward and backward fastq files are in separate folders.
 
 After the processing has been finished you can import the folder with the processed files for the plotmanager. You can find the corresponding folder under
+<br>
 ```
-~/my_experiments/YOUR_EXPERIMENT_NAME
- ```
+📦my_experiments
+ ┣ 📂YOUR_EXPERIMENT_NAME
+```
+<br>
 As soon as you call it you need to press 2 to upload the directory with the files.
 
 ## Talk with your data (optional)
