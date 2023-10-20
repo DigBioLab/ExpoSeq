@@ -119,10 +119,10 @@ class PlotManager:
             merged_report = self.sequencing_report
         if version == "sweetviz":
             analyze_df = sweetviz.analyze([merged_report, "df"])
-            analyze_df.show_html(os.path.join(self.plot_path, f"{self.experiment}_sweetviz.html"))
+            analyze_df.show_html(f"{self.experiment}_sweetviz.html")
         if version == "ydata":
             profile = ProfileReport(merged_report, title="Profiling Report")
-            profile.to_file(os.path.join(self.plot_path, f"{self.experiment}_ydata.html"))
+            profile.to_file(f"{self.experiment}_ydata.html")
             
     def chat(self,):
         """
