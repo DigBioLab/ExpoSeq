@@ -4,10 +4,10 @@ import os
 from .loop_collect_reports import load_mixed_files, load_alignment_reports
 import pandas as pd
 from glob import glob
-from ExpoSeq.augment_data.check_reports import check_completeness
+from ..augment_data.check_reports import check_completeness
 import sys
 import pickle
-from ExpoSeq.augment_data.trimming import trimming
+from ..augment_data.trimming import trimming
 try:
     import tkinter as tk
     from tkinter import filedialog
@@ -16,7 +16,7 @@ except:
 import random
 import string
 import shutil
-from ExpoSeq.settings.available_presets import data_list
+from ..settings.available_presets import data_list
 
 def get_random_string(length):
     letters = string.ascii_letters  # this will get all the uppercase and lowercase letters

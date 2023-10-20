@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from ExpoSeq.tidy_data.barplot import cleaning_data
+from ..tidy_data.barplot import cleaning_data
 import numpy as np
 import matplotlib
 from textwrap import wrap

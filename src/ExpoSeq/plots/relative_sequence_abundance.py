@@ -1,6 +1,6 @@
-from ExpoSeq.tidy_data.tidy_rel_sequence_abun import cleaning
+from ..tidy_data.tidy_rel_sequence_abun import cleaning
 import numpy as np
-from ExpoSeq.plots.layout_finder import best_layout
+from ..plots.layout_finder import best_layout
 from textwrap import wrap
     
 

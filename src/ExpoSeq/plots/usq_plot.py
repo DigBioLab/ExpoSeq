@@ -1,4 +1,4 @@
-from ExpoSeq.tidy_data.tidy_USQ_plot_ import cleaning_data
+from ..tidy_data.tidy_USQ_plot_ import cleaning_data
 import matplotlib.pyplot as plt
 import random
 from collections import Counter

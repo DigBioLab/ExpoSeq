@@ -16,7 +16,11 @@ from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
-
+try:
+    from ydata_profiling import ProfileReport
+    import sweetviz
+except:
+    pass
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=6,
@@ -107,6 +111,19 @@ class PlotManager:
         print(f"Lowest peptide sequence length: {self.sequencing_report['aaSeqCDR3'].str.len().min()}")
         print(f"lowest read count: {self.sequencing_report['readCount'].min()}")
         
+    
+    def dashboard(self, version = "ydata"):
+        if self.binding_data is not None:
+            merged_report = self.merge_bind_seq_report()
+        else:
+            merged_report = self.sequencing_report
+        if version == "sweetviz":
+            analyze_df = sweetviz.analyze([merged_report, "df"])
+            analyze_df.show_html(os.path.join(self.plot_path, f"{self.experiment}_sweetviz.html"))
+        if version == "ydata":
+            profile = ProfileReport(merged_report, title="Profiling Report")
+            profile.to_file(os.path.join(self.plot_path, f"{self.experiment}_ydata.html"))
+            
     def chat(self,):
         """
         :return: starts a conversation with your data. Be creative! You can ask any question and even create plots :)
@@ -126,7 +143,8 @@ class PlotManager:
                                                 self.Report.origin_seq_report,
                                                 self.global_params)
             
-        self.Automation.chat_()
+        response = self.Automation.chat_()
+        return response
 
     def save_in_plots(self, enter_filename):
         plt.savefig(fname = os.path.join(self.plot_path, enter_filename + f".png"), dpi = 300,  format="png",  bbox_inches='tight')
@@ -394,6 +412,14 @@ class PlotManager:
             print("creating rarefraction plot of all samples failed")
 
         print(f"The pipeline has created some plots in: {self.plot_path}")
+        
+        print("Create Dashboard...")
+        try:
+            self.dashboard()
+        except:
+            print("Creation of dashboard failed.")
+            
+        print("You can create and automatic report of the generated analysis by installing Quarto(https://quarto.org/docs/get-started/) and type: plot.create_report()")
 
     def change_preferred_antigen(self, antigen=None):
         if self.binding_data is not None:

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import logomaker
-from ExpoSeq.tidy_data.tidy_seqlogoPlot import cleaning
+from ..tidy_data.tidy_seqlogoPlot import cleaning
 import numpy as np
-from ExpoSeq.plots.layout_finder import best_layout
+from ..plots.layout_finder import best_layout
 from textwrap import wrap
 
 
