@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ExpoSeq.plots.layout_finder import best_layout
+from ..plots.layout_finder import best_layout
 from textwrap import wrap
 
 def length_distribution_single(fig,ax, sequencing_report, sample, font_settings, region_string):

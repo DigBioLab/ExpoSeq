@@ -59,7 +59,7 @@ class Settings:
                     shutil.move(source_path, destination_path)
             
     def create_global_vars(self):
-        global_params = {'mixcr_path': '', 'last_experiment': '', 'api_gpt3': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
+        global_params = {'mixcr_path': '', 'last_experiment': '', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
         with open(self.common_vars, "w") as f:
             f.write(str(global_params))
     

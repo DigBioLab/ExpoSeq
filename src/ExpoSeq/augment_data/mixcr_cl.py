@@ -1,11 +1,11 @@
-from ExpoSeq.augment_data.create_mixcr_commands import CreateCommand
-from ExpoSeq.augment_data.collect_fastqs import CollectFastq
+from ..augment_data.create_mixcr_commands import CreateCommand
+from ..augment_data.collect_fastqs import CollectFastq
 import subprocess
 import os
 import pandas as pd
 import pickle
 import argparse
-from ExpoSeq.settings.check_dirs import check_dirs
+from ..settings.check_dirs import check_dirs
         
 def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None):
     print(path_to_mixcr)

@@ -3,7 +3,7 @@ from Bio.Seq import Seq
 import os
 import pandas as pd
 import numpy as np
-from ExpoSeq.augment_data.binding_data import collect_binding_data
+from ..augment_data.binding_data import collect_binding_data
 from Bio.Seq import Seq
 
 

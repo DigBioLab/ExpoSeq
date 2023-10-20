@@ -111,11 +111,15 @@ class AumotativeReport:
                 print(response)
                 print(cb)
             if conversation == False:
+                response = ""
                 break
             else:
                 user_question = input("What else can I do for you? Type 'bye' or 'exit' to leave.\n")
                 if user_question in ["bye", "exit"]:
+                    
                     break
                 else:
                     continue
+            
+        return response 
                 

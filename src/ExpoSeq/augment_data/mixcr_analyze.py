@@ -5,7 +5,7 @@ import subprocess
 from ast import literal_eval
 import pickle
 import pandas as pd
-from ExpoSeq.augment_data.trimming import trimming
+from ..augment_data.trimming import trimming
 import pkg_resources
 try:
     import tkinter as tk

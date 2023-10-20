@@ -1,4 +1,4 @@
-from ExpoSeq.tidy_data.tidy_stacked_aa_distr import cleaning
+from ..tidy_data.tidy_stacked_aa_distr import cleaning
 import matplotlib.pyplot as plt
 from textwrap import wrap
 

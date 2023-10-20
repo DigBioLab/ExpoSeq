@@ -1,7 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
-from ExpoSeq.tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
+from ..tidy_data.heatmaps import tidy_jaccard, tidy_sorensen, tidy_morosita_horn, tidy_heatmap_share
 
 import numpy as np
 from textwrap import wrap

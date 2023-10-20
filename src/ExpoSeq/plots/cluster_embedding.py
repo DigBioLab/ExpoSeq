@@ -1,5 +1,5 @@
 import pandas as pd
-from ExpoSeq.tidy_data.tidy_cluster_embedding import tidy_embed
+from ..tidy_data.tidy_cluster_embedding import tidy_embed
 from textwrap import wrap
 def show_difference(sequencing_report, list_experiments,strands, batch_size, pca_components, perplexity, iterations_tsne,region_string, ax, legend_settings, font_settings):
     tsne_results, aminoacids, experiments_batch = tidy_embed(sequencing_report,
