@@ -18,4 +18,4 @@ try_outs
 dist
 build
 .venv
-
+requirements.txt
