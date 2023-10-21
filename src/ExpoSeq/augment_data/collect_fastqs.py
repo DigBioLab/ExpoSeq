@@ -131,22 +131,23 @@ class CollectFastq():
                                 two_first_sub = two_first[two_sub_first+1:]
                             except:
                                 two_first_sub = ""
+                                
+                                
                     if one_first_sub == two_first_sub:
                         best_pair = [file1, file2]
-                    else:
-                        best_pair = []
 
 
-                    if len(best_pair) == 0:
-                        print(f"Could not find match for {file1}")
-                        self.paired = []
-                        return
-                    else:
-                        self.paired.append(best_pair)
-                        
+                
+                if not best_pair:
+                    print(f"Could not find match for {file1}")
+                    self.paired = []
+                    return
+                else:
+                    self.paired.append(best_pair)
+                    
     def get_files(self,  cmd = False, path_to_forward = None, path_to_backward = None):
         if cmd == False: 
-            print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.")
+            print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.\nFInally, the filename must not have any backspaces.")
             self.forward = self.get_filenames()
             if self.paired_end_sequencing:
                 print("Now choose the directory where you store the fastq files with the backward reads.")

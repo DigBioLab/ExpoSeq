@@ -39,7 +39,6 @@ src/ExpoSeq/plots/length_distribution.py
 src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
 src/ExpoSeq/plots/plt_heatmap.py
-src/ExpoSeq/plots/protvec.py
 src/ExpoSeq/plots/relative_sequence_abundance.py
 src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py

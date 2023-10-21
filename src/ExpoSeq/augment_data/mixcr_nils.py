@@ -51,7 +51,6 @@ def check_mixcr(path_to_mixcr, data, settings_dir, testing = False):
     return path_to_mixcr
 
 def process_mixcr(experiment, method, testing, paired_end_sequencing):
-    pkg_path = pkg_resources.resource_filename("ExpoSeq", "")
     module_dir = os.path.abspath("")
     check_dirs(module_dir, experiment)
     if not testing:
@@ -89,12 +88,8 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
                     print("Please enter a valid value")
         else:
             pass
-
     else:
-        files = glob(os.path.join(pkg_path, "test_data", "test_files", "*.fastq"))
-        print(files)
-        files = [[i] for i in files]
-        experiment = "test_directory"
+        return
     settings_dir = os.path.join(module_dir,
                                 "settings",
                                 "global_vars.txt")
@@ -113,7 +108,15 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             break
         except:
             print("Please enter the amount as integer")
-
+    while True:
+        mixcr_chain = input("\n\nPress enter if you want to choose the default value with heavy chain (IGH) only. Please, type\nIG: For all immunoglobulin chains\n   IGL: For Immunoglobulin lambda locus\n    IGK: For Immunoglobulin kappa locus \nTCR: For all T-cell receptor chains\n     TRA: Only TCR alpha\n   TRB: Only TCR beta.\n Note: If you have not sequenced the coresponding region the pipeline will fail to create the sequencing report.")
+        if mixcr_chain == "" or mixcr_chain in ["IG", "IGH", "IGL", "IGK", "TCR", "TRA", "TRB", ]:
+            if mixcr_chain == "":
+                mixcr_chain = "IGH"
+            break
+        else:
+            print("Please enter a correct value.")
+    
     for filename in files:
         for file in os.listdir(os.path.join(module_dir, "temp")):
             os.remove(os.path.join(module_dir,
@@ -122,7 +125,7 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
         subprocess.run(Commands.prepare_align(method))
         subprocess.run(Commands.prepare_assembly())
-        subprocess.run(Commands.prepare_clones())
+        subprocess.run(Commands.prepare_clones(mixcr_chain = mixcr_chain))
         basename = Commands.basename
         try:
 

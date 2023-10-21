@@ -413,11 +413,7 @@ class PlotManager:
 
         print(f"The pipeline has created some plots in: {self.plot_path}")
         
-        print("Create Dashboard...")
-        try:
-            self.dashboard()
-        except:
-            print("Creation of dashboard failed.")
+        print("You can create a dasboard of your data with plot.dashboard() and open the html file which appears in your working directory.")
             
         print("You can create and automatic report of the generated analysis by installing Quarto(https://quarto.org/docs/get-started/) and type: plot.create_report()")
 
