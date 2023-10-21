@@ -106,7 +106,6 @@ class CreateCommand:
     def prepare_align(self, method):
         align_commands = self.create_parser()
         align_commands.extend(["align"])
-        print(method)
         align_commands.extend(["--preset", method])
         align_commands.extend(self.files)
         align_commands.extend([self.result])
@@ -125,21 +124,17 @@ class CreateCommand:
         assembly_commands.extend([self.result])
         assembly_commands.extend([self.clones])
         assembly_commands.extend(["--force-overwrite"])
-        if self.threads != None:
-            assembly_commands.extend(["--threads", self.threads])
         assembly_commands.extend(["--report", self.assembly_path])
 
         return assembly_commands
 
 
-    def prepare_clones(self):
+    def prepare_clones(self, mixcr_chain):
         clones_commands = self.create_parser()
         clones_commands.extend(["exportClones"])
-        clones_commands.extend(["-c IGH"])
         clones_commands.extend([self.clones])
         clones_commands.extend(["--force-overwrite"])
-        if self.threads != None:
-            clones_commands.extend(["--threads", self.threads])
+        clones_commands.extend([f"--chains {mixcr_chain}"])
         clones_commands.extend([self.table_tsv])
         return clones_commands
 

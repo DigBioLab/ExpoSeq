@@ -19,3 +19,6 @@ dist
 build
 .venv
 requirements.txt
+AutoViz_Plots
+*.tsv
+*.html
