@@ -258,7 +258,14 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     if os.path.isfile(os.path.join("settings", "signature.md")):
         Builder.md_to_text(os.path.join("settings", "signature.md"))
     report_seq_cluster = os.path.join(ls_clusters_dir, "reports")
+    
     Builder.create_headline("Levenshtein distance based", section="##")
+    Builder.create_headline("Relation of all samples", section = "###")
+    _isfile = find_file_with_substring(plot_path, "ls_connection_all")
+    if _isfile != None:
+        Builder.add_figure(_isfile)
+    else:
+        pass
     for sample in samples:
         
         plot_files = find_multiple_files_with_substring(ls_clusters_dir, sample)
