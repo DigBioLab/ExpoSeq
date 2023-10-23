@@ -1,5 +1,5 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering
+    logo_plot, plt_heatmap, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
@@ -291,6 +291,12 @@ class PlotManager:
 
         print("Cluster NGS sequences in dendrograms and network plots using levenshtein distance of 2 for network plots and ls-distance of 1 for dendrogram. Batch size is set to 1000.")        
         #plot
+        try:
+            print(f"Create clustering for all samples for top 50% of clone fraction and for maximum of 100 reads")
+            self.connect_samples()
+            self.save_in_plots(os.path.join(self.plot_path, "ls_connection_all"))
+        except:
+            print("Creation of cluster for all samples failed.")
         for single_experiment in self.experiments_list:
             try:
                 if not os.path.isfile(os.path.join(self.plot_path, "sequence_cluster", single_experiment + "ls_dendro.png")):
@@ -1188,6 +1194,18 @@ class PlotManager:
       #  self.ControlFigure.tighten()
         return fig2
 
+    def connect_samples(self, summed_clonefraction = 0.5, max_num_reads = 100 ):
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        sample_cluster.ClusterExperiment(self.sequencing_report,
+                                         self.ControlFigure.ax,
+                                         self.region_of_interest,
+                                         summed_clonefraction=summed_clonefraction,
+                                         max_num_reads=max_num_reads)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
 
     def validate_mixcr_path(self):
         path_to_mixcr = self.global_params["mixcr_path"]
@@ -1201,6 +1219,7 @@ class PlotManager:
         commands.extend(["java", f"-Xms{self.java_heap_size}M", "-jar"])  # enable change of para
         commands.extend([path_to_mixcr])
         return commands
+    
 
     def export_mixcr_quality(self,save_dir = None, specific_chain=None, metric=None, plot_type=None):
         if save_dir == None:
