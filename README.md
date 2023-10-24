@@ -187,7 +187,7 @@ The pipeline will prompt you to enter an API. This is necessary, since you need 
 
 ## Collaboration and Contact
 
-Please feel encouraged to discuss on our discussions page on the repository. Further you can contact [Nils Hofmann](nilhof01@gmail.com) if you have any questions or requests for future implementations. 
+Please feel encouraged to discuss on our discussions page on the repository. Further you can contact Nils Hofmann (nilhof01@gmail.com) if you have any questions or requests for future implementations. 
 
 
 
