@@ -40,6 +40,7 @@ src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
 src/ExpoSeq/plots/plt_heatmap.py
 src/ExpoSeq/plots/relative_sequence_abundance.py
+src/ExpoSeq/plots/sample_cluster.py
 src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
 src/ExpoSeq/plots/usq_plot.py
@@ -85,6 +86,7 @@ src/ExpoSeq/tidy_data/tidy_cluster_embedding.py
 src/ExpoSeq/tidy_data/tidy_dendro.py
 src/ExpoSeq/tidy_data/tidy_hist_lvst_dist.py
 src/ExpoSeq/tidy_data/tidy_rel_sequence_abun.py
+src/ExpoSeq/tidy_data/tidy_sample_cluster.py
 src/ExpoSeq/tidy_data/tidy_seqlogoPlot.py
 src/ExpoSeq/tidy_data/tidy_stacked_aa_distr.py
 src/ExpoSeq/tidy_data/heatmaps/__init__.py
