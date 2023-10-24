@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ExpoSeq
-Version: 4.2.1
+Version: 4.2.2
 Summary: A pacakge which provides various ways to analyze NGS data from phage display campaigns
 Home-page: https://github.com/nilshof01/ExpoSeq
 Author: Nils Hofmann
@@ -12,7 +12,7 @@ License-File: LICENSE
 
 # Welcome to ExpoSeq
 
-ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from highthroughput sequencing of samples from display techniques such as phage display. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline focuses on analysing the identity between samples but also applies various clustering techniques to analyse the relation between the sequences. Besides, you can add binding data to relate the clusters to affinity.  
+ExpoSeq is a powerful pipeline for processing and analyzing FASTQ files from highthroughput sequencing of samples from display techniques such as phage display. The pipeline was mainly designed for analyzing phage display campaigns, but RNA-Seq data for analysing T-cell receptor data can also be given as input. It utilizes [MiXCR](https://docs.milaboratories.com/mixcr/getting-started/installation/) to align and assemble the data which you can subsequently analyze in multiple plots. The pipeline offers a huge flexibility for various sequencing strategies and targets which are defined by the presets which are offered by Mixcr and are implemented in the pipeline. You can take a look at the available presets [here](src/ExpoSeq/settings/available_presets.py). The pipeline focuses on analysing the quality of your sequencing and the sequence relations between your samples. Further, you can upload binding data to the pipeline to analyse these with various clustering techniques.
 
 ## Installation
 

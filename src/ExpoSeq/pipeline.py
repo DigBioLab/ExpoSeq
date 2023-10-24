@@ -101,7 +101,7 @@ class PlotManager:
         print("Render qmd file")
         create_quarto(self.experiment, self.plot_path, self.binding_data, self.experiments_list)
         subprocess.run(["quarto", "render", os.path.join(self.plot_path, self.experiment + ".qmd")])
-        print(f"You can find the html file to the report at: {self.plot_path}")
+        print(f"You can find the html file to the report at: {self.plot_path}/{self.experiment}.qmd")
 
     def change_java_heap_size(self, new_size):
         self.java_heap_size = new_size
@@ -258,7 +258,7 @@ class PlotManager:
             self.export_mixcr_quality()
             self.mixcr_explain_diversity()
             self.mixcr_vdj_usage()
-            self.mixcr_overlap()
+          #  self.mixcr_overlap()
         except:
             print(f".clns files could not be found. Most certainly, you have uploaded the sequencing report.")
         # plot
@@ -1195,6 +1195,11 @@ class PlotManager:
         return fig2
 
     def connect_samples(self, summed_clonefraction = 0.5, max_num_reads = 100 ):
+        """
+        :param summed_clonefraction: You will take the top 50% of clones per sample per default. You can change that to take more or less crones
+        :param max_num_reads: You will limit the maximum number of clones to 100 per default. If you want to have more your can increase that
+        :result: A network plot which shows the relation between the samples for the chosen clones based on levenshtein distance. The thickness of the lines indicates the inverse levenshtein distance.
+        """
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()

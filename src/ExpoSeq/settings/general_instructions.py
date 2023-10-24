@@ -84,8 +84,6 @@ Plot Commands
 - plot.dendro_bind(): 
     Shows a dendrogram based on Levenshtein distance and a bar plot with binding data.
 
-- plot.MSA_design(): 
-    Creates a multiple sequence alignment and offers an interface for sequence design.
 
 -----------------------
 Non-Plot Commands
