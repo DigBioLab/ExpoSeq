@@ -8,18 +8,18 @@ import matplotlib.pyplot as plt
 
 
 class ClusterExperiment():
-    def __init__(self, sequencing_report, ax, region_string, summed_clonefraction, max_num_reads, edge_color = "peachpuff") -> None:
+    def __init__(self, sequencing_report, ax, region_string, summed_clonefraction, max_num_reads, edge_color = "peachpuff", max_weight_lines = 100):
         report = sequencing_report
         self.region_string = region_string
         report = cleaning(report, summed_clonefraction=summed_clonefraction, max_num_reads=max_num_reads)
         self.G = nx.Graph()
-        distances = self.nodes_and_edges(report)
+        distances = self.nodes_and_edges(report, max_weight_lines)
         nodesize = self.customizations(report)
         sample_colors, node_colors = self.create_colors(report)
         self.draw_plot(nodesize, node_colors, ax, edge_color)
         self.legend(report, sample_colors)
         
-    def nodes_and_edges(self, report):
+    def nodes_and_edges(self, report, max_weight_lines = 100):
         distances = []
         for sample, group in report.groupby('Experiment'):
             sequences = group[self.region_string].tolist()
@@ -37,9 +37,11 @@ class ClusterExperiment():
                     distances.append((sample, seq1, seq2, distance))
                     # Add nodes for seq2 and connect them with an edge weighted by the Levenshtein distance
                     if distance != 0:
-                        self.G.add_edge(seq1, seq2, weight = 1/distance)
+                        if distance > 5:
+                            self.G.add_edge(seq1, seq2, weight = int(max_weight_lines * 1/(distance**2)))
+                        
                     else:
-                        self.G.add_edge(seq1, seq2, weight= 30)
+                        self.G.add_edge(seq1, seq2, weight= max_weight_lines)
         return distances
     
     def customizations(self, report):
