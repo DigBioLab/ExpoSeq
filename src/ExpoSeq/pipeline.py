@@ -1194,10 +1194,11 @@ class PlotManager:
       #  self.ControlFigure.tighten()
         return fig2
 
-    def connect_samples(self, summed_clonefraction = 0.5, max_num_reads = 100 ):
+    def connect_samples(self, summed_clonefraction = 0.5, max_num_reads = 100,color_lines = "peachpuff", max_weight_lines = 100 ):
         """
         :param summed_clonefraction: You will take the top 50% of clones per sample per default. You can change that to take more or less crones
         :param max_num_reads: You will limit the maximum number of clones to 100 per default. If you want to have more your can increase that
+        :param max_weight_lines: If you have a levenshtein distance of 0 between two sequences this value will be the thickness of the line. The thickness of other distances is indicated through: max_weight_lines * (1 / ls_distance ** 2)
         :result: A network plot which shows the relation between the samples for the chosen clones based on levenshtein distance. The thickness of the lines indicates the inverse levenshtein distance.
         """
         self.ControlFigure.check_fig()
@@ -1207,7 +1208,9 @@ class PlotManager:
                                          self.ControlFigure.ax,
                                          self.region_of_interest,
                                          summed_clonefraction=summed_clonefraction,
-                                         max_num_reads=max_num_reads)
+                                         max_num_reads=max_num_reads,
+                                         edge_color = color_lines,
+                                         max_weight_lines=max_weight_lines)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
