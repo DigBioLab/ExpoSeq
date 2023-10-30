@@ -1,6 +1,5 @@
 ### Clustering based on levenshtein distance 
 
-
 The Levenshtein distance is a metric that measures the similarity between two strings. It is calculated by counting the minimum number of edits (insertions, deletions, and substitutions) required to transform one string into the other.
 
 For example, the Levenshtein distance between the strings "CAT" and "DOG" is 2, because we need to insert the letter "D" and substitute the letter "C" with the letter "G" to transform "CAT" into "DOG".
