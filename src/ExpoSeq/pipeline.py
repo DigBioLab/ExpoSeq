@@ -1,5 +1,6 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster
+    logo_plot, plt_heatmap, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster, \
+        protbert_embedding, bert_network_embedding
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
@@ -965,23 +966,60 @@ class PlotManager:
                                            self.ControlFigure.plot_type)
 
         self.save_cluster_report(tsne_results, path = save_report_path)
+        
+    def embedding_network(self, samples = None,model = "protbert", batch_size = 200, cmap = "Blues", nodesize = 300, threshold_distance = 5):
+        """
+        :param samples: type is list. The samples you would like to compare towards their sequences
+        :param model: The model you would like to choose for the embedding. You can choose protbert or sgt
+        :param batch_size: Default is 200. The size of the sample which is chosen. The higher it is, the more computational intense.
+        :param nodesize: Default is 300. This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size.
+        :threshold_distance: Default is 5. This value is multiplied with the summed batch_size of the samples. This defines the cluster size. The higher the values, the more complex the clusters.
+        """
+        if samples == None:
+            samples = [self.experiments_list[0]]
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        incorrect_samples = [x for x in samples if x not in self.experiments_list]
+        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
+        assert type(nodesize) == int, "Nodesize has to be an integer"
+        assert nodesize > 0 & nodesize < 1000, "Please enter a value between 0 and 1000"
+        assert type(threshold_distance) == int, "Please enter an integer for the threashold distance"
+        if model == "protbert":
+            bert_network_embedding.Network_Embedding(self.ax,
+                                                     self.sequencing_report,
+                                                     samples,
+                                                     batch_size, 
+                                                     self.font_settings,
+                                                     cmap,
+                                                     nodesize,
+                                                     threshold_distance)
+        
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        
+        
 
     def embedding_tsne(self,
                        samples=None,
                        strands=True,
+                       model = "sgt",
                        pca_components=80,
                        perplexity=30,
                        iterations_tsne=2500,
                        batch_size=1000):
         """
-        :param samples: the samples you would like to compare towards their sequences
+        :param samples: type is list. The samples you would like to compare towards their sequences
         :param strands: Default is True. It means that you will plot a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
+        :param model: The model you would like to choose for the embedding. You can choose protbert or sgt
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
+        assert model in ["sgt", "protbert"], "Please enter an available model name"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
@@ -993,18 +1031,35 @@ class PlotManager:
         assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
         assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
         self.ControlFigure.clear_fig()
-        cluster_embedding.show_difference(self.sequencing_report,
-                                          samples,
-                                          strands,
-                                          batch_size,
-                                          pca_components,
-                                          perplexity,
-                                          iterations_tsne,
-                                          self.region_of_interest,
-                                          self.ControlFigure.ax,
-                                          self.legend_settings,
-                                          self.font_settings)
+        if model == "protbert":
+            protbert_embedding.Plot_Embedding(self.ControlFigure.ax, 
+                                              self.sequencing_report,
+                                              samples,
+                                              strands,
+                                              add_clone_size = 300,
+                                              batch_size = batch_size,
+                                              pca_components = pca_components,
+                                              perplexity = perplexity,
+                                              iterations_tsne = iterations_tsne,
+                                                font_settings=self.font_settings,
+                                              legend_settings = self.legend_settings
+                                              )
+        elif model == "sgt":
+            cluster_embedding.show_difference(self.sequencing_report,
+                                            samples,
+                                            strands,
+                                            batch_size,
+                                            pca_components,
+                                            perplexity,
+                                            iterations_tsne,
+                                            self.region_of_interest,
+                                            self.ControlFigure.ax,
+                                            self.legend_settings,
+                                            self.font_settings)
+        else: 
+            return
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
