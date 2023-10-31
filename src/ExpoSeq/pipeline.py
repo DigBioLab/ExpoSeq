@@ -185,6 +185,9 @@ class PlotManager:
                 best_binding[i] = [best_key]
         return best_binding
 
+    def model_protein():
+        print("Visit one of these pages and explore modelling proteins for free!"
+              f"ESM FOLD: https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/ESMFold.ipynb#scrollTo=CcyNpAvhTX6q")
 
     def full_analysis(self):
         """
@@ -786,7 +789,6 @@ class PlotManager:
 
     def rel_seq_abundance(self, samples=None, max_levenshtein_distance=0, length_filter=0, batch=3000):
         """
-
         :param samples: For a qualitative analysis choose samples from the same panning experiment. Input is a list
         :param max_levenshtein_distance: Default is 0. You can change it to see increased fraction with increased variability of certain sequences
         :param length_filter: Default is 0. You should change it if you change the levenshtein distance. Otherwise your results will be biased.
