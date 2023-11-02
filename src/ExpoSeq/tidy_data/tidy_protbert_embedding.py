@@ -9,22 +9,24 @@ import numpy as np
 
 class TransformerBased:
 
-    def __init__(self, choice="T5"):
+    def __init__(self, choice='Rostlab/prot_t5_xl_half_uniref50-enc'):
         
         self.choice = choice
         self.prep_model()
 
     def prep_model(self):
-        if self.choice == "T5":
+        model_types = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        assert self.choice in model_types, f"Your choice has to be a model from https://huggingface.co/Rostlab and has to be one of {model_types}"
+        if "t5" in self.choice.lower():
             from transformers import T5Tokenizer, T5EncoderModel
-            self.tokenizer = T5Tokenizer.from_pretrained('Rostlab/prot_t5_xl_half_uniref50-enc',
+            self.tokenizer = T5Tokenizer.from_pretrained(self.choice,
                                                     do_lower_case=False)
 
-            self.model = T5EncoderModel.from_pretrained("Rostlab/prot_t5_xl_half_uniref50-enc")
+            self.model = T5EncoderModel.from_pretrained(self.choice)
         else:
             from transformers import BertModel, BertTokenizer
-            self.tokenizer = BertTokenizer.from_pretrained("Rostlab/prot_bert", do_lower_case=False )
-            self.model = BertModel.from_pretrained("Rostlab/prot_bert")
+            self.tokenizer = BertTokenizer.from_pretrained(self.choice, do_lower_case=False )
+            self.model = BertModel.from_pretrained(self.choice)
         
 
     
