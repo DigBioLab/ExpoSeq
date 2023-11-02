@@ -1,6 +1,5 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster, \
-        protbert_embedding, bert_network_embedding
+    logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
@@ -17,11 +16,8 @@ from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
-try:
-    from ydata_profiling import ProfileReport
-    import sweetviz
-except:
-    pass
+from ydata_profiling import ProfileReport
+import sweetviz
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=6,
@@ -104,9 +100,11 @@ class PlotManager:
         subprocess.run(["quarto", "render", os.path.join(self.plot_path, self.experiment + ".qmd")])
         print(f"You can find the html file to the report at: {self.plot_path}/{self.experiment}.qmd")
 
+
+
     def change_java_heap_size(self, new_size):
         self.java_heap_size = new_size
-        
+    
     def export_sequencing_report(self):
         self.sequencing_report.to_csv(os.path.join(self.experiment_path, "sequencing_report_processed.csv"))
         print(f"Lowest peptide sequence length: {self.sequencing_report['aaSeqCDR3'].str.len().min()}")
@@ -273,7 +271,17 @@ class PlotManager:
             print("Alignment reports could not be found")
             
 
-        #plot
+        try:
+            print("create rarefraction curves of all samples")
+            self.rarefraction_curves(self.experiments_list)
+            self.save_in_plots("rarefraction_all")
+            
+        except:
+            print("creating rarefraction plot of all samples failed")
+            
+        if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
+            os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
+
         for i in self.experiments_list:
             if not os.path.isfile(os.path.join("rarefraction_curves", "rarefraction_curves_"+i + ".png")):
                 try:
@@ -969,14 +977,16 @@ class PlotManager:
 
         self.save_cluster_report(tsne_results, path = save_report_path)
         
-    def embedding_network(self, samples = None,model = "protbert", batch_size = 200, cmap = "Blues", nodesize = 300, threshold_distance = 5):
+    def embedding_network(self, samples = None,model = 'Rostlab/prot_t5_xl_half_uniref50-enc', batch_size = 200, cmap = "Blues", nodesize = 300, threshold_distance = 5):
         """
         :param samples: type is list. The samples you would like to compare towards their sequences
-        :param model: The model you would like to choose for the embedding. You can choose protbert or sgt
+        :param model: The model you would like to choose for the embedding. You can choose "Rostlab/ProstT5_fp16",\n"Rostlab/prot_t5_xl_uniref50",\n"Rostlab/prot_t5_base_mt_uniref50",\n"Rostlab/prot_bert_bfd_membrane",\n"Rostlab/prot_t5_xxl_uniref50", \n"Rostlab/ProstT5", \n"Rostlab/prot_t5_xl_half_uniref50-enc", \n"Rostlab/prot_bert_bfd_ss3", \n"Rostlab/prot_bert_bfd_localization", \n"Rostlab/prot_electra_generator_bfd", \n"Rostlab/prot_t5_xl_bfd", \n"Rostlab/prot_bert", \n"Rostlab/prot_xlnet", \n"Rostlab/prot_bert_bfd", \n"Rostlab/prot_t5_xxl_bfd"
         :param batch_size: Default is 200. The size of the sample which is chosen. The higher it is, the more computational intense.
         :param nodesize: Default is 300. This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size.
         :threshold_distance: Default is 5. This value is multiplied with the summed batch_size of the samples. This defines the cluster size. The higher the values, the more complex the clusters.
         """
+        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        assert model in model_types_adv, f"Please enter a valid model name which are\n{model_types_adv}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
@@ -987,10 +997,11 @@ class PlotManager:
         assert type(nodesize) == int, "Nodesize has to be an integer"
         assert nodesize > 0 & nodesize < 1000, "Please enter a value between 0 and 1000"
         assert type(threshold_distance) == int, "Please enter an integer for the threashold distance"
-        if model == "protbert":
-            bert_network_embedding.Network_Embedding(self.ax,
+        if model in model_types_adv:
+            protein_network_embedding.Network_Embedding(self.ControlFigure.ax,
                                                      self.sequencing_report,
                                                      samples,
+                                                     model,
                                                      batch_size, 
                                                      self.font_settings,
                                                      cmap,
@@ -1006,7 +1017,7 @@ class PlotManager:
     def embedding_tsne(self,
                        samples=None,
                        strands=True,
-                       model = "sgt",
+                       model = 'Rostlab/prot_t5_xl_half_uniref50-enc',
                        pca_components=80,
                        perplexity=30,
                        iterations_tsne=2500,
@@ -1021,7 +1032,9 @@ class PlotManager:
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
-        assert model in ["sgt", "protbert"], "Please enter an available model name"
+        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        models_all = model_types_adv + ["sgt"]
+        assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
@@ -1035,9 +1048,10 @@ class PlotManager:
         assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
         assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
         self.ControlFigure.clear_fig()
-        if model == "protbert":
-            protbert_embedding.Plot_Embedding(self.ControlFigure.ax, 
+        if model in model_types_adv:
+            protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
                                               self.sequencing_report,
+                                              model,
                                               samples,
                                               strands,
                                               add_clone_size = 300,
