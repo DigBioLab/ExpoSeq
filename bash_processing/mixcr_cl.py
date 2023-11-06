@@ -303,16 +303,10 @@ class CreateCommand:
             align_commands.extend(["--threads", self.threads])
         align_commands.extend(["--report", self.alignment_path])
         if len(add_args) >= 1:
-            for arg, value in add_args.items():
-                if arg != "":
-                    if arg[0] == "-":
-                        if arg[1] == "-":
-                            arg = arg[2:]
-                        else:
-                            arg = arg[1:]
-                    align_commands.extend([f"--{arg}", value])
-                else:
-                    pass
+  
+            align_commands.extend([add_args])
+        else:
+            pass
         return align_commands
 
     def prepare_assembly(self):
@@ -329,18 +323,19 @@ class CreateCommand:
         return assembly_commands
 
 
-    def prepare_clones(self):
+    def prepare_clones(self, mixcr_chain):
         clones_commands = self.create_parser()
         clones_commands.extend(["exportClones"])
-        clones_commands.extend(["-c IGH"])
         clones_commands.extend([self.clones])
         clones_commands.extend(["--force-overwrite"])
+        clones_commands.extend([f"--chains {mixcr_chain}"])
         clones_commands.extend([self.table_tsv])
         return clones_commands
 
 
+
  
-def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None, add_arguments = {}):
+def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None, add_arguments = "", mixcr_chain = "IG"):
     print(path_to_backward)
     print(path_to_forward)
     print(experiment_name)
@@ -385,38 +380,24 @@ def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = 
 
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment_name, filename, java_heap_size, threads = threads)
 
-        subprocess.run(Commands.prepare_align(method))
+        subprocess.run(Commands.prepare_align(method, add_arguments))
         skip_sample = False
         try:
-            align_quality, percent_quality = Commands.read_aligned_reads()
-            if align_quality < 1000 and align_quality >10:
-                print(f"Only {align_quality} reads could be aligned ({percent_quality}).")
-            if align_quality < 10:
-                print("Too less reads were aligned. Please choose the correct mixcr method.")
-                skip_sample = True
-            if skip_sample == False:
-                subprocess.run(Commands.prepare_assembly())
-                assembly_qual, realtive_assembly_quality = Commands.read_clones()
-                if assembly_qual < 1000 and realtive_assembly_quality > 10:
-                    print(f"Only {assembly_qual} reads could be assembled ({realtive_assembly_quality}).")
-                if assembly_qual < 10:
-                    print("Too less reads were assembled. Please choose the correct ")
-                    skip_sample = True
-                if skip_sample == False:
-                    subprocess.run(Commands.prepare_clones())
-                    basename = Commands.basename
-                    columns_not_wanted = ['refPoints','allVHitsWithScore', 'allDHitsWithScore',
-                                            'allJHitsWithScore', 'allCHitsWithScore', 'allVAlignments',
-                                            'allDAlignments', 'allJAlignments', 'allCAlignments']
-                    clones_sample = pd.read_table(Commands.table_tsv)
-                    clones_sample.drop(columns = columns_not_wanted, inplace = True)
-                    clones_sample["Experiment"] = basename
-                    sequencing_report = pd.concat([sequencing_report, clones_sample])
+            subprocess.run(Commands.prepare_assembly())
+            subprocess.run(Commands.prepare_clones(mixcr_chain = mixcr_chain))
+            basename = Commands.basename
+            columns_not_wanted = ['refPoints','allVHitsWithScore', 'allDHitsWithScore',
+                                    'allJHitsWithScore', 'allCHitsWithScore', 'allVAlignments',
+                                    'allDAlignments', 'allJAlignments', 'allCAlignments']
+            clones_sample = pd.read_table(Commands.table_tsv)
+            clones_sample.drop(columns = columns_not_wanted, inplace = True)
+            clones_sample["Experiment"] = basename
+            sequencing_report = pd.concat([sequencing_report, clones_sample])
 
-                    for file in os.listdir(os.path.join(module_dir, "temp")):
-                        os.remove(os.path.join(module_dir,
-                                            "temp",
-                                            file))
+            for file in os.listdir(os.path.join(module_dir, "temp")):
+                os.remove(os.path.join(module_dir,
+                                    "temp",
+                                    file))
         except:
             print(f"File {filename} could not be processed. Please check if you have chosen the correct mixcr method or verify that the sequencing was successful.")
 
@@ -450,7 +431,8 @@ parser.add_argument('--path_to_backward',type = str,default=None, help='Director
 parser.add_argument('--threads', default=1, type=int, help='Number of threads to use')
 parser.add_argument("--method", default="milab-human-tcr-dna-multiplex-cdr3", type=str, help="Method to use for the alignment")
 parser.add_argument("--java_heap_size", default="1000", type=int, help="Memory allocation for the processing in MB")
-parser.add_argument("--add_arguments", default = {}, type = dict, help = "Enter additional mixcr arguments to specify your analysis. An example is the --species argument. Here you would enter in a dictionary the '--species' as key and 'hsa' as corresponding values." )
+parser.add_argument("--add_arguments", default = "", type = str, help = "Enter additional mixcr arguments to specify your analysis. An example is the --species argument. Here you would enter in a dictionary the '--species' as key and 'hsa' as corresponding values." )
+parser.add_argument("--mixcr_chain", default = "IG", type = str, help = "The chain from mixcr you want to isolate. IG, IGH, IGL, IGK, TCR, TRA, TRB  are possible." )
 
 args = parser.parse_args()
 path_to_mixcr = args.path_to_mixcr
@@ -461,12 +443,13 @@ threads = args.threads
 method = args.method
 java_heap_size = args.java_heap_size
 add_arguments = args.add_arguments
+mixcr_chain = args.mixcr_chain
 start_time = time.time()
 # Call the function
-mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  method,threads,  java_heap_size, add_arguments)
+mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  method,threads,  java_heap_size, add_arguments, mixcr_chain)
 #PlotManager(experiment = experiment_name)
 end_time = time.time()
 execution_time = end_time - start_time
 print(f"Execution Time: {execution_time} seconds")
-print(f"Launch ExpoSeq with from ExpoSeq.pipeline import PlotManager\n plot = PlotManager()\n and press 2 when it asks you for your new experiment.\n Choose the folder in my_experiments/{experiment_name} which will then be copy and pasted in ExpoSeq's working directory.")
+print(f"Launch ExpoSeq with from ExpoSeq.pipeline import PlotManager\nplot = PlotManager()\n and press 2 when it asks you for your new experiment.\n Choose the folder in my_experiments/{experiment_name} which will then be copy and pasted in ExpoSeq's working directory.")
   
