@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from . import plot_styler
 import os
+import matplotlib
 
 class MyFigure:
     def __init__(self):
@@ -26,6 +27,9 @@ class MyFigure:
 
     def tighten(self):
         plt.tight_layout()
+        
+    def set_backend(backend = "Qt5Agg"):
+        matplotlib.use(backend)
 
 
 def save_matrix(matrix, path = None):

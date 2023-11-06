@@ -1,6 +1,16 @@
 
 import os
 
+
+def get_basename(files, paired_end_sequencing):
+    if paired_end_sequencing:
+        files = [os.path.normpath(j) for i in files for j in i]
+        basename = os.path.basename(files[0][0]).split(".")[0]
+    else:
+        files = files
+        basename = os.path.basename(files[0]).split(".")[0]
+    return basename, files
+
 class CreateCommand:
     def __init__(self, module_dir, path_to_mixcr, paired_end_sequencing, experiment, files, java_heap_size, threads = None):
         self.java_heap_size = java_heap_size
@@ -8,12 +18,7 @@ class CreateCommand:
         self.path_to_mixcr = path_to_mixcr
         self.threads = threads
         self.paired_end_sequencing = paired_end_sequencing
-        if paired_end_sequencing:
-            self.files = [os.path.normpath(j) for i in files for j in i]
-            basename = os.path.basename(files[0][0]).split(".")[0]
-        else:
-            self.files = files
-            basename = os.path.basename(files[0]).split(".")[0]
+        basename, self.files = get_basename(files, paired_end_sequencing)
         self.basename = basename
         self.result = os.path.join(self.module_dir,
                                    "temp",
@@ -103,7 +108,7 @@ class CreateCommand:
         return commands
 
 
-    def prepare_align(self, method):
+    def prepare_align(self, method, add_args):
         align_commands = self.create_parser()
         align_commands.extend(["align"])
         align_commands.extend(["--preset", method])
@@ -114,6 +119,11 @@ class CreateCommand:
         if self.threads != None:
             align_commands.extend(["--threads", self.threads])
         align_commands.extend(["--report", self.alignment_path])
+        for arg, value in add_args.items():
+            if arg != "":
+                align_commands.extend([f"--{arg}", value])
+            else:
+                pass
         return align_commands
 
     def prepare_assembly(self):

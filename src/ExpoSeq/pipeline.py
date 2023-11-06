@@ -75,6 +75,7 @@ class PlotManager:
         self.sequencing_report = self.Report.sequencing_report
 
         self.ControlFigure = MyFigure()
+        self.ControlFigure.set_backend()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.experiments_list = self.unique_experiments
@@ -111,18 +112,7 @@ class PlotManager:
         print(f"lowest read count: {self.sequencing_report['readCount'].min()}")
         
     
-    def dashboard(self, version = "ydata"):
-        if self.binding_data is not None:
-            merged_report = self.merge_bind_seq_report()
-        else:
-            merged_report = self.sequencing_report
-        if version == "sweetviz":
-            analyze_df = sweetviz.analyze([merged_report, "df"])
-            analyze_df.show_html(f"{self.experiment}_sweetviz.html")
-        if version == "ydata":
-            profile = ProfileReport(merged_report, title="Profiling Report")
-            profile.to_file(f"{self.experiment}_ydata.html")
-            
+
     def chat(self,):
         """
         :return: starts a conversation with your data. Be creative! You can ask any question and even create plots :)
@@ -1026,7 +1016,7 @@ class PlotManager:
         :param samples: type is list. The samples you would like to compare towards their sequences
         :param strands: Default is True. It means that you will plot a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
-        :param model: The model you would like to choose for the embedding. You can choose protbert or sgt
+        :param model: The model you would like to choose for the embedding. Default is 'Rostlab/prot_t5_xl_half_uniref50-enc'. You can choose all models on https://huggingface.co/Rostlab and sgt.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.

@@ -1,12 +1,12 @@
-from glob import glob
+
 import subprocess
 from ast import literal_eval
 import pickle
 import pandas as pd
 from ..augment_data.trimming import trimming
-import pkg_resources
 import os
-
+from .create_mixcr_commands import get_basename 
+import sys
 #psutil
 try:
     import tkinter as tk
@@ -50,7 +50,7 @@ def check_mixcr(path_to_mixcr, data, settings_dir, testing = False):
         pass
     return path_to_mixcr
 
-def process_mixcr(experiment, method, testing, paired_end_sequencing):
+def process_mixcr(experiment, method, testing, paired_end_sequencing, add_args):
     module_dir = os.path.abspath("")
     check_dirs(module_dir, experiment)
     if not testing:
@@ -116,14 +116,20 @@ def process_mixcr(experiment, method, testing, paired_end_sequencing):
             break
         else:
             print("Please enter a correct value.")
-    
+    for filename in files:
+        basename, empty = get_basename(filename, paired_end_sequencing)
+        if " " in basename:
+            print("Spaces in the filename are not allowed. Analysis aborted")
+            sys.exit(1)
+        
     for filename in files:
         for file in os.listdir(os.path.join(module_dir, "temp")):
             os.remove(os.path.join(module_dir,
                                    "temp",
                                    file))
+        
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment, filename, java_heap_size)
-        subprocess.run(Commands.prepare_align(method))
+        subprocess.run(Commands.prepare_align(method, add_args))
         subprocess.run(Commands.prepare_assembly())
         subprocess.run(Commands.prepare_clones(mixcr_chain = mixcr_chain))
         basename = Commands.basename

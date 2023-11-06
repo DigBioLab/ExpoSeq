@@ -17,6 +17,8 @@ import random
 import string
 import shutil
 from ..settings.available_presets import data_list
+from .preset_chooser import ChooseMethod
+
 
 def get_random_string(length):
     letters = string.ascii_letters  # this will get all the uppercase and lowercase letters
@@ -96,23 +98,18 @@ def create_alignment_report(module_dir, experiment):
             "No alignment reports could be found in " + experiment + ". You will continue without being able to analyze the Alignment Quality.")
     return all_alignment_reports
 
+
+
+
+
+
 def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"):
     if not testing:
-        for i in data_list:
-            print(i)
-        use_method = input(
-            "Per default you will align your data with the following method: milab-human-tcr-dna-multiplex-cdr3.\nPress enter if you want to continue.\nOtherwise type in the method of your choice.\nIt has to be the exact same string which is given on the Mixcr documentation.The available presets are:")
-        if use_method == "":
-            use_method = "milab-human-tcr-dna-multiplex-cdr3"
-        else:
-            while True:
-                if use_method in data_list:
-                    break
-                use_method = input("The method you entered is not in the list. Please enter a valid method.")
-                if use_method in data_list:
-                    break
-                else:
-                    print("Please enter a valid method.")
+        Chooser = ChooseMethod()
+        use_method = Chooser.ask_user()
+        add_args = Chooser.check_args(use_method)
+        add_args = Chooser.change_args(add_args)
+        
     else:
         use_method = ""
     if use_method == "":
@@ -142,7 +139,8 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
     process_mixcr(experiment,
                   method=method,
                   testing = testing,
-                  paired_end_sequencing=paired_end)
+                  paired_end_sequencing=paired_end,
+                  add_args = add_args)
     repo_path = os.path.join(module_dir,
                              "my_experiments",
                              experiment,
