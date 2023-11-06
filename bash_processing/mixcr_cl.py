@@ -290,7 +290,7 @@ class CreateCommand:
         return commands
 
 
-    def prepare_align(self, method):
+    def prepare_align(self, method, add_args):
         align_commands = self.create_parser()
         align_commands.extend(["align"])
         print(method)
@@ -302,6 +302,17 @@ class CreateCommand:
         if self.threads != None:
             align_commands.extend(["--threads", self.threads])
         align_commands.extend(["--report", self.alignment_path])
+        if len(add_args) >= 1:
+            for arg, value in add_args.items():
+                if arg != "":
+                    if arg[0] == "-":
+                        if arg[1] == "-":
+                            arg = arg[2:]
+                        else:
+                            arg = arg[1:]
+                    align_commands.extend([f"--{arg}", value])
+                else:
+                    pass
         return align_commands
 
     def prepare_assembly(self):
@@ -329,13 +340,13 @@ class CreateCommand:
 
 
  
-def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None):
+def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = None, method = "ampliseq-tcrb-plus-full-length", threads = 1, java_heap_size = None, add_arguments = {}):
     print(path_to_backward)
     print(path_to_forward)
     print(experiment_name)
     print(method)
     print(threads)
-    print(java_heap_size    )
+    print(java_heap_size)
     module_dir = os.path.abspath("")
     assert os.path.isfile(path_to_mixcr), "File path to mixcr.jar file is incorrect."
     assert path_to_forward != path_to_backward, "Directory to forward and backward files needs to be different"
@@ -439,6 +450,7 @@ parser.add_argument('--path_to_backward',type = str,default=None, help='Director
 parser.add_argument('--threads', default=1, type=int, help='Number of threads to use')
 parser.add_argument("--method", default="milab-human-tcr-dna-multiplex-cdr3", type=str, help="Method to use for the alignment")
 parser.add_argument("--java_heap_size", default="1000", type=int, help="Memory allocation for the processing in MB")
+parser.add_argument("--add_arguments", default = {}, type = dict, help = "Enter additional mixcr arguments to specify your analysis. An example is the --species argument. Here you would enter in a dictionary the '--species' as key and 'hsa' as corresponding values." )
 
 args = parser.parse_args()
 path_to_mixcr = args.path_to_mixcr
@@ -448,10 +460,10 @@ path_to_backward = args.path_to_backward
 threads = args.threads
 method = args.method
 java_heap_size = args.java_heap_size
-
+add_arguments = args.add_arguments
 start_time = time.time()
 # Call the function
-mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  method,threads,  java_heap_size)
+mixcr_(path_to_mixcr, experiment_name, path_to_forward, path_to_backward,  method,threads,  java_heap_size, add_arguments)
 #PlotManager(experiment = experiment_name)
 end_time = time.time()
 execution_time = end_time - start_time

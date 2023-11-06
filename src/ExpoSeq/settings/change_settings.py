@@ -18,6 +18,7 @@ class Settings:
                                                     "settings",	
                                                     "colorbar.txt")
         self.automation = False
+        self.move_preset_table()
         
     def check_dirs(self):
         if not os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
@@ -57,7 +58,18 @@ class Settings:
                     source_path = os.path.join(source_folder, filename)
                     destination_path = os.path.join(destination_folder, filename)
                     shutil.move(source_path, destination_path)
-            
+                    
+    def move_preset_table(self):
+        if not os.path.isfile(os.path.join(self.module_dir, "settings", "preset_list.csv")):
+            destination_folder= os.path.join(self.module_dir, "settings")
+            source = pkg_resources.get_distribution('ExpoSeq')
+            source_folder = os.path.join(source.location,"ExpoSeq", "settings")
+            filename = "preset_list.csv"
+            destination_path = os.path.join(destination_folder, filename)
+            source_path = os.path.join(source_folder, filename)
+            shutil.move(source_path, destination_path)
+        else:
+            pass
     def create_global_vars(self):
         global_params = {'mixcr_path': '', 'last_experiment': '', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
         with open(self.common_vars, "w") as f:
@@ -183,5 +195,7 @@ class Settings:
         if delete == "delete":
             self.remove_directories(os.path.join(self.module_dir, "my_experiments"))
             self.remove_directories(os.path.join(self.module_dir, "temp"))
+            
+            
             
             

@@ -22,3 +22,5 @@ requirements.txt
 AutoViz_Plots
 *.tsv
 *.html
+NanoNet*
+NanoNetResults
