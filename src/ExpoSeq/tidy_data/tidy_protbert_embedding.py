@@ -30,9 +30,13 @@ class TransformerBased:
         
 
     
-    def filter_sequences(self, sequencing_report, batch_size, experiments, region_of_interest = "aaSeqCDR3", ):
+    def filter_sequences(self, sequencing_report, batch_size, experiments,binding_data, region_of_interest = "aaSeqCDR3"):
         report_batch = sequencing_report.groupby("Experiment").head(batch_size)
         selected_rows = report_batch.loc[report_batch["Experiment"].isin(experiments)]
+        if binding_data is not None:
+            mix = sequencing_report.merge(binding_data, on = region_of_interest, how = "left")
+            mix = pd.concat([selected_rows, binding_data])
+            selected_rows = mix.fillna(0)
         sequences_filtered = selected_rows[region_of_interest]
         sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
 

@@ -230,20 +230,32 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     Builder.create_headline("Sample specific quality analysis", section = "##")
     length_distribution_path = os.path.join(plot_path, "length_distributions")
     rarefraction_curve_path = os.path.join(plot_path, "rarefraction_curves")
-    logo_plot_path = os.path.join(plot_path, "logo_plots")
+    clone_fraction_path = os.path.join(plot_path, "clone_fraction")
+    
     for sample in samples:
         Builder.create_headline("Quality analysis for " + sample, section = "###")
         length_distr_single = find_file_with_substring(length_distribution_path, sample)
         rarefraction_single = find_file_with_substring(rarefraction_curve_path, sample)
-        logo_plot_single = find_file_with_substring(logo_plot_path, sample)
-        if check_path_multiple([length_distr_single, rarefraction_single, logo_plot_single]) != False:
-            Builder.add_figure_layout([[1, 1], [1]], [length_distr_single, rarefraction_single, logo_plot_single])
+        clone_single = find_file_with_substring(clone_fraction_path, sample)
+        if check_path_multiple([length_distr_single, rarefraction_single, clone_single]) != False:
+            Builder.add_figure_layout([[1, 1], [1]], [length_distr_single, rarefraction_single, clone_single])
         else:
             for i in [length_distr_single, rarefraction_single, logo_plot_single]:
                 if i != None:
                     Builder.add_figure(i)
                 else: 
                     pass
+        Builder.add_page()
+        
+    Builder.create_headline("Sequence Logo Plots", section = "##")
+    logo_plot_path = os.path.join(plot_path, "logo_plots")
+    for sample in samples:
+        Builder.create_headline("Logo Plot for sequences with length 16 for " + sample, section = "###")
+        logo_plot_single = find_file_with_substring(logo_plot_path, sample)
+        if logo_plot_single != None:
+            Builder.add_figure(logo_plot_single)
+        else:
+            pass
         Builder.add_page()
 
     ls_clusters_dir = os.path.join(plot_path, "sequence_cluster")
@@ -289,14 +301,39 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         Builder.add_page()
 
     Builder.create_headline("Sequence Similarity between samples", section = "##")
-    embedding_dir = os.path.join(plot_path, "sequence_embedding")
+    embedding_dir = os.path.join(plot_path, "sequence_embedding", "sgt")
+    Builder.create_headline("SGT Embedder", section = "###")
     for sample in samples:
         file = find_file_with_substring(embedding_dir, sample)
         if file != None:
-            Builder.create_headline(f"Global Sequence similarity for {sample}", section = "###")
+            Builder.create_headline(f"Global Sequence similarity for {sample}", section = "####")
             Builder.add_figure(file)
+            Builder.add_page()
         else:
             pass
+        
+    Builder.create_headline("ProtBert Embedder", section = "###")
+    embedding_dir = os.path.join(plot_path, "sequence_embedding", "protbert")
+    for sample in samples:
+        file = find_file_with_substring(embedding_dir, sample)
+        if file != None:
+            Builder.create_headline(f"Global Sequence similarity for {sample}", section = "####")
+            Builder.add_figure(file)
+            Builder.add_page()
+        else:
+            pass
+    
+    Builder.create_headline("T5 Embedder", section = "###")
+    embedding_dir = os.path.join(plot_path, "sequence_embedding", "T5")
+    for sample in samples:
+        file = find_file_with_substring(embedding_dir, sample)
+        if file != None:
+            Builder.create_headline(f"Global Sequence similarity for {sample}", section = "####")
+            Builder.add_figure(file)
+            Builder.add_page()
+        else:
+            pass
+    
     Builder.write_quarto(save_dir=plot_path)
     if binding_data is not None:
         assert os.path.isdir(os.path.join(plot_path, "clustering_antigens")), f"The directory {os.path.join(plot_path, 'clustering_antigens')} does not exist"

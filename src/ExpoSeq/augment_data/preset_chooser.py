@@ -1,16 +1,18 @@
 import pandas as pd
 import os
 from tabulate import tabulate
+
 class ChooseMethod:
     def __init__(self) -> None:
-        self.open_presets()
+        preset_path = os.path.join(os.getcwd(), "settings", "preset_list.csv")
+        self.open_presets(preset_path)
         self.print_table()
         
 
         
         
-    def open_presets(self):
-        preset_path = os.path.join(os.getcwd(), "settings", "preset_list.csv")
+    def open_presets(self, preset_path):
+        
         if os.path.isfile(preset_path):
             self.preset_table = pd.read_csv(preset_path, sep=";")
         else:
@@ -41,8 +43,9 @@ class ChooseMethod:
         add_arguments = {}
         method_vals = args_table.values.tolist()[0]
         gen_columns = args_table.columns.tolist()
-        for index, vals in enumerate(method_vals):
-            if vals != 0:
+        for vals in method_vals: 
+            if vals != str(0) and vals != int(0):
+                index = method_vals.index(vals)
                 add_arguments[gen_columns[index]] = vals
             else:
                 pass
@@ -63,4 +66,11 @@ class ChooseMethod:
     
     
 
-        
+class Test:
+    def __init__(self) -> None:
+        Test_Choose = ChooseMethod()
+        assert Test_Choose.check_args("milab-human-tcr-dna-multiplex-cdr3") == {}, "output must be an empty dict"
+        assert Test_Choose.check_args("ont-rna-seq-vdj-full-length") == {"species": "hsa"}, "output must contain the hsa value with species key"
+        assert Test_Choose.change_args({}) == {}, "No prompting should appear"
+        Test_Choose.open_presets("") == FileNotFoundError, "An error should appear"
+    
