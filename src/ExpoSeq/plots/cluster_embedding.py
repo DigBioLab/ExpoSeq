@@ -12,6 +12,7 @@ def show_difference(sequencing_report, list_experiments,strands, batch_size, pca
     tsne_plot = ax.scatter(tsne_results.tsne1,
                            tsne_results.tsne2,
                            c = pd.factorize(experiments_batch)[0],
+                           alpha = 0.5
                             )
     ax.legend(handles=tsne_plot.legend_elements()[0],
                labels=list_experiments,

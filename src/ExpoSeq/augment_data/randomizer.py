@@ -60,7 +60,7 @@ def create_sequencing_report(num_experiments = 30, mean_length = 48, stddev_leng
                 "cloneId": cloneid,
                     "aaSeqCDR3": aminoacid_seqs,
                     "nSeqCDR3": sequences,
-                    "clonesFraction": fractions,
+                    "cloneFraction": fractions,
                     "readCount": readsCount,
                     "lengthOfCDR3": length_cdr3}
         intermediate_frame = pd.DataFrame(data)

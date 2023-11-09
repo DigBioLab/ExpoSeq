@@ -1,21 +1,21 @@
 import matplotlib.pyplot as plt
 from ..tidy_data.barplot import cleaning_data
 import numpy as np
-import matplotlib
 from textwrap import wrap
 
 def barplot(ax, all_alignment_reports, sequencing_report_all,font_settings, legend_settings, apply_log):
-    matplotlib.use("Qt5Agg")
     boxplot_data_frame = cleaning_data(all_alignment_reports,
                                        sequencing_report_all)
     ax.bar(boxplot_data_frame.Experiment,
            np.array(boxplot_data_frame.tot_sequenced_reads).astype(np.float32),
            label="Total Sequenced Reads",
-            color="orange")
+            color="lightsalmon",
+            alpha = 1)
     ax.bar(boxplot_data_frame.Experiment,
             np.array(boxplot_data_frame.Aligned_Reads).astype(np.float32),
             label="Aligned Reads",
-            color="royalblue")
+            color="lightskyblue",
+            alpha = 1)
     plt.xticks(rotation=45,
               ha = 'right',
               size=12)

@@ -1,6 +1,6 @@
 
 import os
-
+import sys
 
 def get_basename(files, paired_end_sequencing):
     if paired_end_sequencing:
@@ -9,6 +9,9 @@ def get_basename(files, paired_end_sequencing):
     else:
         files = files
         basename = os.path.basename(files[0]).split(".")[0]
+    if len(basename) > 22:
+        basename = print("Please change the name of your files so that they are shorter than 22 characters.\nThese names will later appear on the plots and they should be meaningful but also short enough.\nTherefore, the analysis has to be restarted.")
+        sys.exit()
     return basename, files
 
 class CreateCommand:

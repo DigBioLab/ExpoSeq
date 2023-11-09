@@ -8,7 +8,7 @@ def length_distribution_single(fig,ax, sequencing_report, sample, font_settings,
     length = batch[region_string].str.len()
     unique_length, counts_length = np.unique(np.array(length)
                                                 , return_counts = True)
-    ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
+    ax.bar(unique_length, counts_length,  color = "lightskyblue")  # Or whatever you want in the subplot
     #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
     ax.title.set_text(sample)
     ax.title.set_size(18)

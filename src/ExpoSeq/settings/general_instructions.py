@@ -13,17 +13,22 @@ Important Variables
 
 - plot.sequencing_report 
     Contains the processed and trimmed NGS data.
+    
 - plot.binding_data
     Contains the uploaded binding data.
+    
 - plot.Report.origin_seq_report
     Contains the raw NGS data from mixcr which is not trimmed.
+    
 - plot.ControlFigure.fig
     Is the matplotlib figure object
+    
 - plot.ControlFigure.ax
     Is the matplotlib axis object
+    
 - plot.alignment_report
     A dataframe which contains the data from all alignment reports.
-
+    
 -----------------------
 Plot Commands
 -----------------------
@@ -45,14 +50,11 @@ Plot Commands
 - plot.lengthDistribution_single(): 
     Shows the length distribution of the given sample.
 
-- plot.relative_abundance_multi(): 
-    Shows the relative abundance of the given samples.
-
 - plot.lengthDistribution_multi(): 
     Shows the length distribution of the given samples.
 
 - plot.rel_seq_abundance(): 
-    Shows a bar plot of the frequencies of the most abundant sequences with optional Levenshtein distance.
+    Shows the clone fractions of a given sample in a tree map plot
 
 - plot.basic_cluster(): 
     Clusters a batch of sequences based on a threshold for the Levenshtein distance.
@@ -83,8 +85,13 @@ Plot Commands
 
 - plot.dendro_bind(): 
     Shows a dendrogram based on Levenshtein distance and a bar plot with binding data.
+    
+- plot.cluster_binding_data():
+    Can cluster multiple samples and sequences with binding data from multiple antigens. Integrates sequence embedders from huggingface.
 
-
+- plot.connect_samples():
+    Connects all samples in a network plot based on the Levenshtein distance.
+    
 -----------------------
 Non-Plot Commands
 -----------------------

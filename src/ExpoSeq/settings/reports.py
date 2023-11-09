@@ -64,7 +64,7 @@ class SequencingReport:
 
         sequencing_report = sequencing_report[(sequencing_report["lengthOfCDR3"] % divisible_by) == 0]
         sequencing_report = sequencing_report[(sequencing_report["aaSeq" + region_string].str.len()) > length_threshold ]
-        sequencing_report = sequencing_report[(sequencing_report["readCount"] > min_read_count)]
+        sequencing_report = sequencing_report[(sequencing_report["readCount"] > (min_read_count + 1))]
 
         new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
         self.sequencing_report = sequencing_report.copy()
@@ -125,8 +125,32 @@ class SequencingReport:
         return region_string
 
         
-
-
+    def check_sample_name(self, module_dir, experiment_name):
+        sample_names = self.origin_seq_report["Experiment"].unique().tolist()
+        for sample in sample_names:
+            if len(sample) > 22:
+                new_sample_name = input(f"Your sample name for {sample} is to long. Please enter a new name with maximum 22 characters.")
+                replacement_mapping = {sample: new_sample_name}
+                self.origin_seq_report['Experiment'] = self.origin_seq_report['Experiment'].replace(replacement_mapping)
+                self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].replace(replacement_mapping)
+        path_file = os.path.join(module_dir, "my_experiments", experiment_name, "sequencing_report.csv")
+        self.origin_seq_report.to_csv(path_file, index = False)
+        
+        
+class Test_SequencingReport:
+    def __init__():
+        divisble_by = 3
+        length_threshold = 3
+        min_read_count = 2
+        example_report = os.path.join("sequencing_report.csv")
+        Report = SequencingReport(example_report)
+        Report.prepare_seq_report(region_string = "CDR3", divisible_by=divisble_by, length_treshold = length_threshold, min_read_count=min_read_count)
+        test = Report.sequencing_report
+        assert test["aaSeqCDR3"].str.len() > length_threshold, "Sequence length filter does not work"
+        assert test["readCount"] > min_read_count, "Read count filter does not work"
+        assert test["nSeqCDR3"].str.len() % 3 == 0, "Filter sequences by divisor does not work"
+        os.mkdir(os.path.join(os.getcwd(), "my_experiments", "unitest"))
+  
 
 class BindingReport:
     def __init__(self, module_dir, experiment):
