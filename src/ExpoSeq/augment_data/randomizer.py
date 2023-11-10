@@ -101,7 +101,7 @@ def create_binding_report(sequencing_report, num_antigen):
     sampled_df = sampled_df.groupby("Experiment").sample(frac = 0.01)
     sampled_df = sampled_df[sampled_df['aaSeqCDR3'].apply(len) >= threshold_aa_seq]
     aaSeq = sampled_df["aaSeqCDR3"].to_list()
-    fractions = sampled_df.clonesFraction
+    fractions = sampled_df.cloneFraction
     binding_values = []
     for i in fractions:
         random_binding = random.randint(1000000, 10000000000)

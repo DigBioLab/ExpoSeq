@@ -34,12 +34,14 @@ class TransformerBased:
         report_batch = sequencing_report.groupby("Experiment").head(batch_size)
         selected_rows = report_batch.loc[report_batch["Experiment"].isin(experiments)]
         if binding_data is not None:
-            mix = sequencing_report.merge(binding_data, on = region_of_interest, how = "left")
+            #mix = selected_rows.merge(binding_data, on = "aaSeqCDR3", how = "outer")
             mix = pd.concat([selected_rows, binding_data])
             selected_rows = mix.fillna(0)
+        selected_rows["cloneFraction"] = selected_rows["cloneFraction"].replace(0.0, max(selected_rows["cloneFraction"])) # all the added sequences from binding data get highest clone fraction to visualize them, otherwise they will not appear since the plot is fraction sensitive
+        selected_rows = selected_rows.sort_values(by='cloneFraction', ascending=False)
+        selected_rows.drop_duplicates(subset='aaSeqCDR3', keep="first", inplace=True) # remove duplicates due to adding of binding data
         sequences_filtered = selected_rows[region_of_interest]
         sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
-
         return sequences,sequences_filtered, selected_rows
         
     def prepare_sequences(self,sequences, device = "cpu"):

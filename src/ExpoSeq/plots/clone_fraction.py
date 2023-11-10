@@ -65,7 +65,7 @@ class VisFrac:
         self.ax.set_title(title,pad = 12, **font_settings)
         
     def make_plot(self, pad,visualize_seqs, alpha_val, prefered_cmap, **kwargs):
-        if visualize_seqs == None:
+        if visualize_seqs == False:
             self.seqs = None
         else:
             pass
@@ -82,11 +82,11 @@ class Test:
         print("Region String must be full sequence")
         assert VisFrac.get_top_fraction(sequencing_report, "sample 0",force_reducing=1000, fraction = 0.95).shape[1] > 1
         assert VisFrac.get_top_fraction(sequencing_report, "sample 0",force_reducing=3, fraction = 0.95).shape[0] == 3
-        assert VisFrac.prepare_labels(sequencing_report, region_string, fraction = 0.1).iloc[-1] == ""
-        Vis = VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = None, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=1000, region_string = region_string)
+        assert VisFrac.prepare_labels(sequencing_report, region_string,limit_seq_filter = 10, fraction = 0.1).iloc[-1] == ""
+        Vis = VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = False, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=1000, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
         assert Vis.seqs == None
-        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=None, region_string = region_string)
-        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = True,force_reducing= 1000, region_string = region_string)
+        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=None, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
+        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = True,force_reducing= 1000, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
         
     def get_fig(self):
         self.fig = plt.figure(1, figsize = (12, 10))
