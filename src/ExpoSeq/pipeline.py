@@ -282,11 +282,13 @@ class PlotManager:
             print("Alignment reports could not be found")
             
 
+        #plot
         try:
-            print("create rarefraction curves of all samples")
-            self.rarefraction_curves(self.experiments_list)
-            self.save_in_plots("rarefraction_all")
-            
+            if not os.path.isfile(os.path.join(self.plot_path, "rarefraction_all.png")):
+                print("create rarefraction curves of all samples")
+                self.rarefraction_curves(self.experiments_list)
+                self.ControlFigure.fig.tight_layout()
+                self.save_in_plots("rarefraction_all")
         except:
             print("creating rarefraction plot of all samples failed")
             
@@ -305,7 +307,7 @@ class PlotManager:
         # plot
         for experiment in self.experiments_list:
             try:
-                if not os.path.isfile(os.path.join(self.plot_path, "logo_plots", experiment)):
+                if not os.path.isfile(os.path.join(self.plot_path, "logo_plots", experiment + ".png")):
                     self.logoPlot_single(sample = experiment)
                     self.save_in_plots(os.path.join("logo_plots", experiment))
             except:
@@ -361,7 +363,7 @@ class PlotManager:
         print("Start sequence embedding of samples")
         if overlapping_samples != None:
             for single_experiment in list(overlapping_samples.keys()):
-                if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding","sgt", single_experiment + "embedding.png")):
+                if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding","sgt", single_experiment + "embedding_tsne.png")):
                     try:
                         self.embedding_tsne(samples = overlapping_samples[single_experiment],model = "sgt", strands = False, batch_size = 300)
                         self.save_in_plots(os.path.join("sequence_embedding","sgt", single_experiment + "embedding_tsne"))
@@ -389,7 +391,7 @@ class PlotManager:
             if not os.path.isdir(clustering_antigens_path):
                 os.mkdir(clustering_antigens_path)
             experiment_keys = list(best_binder.keys())
-            print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n2500 iterations are used for tsne.")
+            print("Starting clustering of binding data for antigens and sequences using PCA and t-SNE.\nPerplexity is set to 25.\n70 principal components are taken for t-SNE.\n1000 iterations are used for tsne. Batch size is set to 300.")
             report_tsne_cluster = os.path.join(self.plot_path, "clustering_antigens", "reports")
             if not os.path.isdir(report_tsne_cluster):
                 os.mkdir(report_tsne_cluster)
@@ -398,10 +400,12 @@ class PlotManager:
             for experiment in experiment_keys:
                 try:
                     if not os.path.isfile(os.path.join(self.plot_path, "clustering_antigens", experiment + "tsne_cluster_AG.png")):
-                        self.tsne_cluster_AG(sample = experiment,
-                                             antigen = best_binder[experiment],
-                                             antigen_names = False,
-                                             save_report_path = os.path.join(report_tsne_cluster, experiment + f"_best_binder{experiment}" + ".xlsx"))
+                        self.cluster_binding_data(samples = [experiment],
+                                                  batch_size = 300,
+                                                    antigens = best_binder[experiment],
+                                                    show_antigen_names = False,
+                                                    iterations_tsne=1000,
+                                                    save_report_path = os.path.join(report_tsne_cluster, experiment + f"_best_binder{experiment}" + ".xlsx"))
                         self.save_in_plots(os.path.join( "clustering_antigens", experiment + "tsne_cluster_AG"))
                 except:
                     print(f"Cluster based on sequence embedding combined with binding data failed for: {experiment}")
@@ -437,25 +441,17 @@ class PlotManager:
                                                 batch_size = 1000,
                                                 max_ld = 2,
                                                 preferred_cmap = "Reds",
+                                                label_type = None,
                                                 save_report_path = os.path.join(report_ls_cluster, experiment + f"_ls_binding_cluster" + ".xlsx"))
                             self.save_in_plots(os.path.join("clustering_antigens","ls_binding_cluster", experiment + f"_ls_binding_cluster"))
                         except:
                             print("Could not create levenshtein distance cluster for best binder")
                 except:
                     print(f"Dendrogram with binding data failed for {experiment}")
-        #plot
-        try:
-            print("create rarefraction curves of all samples")
-            self.rarefraction_curves(self.experiments_list)
-            self.ControlFigure.fig.tight_layout()
-            self.save_in_plots("rarefraction_all")
-        except:
-            print("creating rarefraction plot of all samples failed")
+
 
         print(f"The pipeline has created some plots in: {self.plot_path}")
-        
-        print("You can create a dasboard of your data with plot.dashboard() and open the html file which appears in your working directory.")
-            
+                    
         print("You can create and automatic report of the generated analysis by installing Quarto(https://quarto.org/docs/get-started/) and type: plot.create_report()")
 
     def change_preferred_antigen(self, antigen=None):
@@ -722,7 +718,7 @@ class PlotManager:
 
     def logoPlot_multi(self,
                        samples="all",
-                       chosen_seq_length="max",
+                       chosen_seq_length=1,
                        method="proportion",
                        ):
         """
@@ -739,12 +735,7 @@ class PlotManager:
         if chosen_seq_length != "max":
             assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
-        if chosen_seq_length == "max":
-            lengths = self.sequencing_report[self.sequencing_report["Experiment"] == sample][self.region_of_interest].str.len()
-            counts = lengths.value_counts()
-            chosen_seq_length = counts.idxmax()        
-        else:
-            pass
+
         logo_plot.plot_logo_multi(self.ControlFigure.fig,
                                   self.sequencing_report,
                                   samples,
@@ -863,7 +854,11 @@ class PlotManager:
                     print("Please enter Y or n")
             if cluster_report_save.lower() in ["Y", "y"]:
                 while True:
-                    filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
+                    filename_matrix = input(f"Enter a name for the file. The file will be saved in {self.report_path} in your IDE.")
+                    if filename_matrix.endswith(".csv"):
+                        pass
+                    else:
+                        filename_matrix = filename_matrix + ".csv"
                     if not os.path.isfile(filename_matrix):
                         path = os.path.join(self.report_path, filename_matrix)
                         cluster_report.to_excel(path)
@@ -957,7 +952,7 @@ class PlotManager:
         assert type(antigens) == list, "You have to give a list with the antigens you want to analyze"
         assert show_antigen_names in [True, False], "You have to give True or False as input for the show_antigen_names parameter"
         assert type(save_report_path) == str or save_report_path == None, "You have to give a string as input for the save_report_path parameter"
-        assert os.paht.exists()
+
         self.ControlFigure.clear_fig()
         EmbeddingPlot = protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
                                     self.sequencing_report,

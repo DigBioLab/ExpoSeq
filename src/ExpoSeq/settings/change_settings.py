@@ -62,6 +62,8 @@ class Settings:
     def move_preset_table(self):
         if not os.path.isfile(os.path.join(self.module_dir, "settings", "preset_list.csv")):
             destination_folder= os.path.join(self.module_dir, "settings")
+            if not os.path.isdir(destination_folder):
+                os.mkdir(destination_folder)
             source = pkg_resources.get_distribution('ExpoSeq')
             source_folder = os.path.join(source.location,"ExpoSeq", "settings")
             filename = "preset_list.csv"

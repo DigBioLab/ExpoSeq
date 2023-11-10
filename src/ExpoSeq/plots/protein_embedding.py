@@ -18,7 +18,7 @@ class Plot_Embedding:
         if self.binding_data is not None:
             self.create_binding_plot(selected_rows, antigens, region_of_interest, toxin_names, colorbar_settings)
             if extra_figure == True:
-                self.create_second_bind_plot()
+                self.create_second_bind_plot(font_settings)
                 title = "\n".join(wrap(f"t-SNE embedding for {antigens}", 40))
                 self.ax.set_title(title, pad= 12, **font_settings)
             
@@ -69,10 +69,11 @@ class Plot_Embedding:
                         )
             
     def filter_binding_data(self, region_of_interest, antigens):
-        merged_columns = [region_of_interest] + antigens
-        self.binding_data = self.binding_data[merged_columns]
+        if self.binding_data is not None:
+            merged_columns = [region_of_interest] + antigens
+            self.binding_data = self.binding_data[merged_columns]
         
-    def return_binding_results(self, tsne_results, selected_rows, antigens, region_of_interest):
+    def return_binding_results(self,  selected_rows, antigens, region_of_interest):
         kds = selected_rows[antigens].max(axis = 1)
         ids = selected_rows[antigens].idxmax(axis = 1)
         aminoacids = selected_rows[region_of_interest].to_list()
@@ -82,7 +83,7 @@ class Plot_Embedding:
         self.tsne_results["experiments_string"] = list(experiments_batch)
         self.tsne_results["binding"] = list(kds)
         self.tsne_results["sequences"] = list(aminoacids)
-        self.tsne_results['sequence_id'] = pd.Series(range(1170))
+        self.tsne_results['sequence_id'] = pd.Series(range(self.tsne_results.shape[0]))
         return kds, ids
     
     def create_second_bind_plot(self, font_settings):
@@ -104,11 +105,12 @@ class Plot_Embedding:
             n += 1
     
     def create_binding_plot(self, selected_rows, antigens, region_of_interest, toxin_names, colorbar_settings):
-        kds, ids = self.return_binding_results(self.tsne_results, selected_rows, antigens, region_of_interest)
+        kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
         self.tsne_plot = self.ax.scatter(self.tsne_results.tsne1,
                             self.tsne_results.tsne2,
                             c = self.tsne_results.binding,
-                            alpha = 0.5,
+                            alpha = 1,
+                            cmap = "magma"
                             )
         x_cor = list(self.tsne_results.tsne1.iloc[:, 0])
         y_cor = list(self.tsne_results.tsne2.iloc[:, 0])
@@ -120,6 +122,5 @@ class Plot_Embedding:
             pass
         plt.colorbar(self.tsne_plot, **colorbar_settings)
         
-    
 
-            
+

@@ -134,7 +134,8 @@ class SequencingReport:
                 self.origin_seq_report['Experiment'] = self.origin_seq_report['Experiment'].replace(replacement_mapping)
                 self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].replace(replacement_mapping)
         path_file = os.path.join(module_dir, "my_experiments", experiment_name, "sequencing_report.csv")
-        self.origin_seq_report.to_csv(path_file, index = False)
+        if os.path.isdir(os.path.dirname(path_file)):
+            self.origin_seq_report.to_csv(path_file, index = False)
         
         
 class Test_SequencingReport:
@@ -149,7 +150,12 @@ class Test_SequencingReport:
         assert test["aaSeqCDR3"].str.len() > length_threshold, "Sequence length filter does not work"
         assert test["readCount"] > min_read_count, "Read count filter does not work"
         assert test["nSeqCDR3"].str.len() % 3 == 0, "Filter sequences by divisor does not work"
-        os.mkdir(os.path.join(os.getcwd(), "my_experiments", "unitest"))
+        unitest_dir = os.path.join(os.getcwd(), "my_experiments", "unitest")
+        if not os.path.isdir(unitest_dir):
+            os.mkdir(os.path.join(os.getcwd(), "my_experiments", "unitest"))
+        Report.check_sample_name(os.getcwd(), "not_existent")
+        assert not os.path.isfile(os.path.join(os.getcwd(), "my_experiments", "not_existend", "sequencing_report.csv"))
+        
   
 
 class BindingReport:
@@ -170,6 +176,8 @@ class BindingReport:
                 binding_data = None
         else:
             binding_data = pd.read_csv(self.binding_data_dir)
+        if binding_data is not None:
+            binding_data.drop_duplicates(subset = "aaSeqCDR3", inplace = True)
         return binding_data
 
 
