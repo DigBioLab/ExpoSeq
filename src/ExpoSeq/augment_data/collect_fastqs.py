@@ -43,7 +43,7 @@ class CollectFastq():
                 for i in filenames:
                     print(os.path.basename(i))
                 while True:
-                    read_more_files = input("do you want to add another folder? (Y/n)")
+                    read_more_files = input("do you want to add another folder for the corresponding read direction? (Y/n)")
                     if read_more_files in ["Y" "y", "n", "N"]:
                         break
                     else:
@@ -69,6 +69,8 @@ class CollectFastq():
             else:
                 break
         return filenames
+    
+    
     def get_filename(self):
         try:
             while True:
@@ -86,6 +88,7 @@ class CollectFastq():
                 else:
                     print("Please enter a valid directory. Dont add a \ to the end of the directory path")
         return path_to_file
+    
     def __len__(self, file_list):
         return len(file_list)
 
@@ -147,7 +150,7 @@ class CollectFastq():
                     
     def get_files(self,  cmd = False, path_to_forward = None, path_to_backward = None):
         if cmd == False: 
-            print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.\nFInally, the filename must not have any backspaces.")
+            print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.\nFinally, the filename must not have any spaces.")
             self.forward = self.get_filenames()
             if self.paired_end_sequencing:
                 print("Now choose the directory where you store the fastq files with the backward reads.")

@@ -3,7 +3,6 @@ import subprocess
 from ast import literal_eval
 import pickle
 import pandas as pd
-from ..augment_data.trimming import trimming
 import os
 from .create_mixcr_commands import get_basename 
 import sys

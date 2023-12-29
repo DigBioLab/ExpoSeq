@@ -22,5 +22,7 @@ requirements.txt
 AutoViz_Plots
 *.tsv
 *.html
+!additional_material/*.html 
 NanoNet*
 NanoNetResults
+test.ipynb

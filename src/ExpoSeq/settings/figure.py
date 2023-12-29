@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from . import plot_styler
 import os
-import matplotlib
 
 class MyFigure:
     def __init__(self, figure_style = "seaborn-v0_8-colorblind"):
@@ -35,6 +34,8 @@ class MyFigure:
     @staticmethod
     def set_backend(backend = "Qt5Agg"):
         plt.switch_backend(backend)
+        #return
+        
     @staticmethod
     def use_style(style = "seaborn-v0_8-colorblind"):
         assert style in plt.style.available, f'The style you chose is not availale. Choose one of {plt.style.available}' 

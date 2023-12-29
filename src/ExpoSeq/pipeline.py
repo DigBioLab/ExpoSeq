@@ -8,7 +8,7 @@ import pandas as pd
 import pickle
 import os
 from .augment_data.randomizer import create_sequencing_report, create_binding_report
-from .settings import change_settings, change_save_settings, reports, plot_styler
+from .settings import change_settings, reports, plot_styler
 import subprocess
 from .augment_data.uploader import create_alignment_report
 from .settings.general_instructions import print_instructions
@@ -17,8 +17,7 @@ from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
-from ydata_profiling import ProfileReport
-import sweetviz
+
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=6,

@@ -5,7 +5,6 @@ from .loop_collect_reports import load_mixed_files, load_alignment_reports
 import pandas as pd
 from glob import glob
 from ..augment_data.check_reports import check_completeness
-import sys
 import pickle
 from ..augment_data.trimming import trimming
 try:
@@ -16,7 +15,6 @@ except:
 import random
 import string
 import shutil
-from ..settings.available_presets import data_list
 from .preset_chooser import ChooseMethod
 
 
