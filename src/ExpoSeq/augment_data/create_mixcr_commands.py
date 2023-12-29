@@ -2,17 +2,18 @@
 import os
 import sys
 
-def get_basename(files, paired_end_sequencing):
-    if paired_end_sequencing:
-        files = [os.path.normpath(j) for i in files for j in i]
-        basename = os.path.basename(files[0][0]).split(".")[0]
-    else:
-        files = files
-        basename = os.path.basename(files[0]).split(".")[0]
+def get_basename(files):
+    basename = os.path.basename(files[0]).split(".")[0]
     if len(basename) > 22:
         basename = print("Please change the name of your files so that they are shorter than 22 characters.\nThese names will later appear on the plots and they should be meaningful but also short enough.\nTherefore, the analysis has to be restarted.")
         sys.exit()
-    return basename, files
+    return basename
+
+
+    
+
+
+
 
 class CreateCommand:
     def __init__(self, module_dir, path_to_mixcr, paired_end_sequencing, experiment, files, java_heap_size, threads = None):
@@ -21,7 +22,8 @@ class CreateCommand:
         self.path_to_mixcr = path_to_mixcr
         self.threads = threads
         self.paired_end_sequencing = paired_end_sequencing
-        basename, self.files = get_basename(files, paired_end_sequencing)
+        self.files = files
+        basename = get_basename(self.files)
         self.basename = basename
         self.result = os.path.join(self.module_dir,
                                    "temp",

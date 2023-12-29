@@ -1,4 +1,4 @@
-from .mixcr_nils import process_mixcr
+from .mixcr_nils import RunMixcr
 from ast import literal_eval
 import os
 from .loop_collect_reports import load_mixed_files, load_alignment_reports
@@ -134,11 +134,12 @@ def method_one(experiment, repo_path, module_dir, testing, paired_end_test = "n"
                                 "my_experiments",
                                 experiment,
                                 "sequencing_report.csv")
-    process_mixcr(experiment,
-                  method=method,
-                  testing = testing,
-                  paired_end_sequencing=paired_end,
-                  add_args = add_args)
+    MixcrPip = RunMixcr(experiment,
+                        method,
+                        paired_end,
+                        add_args = add_args)
+       
+
     repo_path = os.path.join(module_dir,
                              "my_experiments",
                              experiment,
