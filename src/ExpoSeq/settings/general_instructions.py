@@ -56,9 +56,6 @@ Plot Commands
 - plot.rel_seq_abundance(): 
     Shows the clone fractions of a given sample in a tree map plot
 
-- plot.basic_cluster(): 
-    Clusters a batch of sequences based on a threshold for the Levenshtein distance.
-
 - plot.cluster_one_AG(): 
     Clusters sequences based on Levenshtein distance and shows binding data against a specific antigen.
 

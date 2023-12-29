@@ -46,7 +46,6 @@ src/ExpoSeq/plots/embedding_with_binding.py
 src/ExpoSeq/plots/hist_lvst_dist.py
 src/ExpoSeq/plots/layout_finder.py
 src/ExpoSeq/plots/length_distribution.py
-src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
 src/ExpoSeq/plots/plt_heatmap.py
 src/ExpoSeq/plots/protbert_embedding.py
