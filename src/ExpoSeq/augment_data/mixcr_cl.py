@@ -46,7 +46,6 @@ def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = 
     sequencing_report = pd.DataFrame([])
     for filename in files:
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment_name, filename)
-        print("go")
         subprocess.run(Commands.prepare_align(method))
         skip_sample = False
         

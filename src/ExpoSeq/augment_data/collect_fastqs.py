@@ -11,17 +11,20 @@ class CollectFastq():
         self.paired = []
         self.paired_end_sequencing = paired_end_sequencing
         
-    def add_fastq_files(self):
+    def add_fastq_files(self, path_to_files = None):
         filenames = []
         while True:
             try:
                 while True:
-                    path_to_files = filedialog.askdirectory()
-                    if os.path.isdir(path_to_files) == True:
-                        break
+                    if path_to_files == None:
+                        path_to_files = filedialog.askdirectory()
+                        if os.path.isdir(path_to_files) == True:
+                            break
+                        else:
+                            pass
                     else:
                         pass
-
+                    break
             except:
                 while True:
                     path_to_files = input("copy and paste the path to your directory")
@@ -30,7 +33,8 @@ class CollectFastq():
                     else:
                         print("Please enter a valid directory. Dont add a \ to the end of the directory path")
             path_to_files = os.path.abspath(path_to_files)
-            filenames.extend(glob(os.path.join(path_to_files, "*.fastq*")))
+            assert os.path.isdir(path_to_files) == True, f"{path_to_files} is not a directory"
+            filenames.extend(glob(os.path.join(path_to_files, "*.f*q*")))
             if len(filenames) == 0:
                 user_choice = input(
                     "You have not chosen a directory with fastq files.\n If you want to try again press 1.\n If you want to cancel the analysis press 2")
@@ -43,7 +47,10 @@ class CollectFastq():
                 for i in filenames:
                     print(os.path.basename(i))
                 while True:
-                    read_more_files = input("do you want to add another folder for the corresponding read direction? (Y/n)")
+                    if path_to_files != None:
+                        read_more_files = "N"
+                        break
+                    read_more_files = input("Do you want to add another folder for the corresponding read direction? (Y/n)")
                     if read_more_files in ["Y" "y", "n", "N"]:
                         break
                     else:
@@ -58,20 +65,22 @@ class CollectFastq():
                 raise Exception("Please remove the files which end with .zip. Only raw fastq files or .gz files are valid.")
             else:
                 pass
+            
+        
         return filenames
 
 
-    def get_filenames(self):
+    def get_filenames(self, filepath = None):
         while True:
-            filenames = self.add_fastq_files()
+            filenames = self.add_fastq_files(filepath)
             if len(filenames) == 0:
                 print("You have not added any fastq files the preprocessing is cancelled now.")
             else:
                 break
         return filenames
     
-    
-    def get_filename(self):
+    @staticmethod
+    def get_filename():
         try:
             while True:
                 path_to_file = filedialog.askopenfilename()
@@ -150,26 +159,35 @@ class CollectFastq():
                     
     def get_files(self,  cmd = False, path_to_forward = None, path_to_backward = None):
         if cmd == False: 
-            print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.\nFinally, the filename must not have any spaces.")
-            self.forward = self.get_filenames()
+            if path_to_forward == None:
+                print("Choose the directory where you store the fastq files with the forward reads or single end sequencing data. \nIf you want to continue with paired end sequencing data make sure that you store your reverse reads in a seperate folder. \nFurther make sure your chosen directory does not contain fastq files from other experiments.\nFinally, the filename must not have any spaces.")
+                self.forward = self.get_filenames()
+            else:
+                self.forward = self.get_filenames(path_to_forward)
+                assert os.path.isdir(path_to_forward) == True
             if self.paired_end_sequencing:
-                print("Now choose the directory where you store the fastq files with the backward reads.")
-                self.backward = self.get_filenames()
+                if path_to_backward == None:
+                    print("Now choose the directory where you store the fastq files with the backward reads.")
+                    self.backward = self.get_filenames()
+                    
+                else:
+                    assert os.path.isdir(path_to_backward) == True
+                    self.backward = self.get_filenames(path_to_backward)
+                    
                 self.get_pairs()
             else:
-                self.paired = self.forward
+                self.paired = [[forward] for forward in self.forward]
         else:
-            path_to_forward= os.path.abspath(path_to_forward)
-            self.forward.extend(glob(os.path.join(path_to_forward, "*.fastq*")))
+            if path_to_forward == None:
+                path_to_forward= os.path.abspath(path_to_forward)
+                self.forward.extend(glob(os.path.join(path_to_forward, "*.f*q*")))
             if self.paired_end_sequencing == True:
-                path_to_backward = os.path.abspath(path_to_backward)
-                self.backward.extend(glob(os.path.join(path_to_backward, "*.fastq*")))
+                if path_to_backward == None:
+                    path_to_backward = os.path.abspath(path_to_backward)
+                    self.backward.extend(glob(os.path.join(path_to_backward, "*.f*q*"))) 
                 self.get_pairs()
             else:
-                self.paired = self.forward
-
-                
- 
+                self.paired = [[forward] for forward in self.forward]
 
     def call_pairs(self):
          if self.paired_end_sequencing:
@@ -193,3 +211,25 @@ class CollectFastq():
                 break
             else:
                 pass
+            
+            
+class Test:
+    def __init__(self) -> None:
+        filenames = CollectFastq(paired_end_sequencing=False).add_fastq_files(path_to_files=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files")
+        assert type(filenames)  == list, "filenames is not a list"
+        assert type(filenames[0]) == str, "filenames[0] is not a str"
+        for i in filenames:
+            assert os.path.isfile(i) == True, "files are not added correctly"
+        SingleEnd = CollectFastq(paired_end_sequencing=False)
+        SingleEnd.get_files(path_to_forward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files")
+        assert type(SingleEnd.paired) == list, "paired is not a list"
+        assert type(SingleEnd.paired[0]) == list, "paired[0] is not a list"
+        assert type(SingleEnd.paired[0][0]) == str, "paired[0][0] is not a str"
+        assert os.path.isfile(SingleEnd.paired[0][0]) == True, "files are not added correctly"
+        PairedEnd = CollectFastq(paired_end_sequencing=True)
+        PairedEnd.get_files(path_to_forward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files\paired\forward", path_to_backward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files\paired\backward")
+        assert type(PairedEnd.paired) == list, "paired is not a list"
+        assert type(PairedEnd.paired[0]) == list, "paired[0] is not a list"
+        assert type(PairedEnd.paired[0][0]) == str, "paired[0][0] is not a str"
+        assert os.path.isfile(PairedEnd.paired[0][0]) == True, "files are not added correctly"
+        assert os.path.isfile(PairedEnd.paired[0][1]) == True, "files are not added correctly"
