@@ -3,11 +3,12 @@ from . import plot_styler
 import os
 
 class MyFigure:
-    def __init__(self, figure_style = "seaborn-v0_8-colorblind"):
+    def __init__(self, test, figure_style = "seaborn-v0_8-colorblind"):
         self.fig = plt.figure(1, figsize = (12, 10))
         self.ax = self.fig.gca()
         self.plot_type = "multi"
-        self.figure_style = figure_style        
+        self.figure_style = figure_style  
+        self.test = test
 
     def check_fig(self, ):
         if not plt.fignum_exists(1):
@@ -23,9 +24,11 @@ class MyFigure:
         self.use_style(self.figure_style)
         self.ax_visibility()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.showMaximized()
-        self.tighten()
+        #figManager = plt.get_current_fig_manager()
+        #figManager.window.showMaximized()
+        if self.test:
+            self.tighten()
+            plt.show(block = False)
         
 
     def tighten(self):

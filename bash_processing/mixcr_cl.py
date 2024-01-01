@@ -194,13 +194,15 @@ class CreateCommand:
                 self.threads = threads
             elif type(threads) == int:
                 self.threads = str(threads)
+        
         self.paired_end_sequencing = paired_end_sequencing
         if paired_end_sequencing:
             self.files = [os.path.normpath(j) for i in files for j in i]
             basename = os.path.basename(files[0][0]).split(".")[0]
         else:
-            self.files = files
+            self.files = files[0]
             basename = os.path.basename(files[0]).split(".")[0]
+            
         self.basename = basename
         self.result = os.path.join(self.module_dir,
                                    "temp",
@@ -293,9 +295,12 @@ class CreateCommand:
     def prepare_align(self, method, add_args):
         align_commands = self.create_parser()
         align_commands.extend(["align"])
-        print(method)
         align_commands.extend(["--preset", method])
-        align_commands.extend(self.files)
+        
+        if self.paired_end_sequencing != True:
+            align_commands.extend([self.files])
+        else:
+            align_commands.extend(self.files)
         align_commands.extend([self.result])
         align_commands.extend(["--no-warnings"])
         align_commands.extend(["--force-overwrite"])
@@ -307,6 +312,7 @@ class CreateCommand:
             align_commands.extend([add_args])
         else:
             pass
+        print(align_commands)
         return align_commands
 
     def prepare_assembly(self):
@@ -377,7 +383,7 @@ def mixcr_(path_to_mixcr, experiment_name,  path_to_forward, path_to_backward = 
                                         "temp",
                                         file))
         filename = [filename]
-
+        print(filename)
         Commands = CreateCommand(module_dir, path_to_mixcr, paired_end_sequencing, experiment_name, filename, java_heap_size, threads = threads)
 
         subprocess.run(Commands.prepare_align(method, add_arguments))

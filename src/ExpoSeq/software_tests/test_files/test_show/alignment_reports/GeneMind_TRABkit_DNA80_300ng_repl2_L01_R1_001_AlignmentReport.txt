@@ -1,0 +1,36 @@
+Analysis date: Tue Nov 07 14:07:03 CET 2023
+Input file(s): C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA80_300ng_repl2_L01_R1_001.fastq.gz
+Output file(s): c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA80_300ng_repl2_L01_R1_001.vdjca
+Version: 4.2.0; built=Thu Jan 26 20:40:26 CET 2023; rev=b0f194e0c6; lib=repseqio.v2.1
+Command line arguments: align --preset milab-human-tcr-dna-multiplex-cdr3 C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA80_300ng_repl2_L01_R1_001.fastq.gz c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA80_300ng_repl2_L01_R1_001.vdjca --no-warnings --force-overwrite --report c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\alignment_reports\GeneMind_TRABkit_DNA80_300ng_repl2_L01_R1_001_AlignmentReport.txt
+Analysis time: 21.64m
+Total sequencing reads: 5397785
+Successfully aligned reads: 5279794 (97.81%)
+Alignment failed, no hits (not TCR/IG?): 107423 (1.99%)
+Alignment failed because of absence of J hits: 10255 (0.19%)
+Alignment failed because of low total score: 313 (0.01%)
+Overlapped: 0 (0%)
+Overlapped and aligned: 0 (0%)
+Alignment-aided overlaps: 0 (NaN%)
+Overlapped and not aligned: 0 (0%)
+No CDR3 parts alignments, percent of successfully aligned: 1491 (0.03%)
+Partial aligned reads, percent of successfully aligned: 96330 (1.82%)
+TRA chains: 3101999 (58.75%)
+TRA non-functional: 1370181 (44.17%)
+TRB chains: 2177733 (41.25%)
+TRB non-functional: 463898 (21.3%)
+TRD chains: 59 (0%)
+TRD non-functional: 23 (38.98%)
+TRG chains: 1 (0%)
+TRG non-functional: 1 (100%)
+IGL chains: 2 (0%)
+IGL non-functional: 0 (0%)
+Realigned with forced non-floating bound: 0 (0%)
+Realigned with forced non-floating right bound in left read: 0 (0%)
+Realigned with forced non-floating left bound in right read: 0 (0%)
+Trimming report:
+  R1 Reads Trimmed Left: 110730 (2.05%)
+  R1 Reads Trimmed Right: 92771 (1.72%)
+  Average R1 Nucleotides Trimmed Left: 0.04622970348022383
+  Average R1 Nucleotides Trimmed Right: 0.04873647246046295
+======================================

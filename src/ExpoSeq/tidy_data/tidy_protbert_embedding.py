@@ -39,7 +39,7 @@ class TransformerBased:
             selected_rows = mix.fillna(0)
         selected_rows["cloneFraction"] = selected_rows["cloneFraction"].replace(0.0, max(selected_rows["cloneFraction"])) # all the added sequences from binding data get highest clone fraction to visualize them, otherwise they will not appear since the plot is fraction sensitive
         selected_rows = selected_rows.sort_values(by='cloneFraction', ascending=False)
-        selected_rows.drop_duplicates(subset='aaSeqCDR3', keep="first", inplace=True) # remove duplicates due to adding of binding data
+        selected_rows.drop_duplicates(subset=region_of_interest, keep="first", inplace=True) # remove duplicates due to adding of binding data
         sequences_filtered = selected_rows[region_of_interest]
         sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
         return sequences,sequences_filtered, selected_rows

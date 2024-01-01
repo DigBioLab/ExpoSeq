@@ -240,7 +240,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         if check_path_multiple([length_distr_single, rarefraction_single, clone_single]) != False:
             Builder.add_figure_layout([[1, 1], [1]], [length_distr_single, rarefraction_single, clone_single])
         else:
-            for i in [length_distr_single, rarefraction_single, logo_plot_single]:
+            for i in [length_distr_single, rarefraction_single, clone_single]:
                 if i != None:
                     Builder.add_figure(i)
                 else: 
@@ -336,60 +336,61 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     
     Builder.write_quarto(save_dir=plot_path)
     if binding_data is not None:
-        assert os.path.isdir(os.path.join(plot_path, "clustering_antigens")), f"The directory {os.path.join(plot_path, 'clustering_antigens')} does not exist"
-        assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "ls_binding_cluster")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'ls_binding_cluster')} does not exist"
-        assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "dendro_binding")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'dendro_binding')} does not exist"
-        assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "reports")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'reports')} does not exist"
-        Builder.create_headline("Cluster Antigens")
-        Builder.create_headline("Theory", section = "##")
-        if os.path.isfile(os.path.join("settings", "reports_binding.md")):
-            Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
-        if os.path.isfile(os.path.join("settings", "signature.md")):
-            Builder.md_to_text(os.path.join("settings", "signature.md"))
-        embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
-        embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
-        Builder.create_headline("Cluster with embedding", section = "##")
-        for sample in samples:
-            file = find_file_with_substring(embedding_antigen_path, sample)
-            if file != None:
-                Builder.create_headline(f"Sequence embedding of {sample}", section = "###")
-                Builder.add_figure(file)
-                try:
-                    report = find_file_with_substring(embedding_antigen_report, sample)
-                    cols_choice = ["tsne1", "tsne2", "binding", "sequences", "sequence_id"]
-                    cur_df = pd.read_excel(report)
-                    df_cols = cur_df.columns.tolist()
-                    incorrect_cols = [x for x in cols_choice if x not in df_cols]
-                    assert not incorrect_cols, "Either the user changed the default column header or the developer for the tsne clusters with the antigen"
-                    Builder.add_table(report, top_ = None, cols = cols_choice, max_column = "binding")
-                except:
-                    print("Something went wrong with creating the tsne binding plots in the report")
-            else:
-                pass
-        ls_cluster_binding = os.path.join(plot_path,"clustering_antigens", "ls_binding_cluster")
-        
-        ls_cluster_binding_report = os.path.join(ls_cluster_binding, "reports")
-        dendro_cluster_binding = os.path.join(plot_path,"clustering_antigens", "dendro_binding")
-        Builder.create_headline("Cluster binding data based on levenshtein distance", section = "##")
-        for sample in samples:
-            ls_file = find_file_with_substring(ls_cluster_binding, sample)
-            dendro_file = find_file_with_substring(dendro_cluster_binding, sample)
-            if ls_file != None:
-                Builder.create_headline(f"LS-Distance cluster for {sample}", section = "###")
-                if dendro_file != None:
-                    Builder.add_figure(ls_file)
-                    Builder.add_figure(dendro_file)
-              #      Builder.add_figure_horizontal(ncol = 2, picture_paths=[ls_file, dendro_file], figure_description="Cluster visualizations based on LS-distance")
+        if os.path.basename(plot_path) in binding_data.columns.tolist():
+            assert os.path.isdir(os.path.join(plot_path, "clustering_antigens")), f"The directory {os.path.join(plot_path, 'clustering_antigens')} does not exist"
+            assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "ls_binding_cluster")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'ls_binding_cluster')} does not exist"
+            assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "dendro_binding")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'dendro_binding')} does not exist"
+            assert os.path.isdir(os.path.join(plot_path, "clustering_antigens", "reports")), f"The directory {os.path.join(plot_path, 'clustering_antigens', 'reports')} does not exist"
+            Builder.create_headline("Cluster Antigens")
+            Builder.create_headline("Theory", section = "##")
+            if os.path.isfile(os.path.join("settings", "reports_binding.md")):
+                Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
+            if os.path.isfile(os.path.join("settings", "signature.md")):
+                Builder.md_to_text(os.path.join("settings", "signature.md"))
+            embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
+            embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
+            Builder.create_headline("Cluster with embedding", section = "##")
+            for sample in samples:
+                file = find_file_with_substring(embedding_antigen_path, sample)
+                if file != None:
+                    Builder.create_headline(f"Sequence embedding of {sample}", section = "###")
+                    Builder.add_figure(file)
+                    try:
+                        report = find_file_with_substring(embedding_antigen_report, sample)
+                        cols_choice = ["tsne1", "tsne2", "binding", "sequences", "sequence_id"]
+                        cur_df = pd.read_excel(report)
+                        df_cols = cur_df.columns.tolist()
+                        incorrect_cols = [x for x in cols_choice if x not in df_cols]
+                        assert not incorrect_cols, "Either the user changed the default column header or the developer for the tsne clusters with the antigen"
+                        Builder.add_table(report, top_ = None, cols = cols_choice, max_column = "binding")
+                    except:
+                        print("Something went wrong with creating the tsne binding plots in the report")
                 else:
-                    Builder.add_figure(ls_file)
-                try:
-                    report_file = find_file_with_substring(ls_cluster_binding_report, sample)
-                    Builder.add_table(report_file, top_ = 10)
-                except:
-                    print("Could not create report table for ls cluster")
-            else:
-                pass
-    else:
-        pass
+                    pass
+            ls_cluster_binding = os.path.join(plot_path,"clustering_antigens", "ls_binding_cluster")
+            
+            ls_cluster_binding_report = os.path.join(ls_cluster_binding, "reports")
+            dendro_cluster_binding = os.path.join(plot_path,"clustering_antigens", "dendro_binding")
+            Builder.create_headline("Cluster binding data based on levenshtein distance", section = "##")
+            for sample in samples:
+                ls_file = find_file_with_substring(ls_cluster_binding, sample)
+                dendro_file = find_file_with_substring(dendro_cluster_binding, sample)
+                if ls_file != None:
+                    Builder.create_headline(f"LS-Distance cluster for {sample}", section = "###")
+                    if dendro_file != None:
+                        Builder.add_figure(ls_file)
+                        Builder.add_figure(dendro_file)
+                #      Builder.add_figure_horizontal(ncol = 2, picture_paths=[ls_file, dendro_file], figure_description="Cluster visualizations based on LS-distance")
+                    else:
+                        Builder.add_figure(ls_file)
+                    try:
+                        report_file = find_file_with_substring(ls_cluster_binding_report, sample)
+                        Builder.add_table(report_file, top_ = 10)
+                    except:
+                        print("Could not create report table for ls cluster")
+                else:
+                    pass
+        else:
+            pass
     Builder.write_quarto(save_dir=plot_path)
 

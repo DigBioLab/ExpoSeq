@@ -5,13 +5,14 @@ from collections import Counter
 from textwrap import wrap
 
 
-def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings):
+def plot_USQ(fig, sequencing_report, samples, font_settings, legend_settings, region_of_interest):
     sub_table = cleaning_data(sequencing_report = sequencing_report,
                               samples = samples)
     x_axis = []
     y_axis = []
+    region_of_interest = region_of_interest.replace("aaSeq", "")
     for sample in range(len(sub_table)):
-        sequences = list(sub_table.iloc[sample]["nSeqCDR3"])
+        sequences = list(sub_table.iloc[sample]["nSeq" + region_of_interest])
         fraction = list(sub_table.iloc[sample]["cloneFraction"])
         counter = 0
         temp_list = []

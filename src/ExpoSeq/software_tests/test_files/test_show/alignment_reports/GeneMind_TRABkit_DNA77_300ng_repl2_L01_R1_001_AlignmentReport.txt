@@ -1,0 +1,34 @@
+Analysis date: Tue Nov 07 13:10:41 CET 2023
+Input file(s): C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA77_300ng_repl2_L01_R1_001.fastq.gz
+Output file(s): c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA77_300ng_repl2_L01_R1_001.vdjca
+Version: 4.2.0; built=Thu Jan 26 20:40:26 CET 2023; rev=b0f194e0c6; lib=repseqio.v2.1
+Command line arguments: align --preset milab-human-tcr-dna-multiplex-cdr3 C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA77_300ng_repl2_L01_R1_001.fastq.gz c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA77_300ng_repl2_L01_R1_001.vdjca --no-warnings --force-overwrite --report c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\alignment_reports\GeneMind_TRABkit_DNA77_300ng_repl2_L01_R1_001_AlignmentReport.txt
+Analysis time: 12.17m
+Total sequencing reads: 5565324
+Successfully aligned reads: 5326080 (95.7%)
+Alignment failed, no hits (not TCR/IG?): 223048 (4.01%)
+Alignment failed because of absence of J hits: 15855 (0.28%)
+Alignment failed because of low total score: 341 (0.01%)
+Overlapped: 0 (0%)
+Overlapped and aligned: 0 (0%)
+Alignment-aided overlaps: 0 (NaN%)
+Overlapped and not aligned: 0 (0%)
+No CDR3 parts alignments, percent of successfully aligned: 1517 (0.03%)
+Partial aligned reads, percent of successfully aligned: 70908 (1.33%)
+TRA chains: 2739869 (51.44%)
+TRA non-functional: 1171225 (42.75%)
+TRB chains: 2586176 (48.56%)
+TRB non-functional: 506181 (19.57%)
+TRD chains: 32 (0%)
+TRD non-functional: 16 (50%)
+IGL chains: 3 (0%)
+IGL non-functional: 0 (0%)
+Realigned with forced non-floating bound: 0 (0%)
+Realigned with forced non-floating right bound in left read: 0 (0%)
+Realigned with forced non-floating left bound in right read: 0 (0%)
+Trimming report:
+  R1 Reads Trimmed Left: 90003 (1.62%)
+  R1 Reads Trimmed Right: 72790 (1.31%)
+  Average R1 Nucleotides Trimmed Left: 0.03442980139161709
+  Average R1 Nucleotides Trimmed Right: 0.03808583291826316
+======================================
