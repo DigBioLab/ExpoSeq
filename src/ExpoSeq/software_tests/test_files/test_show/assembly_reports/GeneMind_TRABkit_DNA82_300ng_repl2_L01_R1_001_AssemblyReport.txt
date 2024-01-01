@@ -1,0 +1,32 @@
+Analysis date: Tue Nov 07 15:21:46 CET 2023
+Input file(s): c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA82_300ng_repl2_L01_R1_001.vdjca
+Output file(s): c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\clones_result\GeneMind_TRABkit_DNA82_300ng_repl2_L01_R1_001_clones.clns
+Version: 4.2.0; built=Thu Jan 26 20:40:26 CET 2023; rev=b0f194e0c6; lib=repseqio.v2.1
+Command line arguments: assemble c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA82_300ng_repl2_L01_R1_001.vdjca c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\clones_result\GeneMind_TRABkit_DNA82_300ng_repl2_L01_R1_001_clones.clns --force-overwrite --report c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\assembly_reports\GeneMind_TRABkit_DNA82_300ng_repl2_L01_R1_001_AssemblyReport.txt
+Analysis time: 5.1m
+Final clonotype count: 48654
+Average number of reads per clonotype: 87.29
+Reads used in clonotypes, percent of total: 4247112 (89.29%)
+Reads used in clonotypes before clustering, percent of total: 4490391 (94.4%)
+Number of reads used as a core, percent of used: 4398633 (97.96%)
+Mapped low quality reads, percent of used: 91758 (2.04%)
+Reads clustered in PCR error correction, percent of used: 243279 (5.42%)
+Reads pre-clustered due to the similar VJC-lists, percent of used: 0 (0%)
+Reads dropped due to the lack of a clone sequence, percent of total: 80912 (1.7%)
+Reads dropped due to a too short clonal sequence, percent of total: 4 (0%)
+Reads dropped due to low quality, percent of total: 0 (0%)
+Reads dropped due to failed mapping, percent of total: 52281 (1.1%)
+Reads dropped with low quality clones, percent of total: 0 (0%)
+Clonotypes eliminated by PCR error correction: 140866
+Clonotypes dropped as low quality: 0
+Clonotypes pre-clustered due to the similar VJC-lists: 0
+Clones dropped in post filtering: 0 (0%)
+Reads dropped in post filtering: 0.0 (0%)
+Alignments filtered by tag prefix: 0 (0%)
+TRA chains: 28717 (59.02%)
+TRA non-functional: 12405 (43.2%)
+TRB chains: 19936 (40.98%)
+TRB non-functional: 4211 (21.12%)
+TRD chains: 1 (0%)
+TRD non-functional: 1 (100%)
+======================================

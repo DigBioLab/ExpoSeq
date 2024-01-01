@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import community
 
 class Network_Embedding:
-    def __init__(self, ax, sequencing_report, list_experiments,model_choice, batch_size,font_settings,cmap = plt.cm.RdYlBu, nodesize = None, threshold_distance = 1) -> None:
+    def __init__(self, ax, sequencing_report, list_experiments,model_choice, batch_size,font_settings,cmap = plt.cm.RdYlBu, nodesize = None, threshold_distance = 1, region_of_interest="aaSeqCDR3") -> None:
         self.ax = ax
         Transformer = TransformerBased(choice = model_choice)
-        sequences,sequences_filtered,  selected_rows = Transformer.filter_sequences(sequencing_report, batch_size=batch_size, experiments = list_experiments, region_of_interest="aaSeqCDR3",binding_data = None )
+        sequences,sequences_filtered,  selected_rows = Transformer.filter_sequences(sequencing_report, batch_size=batch_size, experiments = list_experiments, region_of_interest=region_of_interest,binding_data = None )
         sequences_filtered = sequences_filtered.to_list()
         sequences_list = Transformer.embedding_per_seq(sequences, normalize = True)
         

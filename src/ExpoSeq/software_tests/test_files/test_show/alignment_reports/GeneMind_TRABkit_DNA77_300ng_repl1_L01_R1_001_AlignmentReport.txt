@@ -1,0 +1,32 @@
+Analysis date: Tue Nov 07 13:04:36 CET 2023
+Input file(s): C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001.fastq.gz
+Output file(s): c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001.vdjca
+Version: 4.2.0; built=Thu Jan 26 20:40:26 CET 2023; rev=b0f194e0c6; lib=repseqio.v2.1
+Command line arguments: align --preset milab-human-tcr-dna-multiplex-cdr3 C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\fastq\genemind_test\GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001.fastq.gz c:\Users\nilsh\my_projects\ExpoSeq\temp\GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001.vdjca --no-warnings --force-overwrite --report c:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_show\alignment_reports\GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001_AlignmentReport.txt
+Analysis time: 5.25m
+Total sequencing reads: 2430499
+Successfully aligned reads: 2331949 (95.95%)
+Alignment failed, no hits (not TCR/IG?): 92634 (3.81%)
+Alignment failed because of absence of J hits: 5824 (0.24%)
+Alignment failed because of low total score: 92 (0%)
+Overlapped: 0 (0%)
+Overlapped and aligned: 0 (0%)
+Alignment-aided overlaps: 0 (NaN%)
+Overlapped and not aligned: 0 (0%)
+No CDR3 parts alignments, percent of successfully aligned: 489 (0.02%)
+Partial aligned reads, percent of successfully aligned: 28276 (1.21%)
+TRA chains: 1125807 (48.28%)
+TRA non-functional: 477747 (42.44%)
+TRB chains: 1206113 (51.72%)
+TRB non-functional: 238719 (19.79%)
+TRD chains: 29 (0%)
+TRD non-functional: 19 (65.52%)
+Realigned with forced non-floating bound: 0 (0%)
+Realigned with forced non-floating right bound in left read: 0 (0%)
+Realigned with forced non-floating left bound in right read: 0 (0%)
+Trimming report:
+  R1 Reads Trimmed Left: 54127 (2.23%)
+  R1 Reads Trimmed Right: 42579 (1.75%)
+  Average R1 Nucleotides Trimmed Left: 0.0458675358434626
+  Average R1 Nucleotides Trimmed Right: 0.04931374174603651
+======================================

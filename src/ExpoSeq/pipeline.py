@@ -7,7 +7,6 @@ from .augment_data.uploader import upload
 import pandas as pd
 import pickle
 import os
-from .augment_data.randomizer import create_sequencing_report, create_binding_report
 from .settings import change_settings, reports, plot_styler
 import subprocess
 from .augment_data.uploader import create_alignment_report
@@ -20,44 +19,37 @@ from .settings.markdown_builder import create_quarto
 
 
 class PlotManager:
-    def __init__(self,experiment = None, test_version=False, test_exp_num=3, test_panrou_num=1, divisible_by=3, length_threshold=6,
-                 min_read_count=3, no_automation = False):
+    def __init__(self,experiment = None, test_version=False, divisible_by=3, length_threshold=6,
+                 min_read_count=3, no_automation = False, module_dir = None):
         self.is_test = test_version
         self.Settings = change_settings.Settings()
         self.Settings.check_dirs()
         self.global_params = self.Settings.read_global_vars()
-        self.module_dir = self.Settings.module_dir
-        if test_version == True:
-            self.experiment = "Test"
-            self.sequencing_report = create_sequencing_report(num_experiments=test_exp_num,
-                                                              panning_rounds=test_panrou_num,
-                                                              )
-            self.alignment_report = None
-            self.binding_data = create_binding_report(self.sequencing_report,
-                                                      num_antigen=test_panrou_num)
-            self.region_string = "CDR3"
-            self.region_of_interest = 'aaSeq' + self.region_string
-        else:
-            if experiment == None:
-                self.sequencing_report, self.alignment_report, self.experiment = upload()
-            else:
-                self.sequencing_report  = pd.read_csv(os.path.join(self.module_dir,
-                                                                   "my_experiments",
-                                                                   experiment,
-                                                                   "sequencing_report.csv"))
-                self.alignment_report = create_alignment_report(self.module_dir, experiment)
-                self.experiment = experiment
-            self.region_string = self.global_params["region_of_interest"]
-            if self.region_string == '':
-                self.region_string = "CDR3"
-            binding_report = reports.BindingReport(self.module_dir,
-                                                   self.experiment)
-            self.binding_data = binding_report.ask_binding_data()
+        if module_dir:
+            self.module_dir = module_dir
+        else:    
+            self.module_dir = self.Settings.module_dir
 
-        # check general settings and load them
-            self.region_of_interest = "aaSeq" + self.region_string
-            self.plot_path, self.mixcr_plots_path, self.experiment_path, self.report_path = self.Settings.check_dirs_automation(self.experiment,
-                                                                                                                                self.region_of_interest)
+        if experiment == None:
+            self.sequencing_report, self.alignment_report, self.experiment = upload()
+        else:
+            self.sequencing_report  = pd.read_csv(os.path.join(self.module_dir,
+                                                                "my_experiments",
+                                                                experiment,
+                                                                "sequencing_report.csv"))
+            self.alignment_report = create_alignment_report(self.module_dir, experiment)
+            self.experiment = experiment
+        self.region_string = self.global_params["region_of_interest"]
+        if self.region_string == '':
+            self.region_string = "CDR3"
+        binding_report = reports.BindingReport(self.module_dir,
+                                                self.experiment)
+        self.binding_data = binding_report.ask_binding_data()
+
+    # check general settings and load them
+        self.region_of_interest = "aaSeq" + self.region_string
+        self.plot_path, self.mixcr_plots_path, self.experiment_path, self.report_path = self.Settings.check_dirs_automation(self.experiment,
+                                                                                                                            self.region_of_interest)
         self.font_settings = self.Settings.read_font_settings()
         self.legend_settings = self.Settings.read_legend_settings()
         self.colorbar_settings = self.Settings.read_colorbar_settings()
@@ -74,8 +66,8 @@ class PlotManager:
         self.avail_regions = self.Report.get_fragment()
         self.sequencing_report = self.Report.sequencing_report
 
-        self.ControlFigure = MyFigure()
-        self.ControlFigure.set_backend()
+        self.ControlFigure = MyFigure(test_version)
+        self.ControlFigure.set_backend() 
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.experiments_list = self.unique_experiments
@@ -85,9 +77,8 @@ class PlotManager:
         self.Automation = None
         if self.Settings.automation == True and no_automation == False:
             self.full_analysis()
+            
         print_instructions()
-
-
 
     def create_report(self):
         self.Settings.move_markdown_files()
@@ -359,12 +350,12 @@ class PlotManager:
                     threshold_identity -= 0.01
                     
 
-        print("Start sequence embedding of samples")
+        print("Start sequence embedding of samples with 1000 iterations for tsne and a batch size of 300")
         if overlapping_samples != None:
             for single_experiment in list(overlapping_samples.keys()):
                 if not os.path.isfile(os.path.join(self.plot_path, "sequence_embedding","sgt", single_experiment + "embedding_tsne.png")):
                     try:
-                        self.embedding_tsne(samples = overlapping_samples[single_experiment],model = "sgt", strands = False, batch_size = 300)
+                        self.embedding_tsne(samples = overlapping_samples[single_experiment],model = "sgt", strands = False, batch_size = 300, iterations_tsne = 1000)
                         self.save_in_plots(os.path.join("sequence_embedding","sgt", single_experiment + "embedding_tsne"))
                     except:
                         print(f"Clustering with TSNE failed for {single_experiment}.")
@@ -381,10 +372,15 @@ class PlotManager:
                 
         else: 
             print("Neither Morosita Horn nor Jaccard matrix was generated, thus no sequence embedding can be created.")
-        
-        best_binder = self.get_best_binder()    
+        if self.region_of_interest not in self.binding_data.columns.tolist():
+            print(f"There is no binding data available for {self.region_of_interest}")
+            best_binder = None
+        else:
+            best_binder = self.get_best_binder()    
+            
         if best_binder == None:
             print("No binding data was found. Thus, no binding plots can be created.")
+
         else:
             clustering_antigens_path = os.path.join(self.plot_path, "clustering_antigens")
             if not os.path.isdir(clustering_antigens_path):
@@ -475,26 +471,31 @@ class PlotManager:
         self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold_aa, min_read_count)
         self.sequencing_report = self.Report.sequencing_report
 
-    def change_region(self):
+    def change_region(self, region = None):
         """
         :return: changes the region you want to analyse
         """
         intermediate = self.region_of_interest
-        possible_regions = self.avail_regions + ["all"]
-        region_string = input(
-            f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}. If you want to merge your sequences and analyse the longest possible consecutive sequences your dataset offers type 'all'")
+        possible_regions = self.avail_regions 
+        if region == None:
+            region_string = input(
+                f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}.")
+        else:
+            region_string = region
         if region_string in possible_regions:
-            if not region_string == "all":
+            if not region_string == "targetSequences":
                 region_string = region_string.replace("nSeq", "")
                 self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0)
             else:
-                self.Report.filter_longest_sequence()
-
+                region_string = "targetSequences"
+                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0 )
             self.sequencing_report = self.Report.sequencing_report
             self.region_of_interest = "aaSeq" + region_string
         else:
             print(f"The region you want to plot is not valid. The options are: {self.avail_regions}")
             self.region_of_interest = intermediate
+        plot_dir = os.path.dirname(self.plot_path)
+        self.plot_path = os.path.join(plot_dir, self.region_of_interest)
 
     def discard_samples(self, samples_to_discard):
         """
@@ -666,7 +667,8 @@ class PlotManager:
                               sequencing_report=self.sequencing_report,
                               samples=samples,
                               font_settings=self.font_settings,
-                              legend_settings=self.legend_settings)
+                              legend_settings=self.legend_settings,
+                              region_of_interest=self.region_of_interest,)
 
             self.ControlFigure.update_plot()
             self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1096,7 +1098,8 @@ class PlotManager:
                                                      self.font_settings,
                                                      cmap,
                                                      nodesize,
-                                                     threshold_distance)
+                                                     threshold_distance,
+                                                     self.region_of_interest)
         
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1584,3 +1587,15 @@ class PlotManager:
 
 
 
+def automation(make_report = False):
+    plot = PlotManager()
+    regions = plot.avail_regions
+    if "targetSequences" in regions:
+        regions.remove("targetSequences")
+    for region in regions:
+        plot.change_region(region = region)
+        plot.full_analysis()
+        if make_report == True:
+            plot.create_report()
+    
+        

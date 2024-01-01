@@ -26,3 +26,8 @@ AutoViz_Plots
 NanoNet*
 NanoNetResults
 test.ipynb
+src/test_data/test_files/paired/*
+__pypackages__
+.pytest_cache
+__pycache__
+exposeq_venv

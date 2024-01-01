@@ -1,6 +1,7 @@
 LICENSE
 MANIFEST.in
 README.md
+pyproject.toml
 setup.py
 src/ExpoSeq/__init__.py
 src/ExpoSeq/modelling.py
@@ -17,7 +18,6 @@ src/ExpoSeq/augment_data/collect_fastqs.py
 src/ExpoSeq/augment_data/create_mixcr_commands.py
 src/ExpoSeq/augment_data/load_data.py
 src/ExpoSeq/augment_data/loop_collect_reports.py
-src/ExpoSeq/augment_data/mixcr_analyze.py
 src/ExpoSeq/augment_data/mixcr_cl.py
 src/ExpoSeq/augment_data/mixcr_nils.py
 src/ExpoSeq/augment_data/preset_chooser.py
@@ -46,6 +46,7 @@ src/ExpoSeq/plots/embedding_with_binding.py
 src/ExpoSeq/plots/hist_lvst_dist.py
 src/ExpoSeq/plots/layout_finder.py
 src/ExpoSeq/plots/length_distribution.py
+src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
 src/ExpoSeq/plots/plt_heatmap.py
 src/ExpoSeq/plots/protbert_embedding.py
@@ -85,9 +86,10 @@ src/ExpoSeq/settings/reset.py
 src/ExpoSeq/settings/save_settings.txt
 src/ExpoSeq/settings/sequence_embedding.md
 src/ExpoSeq/settings/signature.md
-src/ExpoSeq/test_data/__init__.py
-src/ExpoSeq/test_data/all_alignment_reports.pickle
-src/ExpoSeq/test_data/test_files/__init__.py
+src/ExpoSeq/software_tests/__init__.py
+src/ExpoSeq/software_tests/test_files/__init__.py
+src/ExpoSeq/software_tests/tests/__init__.py
+src/ExpoSeq/software_tests/tests/test_functional_tests.py
 src/ExpoSeq/tidy_data/__init__.py
 src/ExpoSeq/tidy_data/barplot.py
 src/ExpoSeq/tidy_data/clustering.py

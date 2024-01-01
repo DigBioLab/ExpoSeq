@@ -2,6 +2,7 @@ from textwrap import wrap
 from ..tidy_data.tidy_protbert_embedding import TransformerBased
 import pandas as pd
 import matplotlib.pyplot as plt
+import warnings
 
 class Plot_Embedding:
     def __init__(self,ax, sequencing_report,model_choice, list_experiments,strands,add_clone_size, batch_size, pca_components, perplexity, iterations_tsne, font_settings, legend_settings, region_of_interest, binding_data = None, colorbar_settings = None, antigens = None, toxin_names = None, extra_figure = False):
@@ -10,10 +11,22 @@ class Plot_Embedding:
         self.filter_binding_data(region_of_interest, antigens)
         Transformer = TransformerBased(choice = model_choice)
         sequences, selected_rows, selected_rows = Transformer.filter_sequences(sequencing_report, batch_size, list_experiments, self.binding_data, region_of_interest=region_of_interest, )
+        if len(sequences) < pca_components:
+            warnings.warn(f"The number of sequences you have is {len(sequences)} but you need to have more sequences than principal components which is: {pca_components}") 
+            print(f"Number of principal components is set to number of sequences ({len(sequences)})")
+            pca_components = len(sequences) 
+            
 
         X = Transformer.do_pca(sequences, batch_size, pca_components)
-        peptides = selected_rows["aaSeqCDR3"].to_list()
+        peptides = selected_rows[region_of_interest].to_list()
         self.clones = selected_rows["cloneFraction"]
+        if pca_components < perplexity:
+            warnings.warn(f"The number of reduced dimensions you have is {pca_components} but you need to have more than perplexity which is: {perplexity}") 
+            print(f"Perplexity is set to the half of reduced dimensions ({int(int(pca_components)/2)})")
+            perplexity = int(int(pca_components)/2)
+            if perplexity < 1:
+                perplexity = 1
+                
         self.tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
         if self.binding_data is not None:
             self.create_binding_plot(selected_rows, antigens, region_of_interest, toxin_names, colorbar_settings)

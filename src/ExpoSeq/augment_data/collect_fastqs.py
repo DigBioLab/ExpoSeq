@@ -33,6 +33,7 @@ class CollectFastq():
                     else:
                         print("Please enter a valid directory. Dont add a \ to the end of the directory path")
             path_to_files = os.path.abspath(path_to_files)
+            print(path_to_files)
             assert os.path.isdir(path_to_files) == True, f"{path_to_files} is not a directory"
             filenames.extend(glob(os.path.join(path_to_files, "*.f*q*")))
             if len(filenames) == 0:
@@ -213,23 +214,3 @@ class CollectFastq():
                 pass
             
             
-class Test:
-    def __init__(self) -> None:
-        filenames = CollectFastq(paired_end_sequencing=False).add_fastq_files(path_to_files=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files")
-        assert type(filenames)  == list, "filenames is not a list"
-        assert type(filenames[0]) == str, "filenames[0] is not a str"
-        for i in filenames:
-            assert os.path.isfile(i) == True, "files are not added correctly"
-        SingleEnd = CollectFastq(paired_end_sequencing=False)
-        SingleEnd.get_files(path_to_forward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files")
-        assert type(SingleEnd.paired) == list, "paired is not a list"
-        assert type(SingleEnd.paired[0]) == list, "paired[0] is not a list"
-        assert type(SingleEnd.paired[0][0]) == str, "paired[0][0] is not a str"
-        assert os.path.isfile(SingleEnd.paired[0][0]) == True, "files are not added correctly"
-        PairedEnd = CollectFastq(paired_end_sequencing=True)
-        PairedEnd.get_files(path_to_forward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files\paired\forward", path_to_backward=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\test_data\test_files\paired\backward")
-        assert type(PairedEnd.paired) == list, "paired is not a list"
-        assert type(PairedEnd.paired[0]) == list, "paired[0] is not a list"
-        assert type(PairedEnd.paired[0][0]) == str, "paired[0][0] is not a str"
-        assert os.path.isfile(PairedEnd.paired[0][0]) == True, "files are not added correctly"
-        assert os.path.isfile(PairedEnd.paired[0][1]) == True, "files are not added correctly"
