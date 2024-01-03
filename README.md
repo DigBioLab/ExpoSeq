@@ -96,7 +96,7 @@ If you have conducted DELFIA or other techniques to receive binding data for cer
 |PEICEES|0|1929|100000|
 
   
-  You can upload the table as csv or xlsx file but make sure that the first column's name is *aaSeqCDR3* and *is in row 1*. Besides the given example, you can have a look at [an example file](src/ExpoSeq/test_data/test_files/binding_data.csv). If you decide to work with that file make sure to delete the first column which contains the row number.
+  You can upload the table as csv or xlsx file but make sure that the first column's name is *aaSeqCDR3* and *is in row 1*. Besides the given example, you can have a look at [an example file](src/ExpoSeq/test_data/software_tests/test_files/binding_data.csv). If you decide to work with that file make sure to delete the first column which contains the row number.
 
 If you have prepared your data you can upload it with:
 <br>
