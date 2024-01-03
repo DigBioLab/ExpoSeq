@@ -3,7 +3,7 @@ import os
 import shutil
 import os
 from ast import literal_eval
-import pkg_resources
+import ExpoSeq
 
 
 class Settings:
@@ -50,8 +50,8 @@ class Settings:
     
     def move_markdown_files(self):
         destination_folder= os.path.join(self.module_dir, "settings")
-        source = pkg_resources.get_distribution('ExpoSeq')
-        source_folder = os.path.join(source.location,"ExpoSeq", "settings")
+        source = os.path.dirname(os.path.abspath(ExpoSeq.__file__))
+        source_folder = os.path.join(source, "settings")
         for filename in os.listdir(source_folder):
             if filename.endswith('.md'):
                 if not os.path.isfile(os.path.join(destination_folder, filename)):
@@ -64,8 +64,8 @@ class Settings:
             destination_folder= os.path.join(self.module_dir, "settings")
             if not os.path.isdir(destination_folder):
                 os.mkdir(destination_folder)
-            source = pkg_resources.get_distribution('ExpoSeq')
-            source_folder = os.path.join(source.location,"ExpoSeq", "settings")
+            source = os.path.dirname(os.path.abspath(ExpoSeq.__file__))
+            source_folder = os.path.join(source,"settings")
             filename = "preset_list.csv"
             destination_path = os.path.join(destination_folder, filename)
             source_path = os.path.join(source_folder, filename)

@@ -89,6 +89,8 @@ Plot Commands
 - plot.connect_samples():
     Connects all samples in a network plot based on the Levenshtein distance.
     
+- plot.sample_diversity()
+    Shows the diversity of your samples based on the Inverse Simpson Index or the Shannon Index.
 -----------------------
 Non-Plot Commands
 -----------------------
@@ -127,6 +129,9 @@ Non-Plot Commands
     
 - plot.chat()
     Allows you to use artifical intelligence to investigate your data without coding. 
-    
+   
+- plot.show()
+    Sometimes the plot does not show up. You can force the pipeline to do so by typing this command. 
+
 '''
     print(instructions)
