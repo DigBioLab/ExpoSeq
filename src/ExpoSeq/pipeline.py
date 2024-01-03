@@ -1,6 +1,6 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
     logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster, \
-        clone_fraction
+        clone_fraction, diversity_plot
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
@@ -20,7 +20,7 @@ from .settings.markdown_builder import create_quarto
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False, divisible_by=3, length_threshold=6,
-                 min_read_count=3, no_automation = False, module_dir = None):
+                 min_read_count=3, no_automation = False, module_dir = None, allow_binding_data = True):
         self.is_test = test_version
         self.Settings = change_settings.Settings()
         self.Settings.check_dirs()
@@ -44,8 +44,13 @@ class PlotManager:
             self.region_string = "CDR3"
         binding_report = reports.BindingReport(self.module_dir,
                                                 self.experiment)
-        self.binding_data = binding_report.ask_binding_data()
-
+        if allow_binding_data != False:
+            if os.path.isfile(allow_binding_data):
+                self.binding_data = pd.read_csv(allow_binding_data)
+            else:
+                self.binding_data = binding_report.ask_binding_data()
+        else:
+            self.binding_data = None
     # check general settings and load them
         self.region_of_interest = "aaSeq" + self.region_string
         self.plot_path, self.mixcr_plots_path, self.experiment_path, self.report_path = self.Settings.check_dirs_automation(self.experiment,
@@ -248,6 +253,14 @@ class PlotManager:
                 self.save_in_plots(os.path.join("clone_fraction", experiment))
             except:
                 print(f"Clone fraction for {experiment} failed")
+        # diversity plot
+        
+        for method in ["Shannon", "InverseSimpson"]:
+            try:
+                self.diversity(method)
+                self.save_in_plots(os.path.join("diversity_" + method))
+            except:
+                print(f"Diversity for {method} plot failed")        
         #plot
         for experiment in self.experiments_list:
             try:
@@ -293,7 +306,6 @@ class PlotManager:
                 except:
                     pass
             
-
         # plot
         for experiment in self.experiments_list:
             try:
@@ -909,6 +921,8 @@ class PlotManager:
         if second_figure == True:
             print("close the second window before you continue")
 
+    def show(self):
+        self.ControlFigure.fig.show()
 
     def cluster_binding_data(self, samples=None, strands=True, model = 'Rostlab/prot_t5_xl_half_uniref50-enc', pca_components=80, perplexity=30, iterations_tsne=2500, batch_size=1000, antigens = None, show_antigen_names = False, extra_figure = False, save_report_path = None):
         """
@@ -1235,6 +1249,23 @@ class PlotManager:
                                            self.ControlFigure.plot_type)
 
         save_matrix(matrix, matrix_save_path)
+
+    def sample_diversity(self, method = "InverseSimpson"):
+        """
+        :param method: Default is InverseSimpson. You can choose between InverseSimpson and Shannon which are two available indices to measure the diversity of the sequences in each of your samples based on the clone fraction.
+        :return: Returns a barplot where the diversity of the sequences in each of your samples is shown.
+        """
+        assert method in ["InverseSimpson", "Shannon"], "Please enter a valid method. You can choose between InverseSimpson and Shannon"
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        diversity_plot.DiversityPlot(self.sequencing_report,
+                                     self.ControlFigure.ax, 
+                                     self.font_settings,
+                                     method = method)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
 
     def sorensen(self,cmap = "Blues",  annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from . import plot_styler
 import os
+import matplotlib
 
 class MyFigure:
     def __init__(self, test, figure_style = "seaborn-v0_8-colorblind"):
@@ -24,11 +25,13 @@ class MyFigure:
         self.use_style(self.figure_style)
         self.ax_visibility()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-        #figManager = plt.get_current_fig_manager()
-        #figManager.window.showMaximized()
+        if matplotlib.get_backend() == "Qt5Agg":
+            figManager = plt.get_current_fig_manager()
+            figManager.window.showMaximized()
         if self.test:
             self.tighten()
             plt.show(block = False)
+
         
 
     def tighten(self):

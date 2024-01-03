@@ -218,9 +218,21 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     figure_rarefraction = os.path.join(plot_path, "rarefraction_all.png")
     
     if check_path_multiple([figure_alignment, figure_rarefraction]) != False:
-        Builder.add_figure_horizontal(2, [figure_alignment, figure_rarefraction], "General Sequencing Quality")
+        Builder.add_figure_horizontal(2, [figure_alignment, figure_rarefraction], "")
     else:
         for i in [figure_alignment, figure_rarefraction]:
+            if i != None:
+                Builder.add_figure(i)
+            else:
+                pass
+    Builder.add_page()
+    # Diversity Plots
+    figure_diversity_shannon = os.path.join(plot_path, "diversity_Shannon.png")
+    figure_diversity_simp = os.path.join(plot_path, "diversity_InverseSimpson.png")
+    if check_path_multiple([figure_diversity_shannon, figure_diversity_simp]) != False:
+        Builder.add_figure_horizontal(2, [figure_diversity_shannon, figure_diversity_simp], "")
+    else:
+        for i in [figure_diversity_shannon, figure_diversity_simp]:
             if i != None:
                 Builder.add_figure(i)
             else:
@@ -335,6 +347,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
             pass
     
     Builder.write_quarto(save_dir=plot_path)
+    
     if binding_data is not None:
         if os.path.basename(plot_path) in binding_data.columns.tolist():
             assert os.path.isdir(os.path.join(plot_path, "clustering_antigens")), f"The directory {os.path.join(plot_path, 'clustering_antigens')} does not exist"
