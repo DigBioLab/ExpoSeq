@@ -42,6 +42,7 @@ src/ExpoSeq/plots/barplot.py
 src/ExpoSeq/plots/bert_network_embedding.py
 src/ExpoSeq/plots/clone_fraction.py
 src/ExpoSeq/plots/cluster_embedding.py
+src/ExpoSeq/plots/diversity_plot.py
 src/ExpoSeq/plots/embedding_with_binding.py
 src/ExpoSeq/plots/hist_lvst_dist.py
 src/ExpoSeq/plots/layout_finder.py
