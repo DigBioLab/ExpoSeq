@@ -60,7 +60,7 @@ quarto render YOUR/PATH/TO/FILE.qmd
 
 <br>
 
-If you want to create some plots by yourself, please take a look at the [jupyter script](additional_material/ExpoSeq_handsOn.ipynb) .
+If you want to create some plots by yourself, please take a look at the [jupyter script](additional_material/ExpoSeq_handsOn.ipynb).
 <br>
 
 In the following you can obtain an insight in the worklow of the pipeline after the initial call. There, the blue boxes indicate your input, gray are optional inputs while black and red are processing steps and output, respectively.
