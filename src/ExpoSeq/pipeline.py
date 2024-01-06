@@ -19,12 +19,23 @@ from .settings.markdown_builder import create_quarto
 
 
 class PlotManager:
-    def __init__(self,experiment = None, test_version=False, divisible_by=3, length_threshold=6,
-                 min_read_count=3, no_automation = False, module_dir = None, allow_binding_data = True):
+    def __init__(self,experiment = None, test_version=False,  length_threshold=6,
+                 min_read_count=3, no_automation = True, module_dir = None, allow_binding_data = True, remove_gaps = True):
+        """
+        :param experiment: the name of the experiment you want to analyse
+        :param test_version: Some settings are different if the pipeline is launched in test mode
+        :param length_threshold: Filter all amino acid sequences smaller than this value
+        :param min_read_count: Filter all amino acid sequences with less reads than this value
+        :param no_automation: If True, the pipeline will not launch the automatic plotting tool
+        :param module_dir: If you want to use the pipeline in a different directory than the main directory, you can specify it here
+        :param allow_binding_data: Default is True. If set to False, the pipeline will not ask for binding data
+        :param remove_gaps: Default is True. If set to False, the pipeline will not remove sequences with gaps
+        """
         self.is_test = test_version
         self.Settings = change_settings.Settings()
         self.Settings.check_dirs()
         self.global_params = self.Settings.read_global_vars()
+        self.remove_gaps = remove_gaps
         if module_dir:
             self.module_dir = module_dir
         else:    
@@ -64,9 +75,9 @@ class PlotManager:
         self.Report.check_sample_name(module_dir=self.module_dir, experiment_name = self.experiment)
         self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
         self.Report.prepare_seq_report(self.region_string,
-                                       divisible_by=divisible_by,
                                        length_threshold=length_threshold,
-                                       min_read_count=min_read_count)
+                                       min_read_count=min_read_count,
+                                       remove_gaps = self.remove_gaps)
        # self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
         self.sequencing_report = self.Report.sequencing_report
@@ -168,7 +179,8 @@ class PlotManager:
             else:
                 best_binding[i] = [best_key]
         return best_binding
-
+    
+    
     def model_protein():
         print("Visit one of these pages and explore modelling proteins for free!"
               f"ESM FOLD: https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/ESMFold.ipynb#scrollTo=CcyNpAvhTX6q")
@@ -257,7 +269,7 @@ class PlotManager:
         
         for method in ["Shannon", "InverseSimpson"]:
             try:
-                self.diversity(method)
+                self.sample_diversity(method)
                 self.save_in_plots(os.path.join("diversity_" + method))
             except:
                 print(f"Diversity for {method} plot failed")        
@@ -497,10 +509,10 @@ class PlotManager:
         if region_string in possible_regions:
             if not region_string == "targetSequences":
                 region_string = region_string.replace("nSeq", "")
-                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0)
+                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0, remove_gaps = self.remove_gaps)
             else:
                 region_string = "targetSequences"
-                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0 )
+                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0, remove_gaps = self.remove_gaps )
             self.sequencing_report = self.Report.sequencing_report
             self.region_of_interest = "aaSeq" + region_string
         else:
@@ -688,42 +700,45 @@ class PlotManager:
 
     def logoPlot_single(self,
                         sample=None,
-                        highlight_specific_pos=False,
+                        highlight_specific_pos=None,
                         method="proportion",
-                        chosen_seq_length="max"):
+                        chosen_seq_length=None,
+                        color_scheme = "chemistry",
+                        **kwargs):
         """
         :param sample: insert the sample name
         :param highlight_specific_pos: optional. you can highlight a specific position. For instance if you want to highlight the 3rd position, you insert 3.
         :param method: You can specify whether you want to have on your y axis the frequency of the amino acids or the information content in bits. The default is proportion. If you want to have the information content, insert "bits"
         :param chosen_seq_length: Max per default. If you plot the length distribution it will take the sequences with the highest bar there. You always analyze only one sequence length! You can enter an integer to analyze other lengths.
+        :param color_scheme: Default is skylign_protein. You can choose between skylign_protein, chemistry, weblogo_protein, hydrophobicity, dmslogo_charge, charge, NajafabadiEtAl2017.
         :return: A logo Plot which shows you the composition of aminoacids per position
         """
+        logo_schemes = ["skylign_protein", "chemistry", "weblogo_protein", "hydrophobicity", "dmslogo_charge", "charge", "NajafabadiEtAl2017"]
+        assert color_scheme in logo_schemes, f"You have to give a valid color scheme. The options are: {logo_schemes}"
         if sample == None:
             sample = self.preferred_sample
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         assert type(sample) == str, "You have to give a string as input for the sample"
-        if highlight_specific_pos != False:
+        if highlight_specific_pos != None:
             assert type(
                 highlight_specific_pos) == int, "You have to give an integer as input for the specific position you want to highlight"
-        if chosen_seq_length != "max":
+        if chosen_seq_length != None:
             assert type(chosen_seq_length) == int, "You have to give an integer as input for the sequence length you want to analyze"
         self.ControlFigure.clear_fig()
-        if chosen_seq_length == "max":
-            lengths = self.sequencing_report[self.sequencing_report["Experiment"] == sample][self.region_of_interest].str.len()
-            counts = lengths.value_counts()
-            chosen_seq_length = counts.idxmax()
-        else:
-            pass
-        logo_plot.plot_logo_single(self.ControlFigure.ax,
-                                   self.sequencing_report,
-                                   sample,
-                                   self.font_settings,
-                                   highlight_specific_pos,
-                                   self.region_of_interest,
-                                   method,
-                                   chosen_seq_length)
+
+        logo_plot.LogoPlot(self.ControlFigure.ax,
+                           self.sequencing_report,
+                            self.region_of_interest,
+                           sample,
+                            highlight_specific_pos,
+                            self.font_settings,
+                           chosen_seq_length,
+                           method,
+                           color_scheme,
+                           **kwargs
+                           )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1260,7 +1275,8 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         diversity_plot.DiversityPlot(self.sequencing_report,
-                                     self.ControlFigure.ax, 
+                                     self.ControlFigure.ax,
+                                     self.region_of_interest, 
                                      self.font_settings,
                                      method = method)
         self.ControlFigure.update_plot()

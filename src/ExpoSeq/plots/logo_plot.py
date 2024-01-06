@@ -7,12 +7,11 @@ from textwrap import wrap
 
 
 class LogoPlot:
-    def __init__(self,ax, sequencing_report, region_string, sample, chosen_seq_length, highlight_spec_position, font_settings):
+    def __init__(self,ax, sequencing_report, region_string, sample, highlight_spec_position, font_settings, chosen_seq_length, method, color_scheme, **kwargs):
         self.ax = ax
-        self.aa_distribution = self.cleaningPlot(sample, sequencing_report, chosen_seq_length, region_string)
+        self.chosen_seq_length = self.find_seq_length(sequencing_report, sample, chosen_seq_length)
+        self.aa_distribution, chosen_seq_length, length_filtered_seqs = self.cleaningPlot(sample, sequencing_report, region_string, method)
        # self.createPlot()
-        self.chosen_seq_length = chosen_seq_length
-        self.highlight_spec_position = highlight_spec_position
         self.font_settings = font_settings
         self.func_type = {
     "alpha": [0.01, 0.01, 0.01, 1],
@@ -24,14 +23,32 @@ class LogoPlot:
             "shade": "CustomScale",
             "fade": "CustomScale",
         }
+        self.createPlot(color_scheme=color_scheme, **kwargs)
+        self.add_style(highlight_spec_position, sample)
         
-        
-                
-    def cleaningPlot(self, sample, sequencing_report, chosen_seq_length, region_string):
+    
+    @staticmethod
+    def find_seq_length(sequencing_report, sample, chosen_seq_length):
+        filtered_data = sequencing_report[sequencing_report["Experiment"] == sample]
+        length_counts = filtered_data["aaSeqCDR3"].str.len().value_counts()
+
+        if chosen_seq_length == None:
+            max_length = length_counts.idxmax()
+            chosen_seq_length = max_length
+        else:
+            if chosen_seq_length in length_counts:
+                pass
+            else:
+                print("The chosen sequence length is not in the data. The most frequent sequence length was chosen instead")
+                max_length = length_counts.idxmax()
+                chosen_seq_length = max_length
+        return chosen_seq_length
+    def cleaningPlot(self, sample, sequencing_report, region_string, method):
         aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
                                                                     sequencing_report,
-                                                                    chosen_seq_length,
-                                                                    region_string)
+                                                                    self.chosen_seq_length,
+                                                                    region_string,
+                                                                    method)
         return aa_distribution, sequence_length, length_filtered_seqs
     
     def createPlot(self,shade_below = .5, fade_below = .5, font_name = 'Arial Rounded MT Bold', color_scheme = "skylign_protein", show_spines = False,):
@@ -50,25 +67,28 @@ class LogoPlot:
                     rotation=0)
         
 
-    def add_style(self, highlight_specific_pos):
-        original_fontsize = self.font_settings["fontsize"]
-        self.ax.set_xlabel("Frequency", **self.font_settings)
-        self.ax.set_ylabel("Position on sequence", **self.font_settings)
-        self.font_settings["fontsize"] = 22
-        plt.title("Logo Plot of " + self.sample + " with sequence length " + str(self.chosen_seq_length), **self.font_settings)
-        self.font_settings["fontsize"] = original_fontsize
-        labels_true = list(range(0, self.chosen_seq_length))
-        numbers_true = list(range(1, self.chosen_seq_length + 1))
-        plt.xticks(labels_true, numbers_true)
-        if highlight_specific_pos != False:
-            self.logo_plot.highlight_position(p=5,
-                                        color='gold',
-                                        alpha=.5)
+    def add_style(self, highlight_specific_pos, sample):
+        if "fontsize" in self.font_settings.keys():
+            original_fontsize = self.font_settings["fontsize"]
+            self.ax.set_ylabel("Frequency", **self.font_settings)
+            self.ax.set_xlabel("Position on sequence", **self.font_settings)
+            self.font_settings["fontsize"] = 22
+            plt.title("Logo Plot of " + sample + " with sequence length " + str(self.chosen_seq_length), **self.font_settings)
+            self.font_settings["fontsize"] = original_fontsize
+            labels_true = list(range(0, self.chosen_seq_length))
+            numbers_true = list(range(1, self.chosen_seq_length + 1))
+            plt.xticks(labels_true, numbers_true)
+            if highlight_specific_pos != None:
+                self.logo_plot.highlight_position(p=5,
+                                            color='gold',
+                                            alpha=.5)
 
 
 
 
-def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, region_string,method = "proportion", chosen_seq_length = 16):
+
+
+def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, region_string,method = "proportion", chosen_seq_length = 16, color_scheme = "skylign_protein"):
     aa_distribution, chosen_seq_length, length_filtered_seqs = cleaning(sample,
                                 sequencing_report,
                                 chosen_seq_length,
@@ -79,7 +99,7 @@ def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_spe
                                shade_below=.5,
                                fade_below=.5,
                                font_name='Arial Rounded MT Bold',
-                               color_scheme="skylign_protein",
+                               color_scheme=color_scheme,
                                show_spines=False,
                                ax=ax,
                                )

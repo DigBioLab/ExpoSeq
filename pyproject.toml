@@ -51,4 +51,4 @@ test = [
 
 [tool.pdm.scripts]
 test = "python -m pytest -s src/ExpoSeq/software_tests/tests"
-
+test_new = "python -m pytest -s src/ExpoSeq/software_tests/test_new"

@@ -7,11 +7,11 @@ import time
 
 
 class DiversityPlot:
-    def __init__(self, sequencing_report, ax, font_settings = {}, method = "InverseSimpson"):
+    def __init__(self, sequencing_report, ax, region_of_interest, font_settings = {},  method = "InverseSimpson",):
         self.ax = ax
         self.method = method
         self.font_settings = font_settings
-        values, unique_experiments = self.tidy(sequencing_report)
+        values, unique_experiments = self.tidy(sequencing_report, region_of_interest)
         self.create_base_plot(values, unique_experiments)
         self.add_plot_addons()
         self.set_title()
@@ -25,12 +25,12 @@ class DiversityPlot:
     def calc_shannon_index(clones):
         return -np.sum(clones * np.log(clones))
         
-    def tidy(self, sequencing_report):
+    def tidy(self, sequencing_report, region_of_interest):
         values = []
         unique_experiments = sequencing_report["Experiment"].unique().tolist()
         for experiment in unique_experiments:
             exp_spec = sequencing_report[sequencing_report["Experiment"] == experiment]
-            aa_seqs = exp_spec["aaSeqCDR3"]
+            aa_seqs = exp_spec[region_of_interest]
             clones = exp_spec["cloneFraction"]
             if self.method == "InverseSimpson":
                 values.append(self.calc_simpson_index(clones))

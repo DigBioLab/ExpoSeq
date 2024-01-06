@@ -180,7 +180,8 @@ def create_quarto(experiment, plot_path, binding_data, samples):
     assert os.path.isdir(os.path.join(plot_path, "rarefraction_curves")), f"The directory {os.path.join(plot_path, 'rarefraction_curves')} does not exist"
     assert os.path.isdir(os.path.join(plot_path, "logo_plots")), f"The directory {os.path.join(plot_path, 'logo_plots')} does not exist"
     Builder = QuartoBuilder(experiment)
-    Builder.create_headline("Basic Overview")
+    region = os.path.basename(plot_path)
+    Builder.create_headline(f"Basic Overview - {region}")
     Builder.create_headline("Theory", section = "##")
     if os.path.isfile(os.path.join("settings", "rarefraction_curves_desc.md")):
         Builder.md_to_text(os.path.join("settings", "rarefraction_curves_desc.md"))
@@ -190,8 +191,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         Builder.md_to_text(os.path.join("settings", "morosita_horn.md"))
     if os.path.isfile(os.path.join("settings", "jaccard.md")):
         Builder.md_to_text(os.path.join("settings", "logo_plot.md"))
-    if os.path.isfile(os.path.join("settings", "signature.md")):
-        Builder.md_to_text(os.path.join("settings", "signature.md"))
+
     #Builder.
     Builder.create_headline("Identity between samples", section = "##")
     Builder.create_headline("Identity based on Morosita Horn Index", section = "###")
@@ -279,8 +279,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
         Builder.md_to_text(os.path.join("settings", "dendrogram_cluster.md"))
     if os.path.isfile(os.path.join("settings", "sequence_embedding.md")):
         Builder.md_to_text(os.path.join("settings", "sequence_embedding.md"))
-    if os.path.isfile(os.path.join("settings", "signature.md")):
-        Builder.md_to_text(os.path.join("settings", "signature.md"))
+
     report_seq_cluster = os.path.join(ls_clusters_dir, "reports")
     
     Builder.create_headline("Levenshtein distance based", section="##")
@@ -358,8 +357,7 @@ def create_quarto(experiment, plot_path, binding_data, samples):
             Builder.create_headline("Theory", section = "##")
             if os.path.isfile(os.path.join("settings", "reports_binding.md")):
                 Builder.md_to_text(os.path.join("settings", "reports_binding.md"))
-            if os.path.isfile(os.path.join("settings", "signature.md")):
-                Builder.md_to_text(os.path.join("settings", "signature.md"))
+
             embedding_antigen_path = os.path.join(plot_path, "clustering_antigens")
             embedding_antigen_report = os.path.join(embedding_antigen_path, "reports")
             Builder.create_headline("Cluster with embedding", section = "##")
@@ -404,6 +402,6 @@ def create_quarto(experiment, plot_path, binding_data, samples):
                 else:
                     pass
         else:
-            pass
+            print(f"No plots with binding data were included in the report.\n If you have plots with binding data in {plot_path} please make sure that you upload the binding data to the pipeline with plot.add_binding_data() before you run plot.create_report()")
     Builder.write_quarto(save_dir=plot_path)
 
