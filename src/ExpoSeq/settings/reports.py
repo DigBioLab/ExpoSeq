@@ -44,14 +44,15 @@ class SequencingReport:
         return avail_cols
 
     
-    def filter_region(self, region_string):
+    def filter_region(self, region_string, remove_gaps = True):
         fixed_cols = ["Experiment", "cloneId", "readCount", "readFraction"]
         if region_string == "targetSequences":
             aa_string = "aaSeqtargetSequences"
             nseq_string = "nSeqtargetSequences"
             self.sequencing_report = self.origin_seq_report.copy()
             self.sequencing_report.rename(columns={region_string: nseq_string}, inplace=True) 
-            self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
+            if remove_gaps:
+                self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
             self.sequencing_report[aa_string] = self.sequencing_report[nseq_string].apply(self.translate_nucleotide_to_amino_acid)
             added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
             cols_of_interest = fixed_cols + added_columns
@@ -60,7 +61,10 @@ class SequencingReport:
             added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
             cols_of_interest = fixed_cols + added_columns
             self.sequencing_report = self.origin_seq_report[cols_of_interest]
-            self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
+            if remove_gaps:
+                self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)] # removes gaps indirectly
+        self.sequencing_report = self.remove_seq_errors(self.sequencing_report, region_string)
+
        # self.sequencing_report["aaSeq" + region_string] = self.sequencing_report["nSeq" + region_string].apply(self.translate_sequence)
     
     @staticmethod
@@ -68,7 +72,7 @@ class SequencingReport:
         seq = Seq(nucleotide_sequence)
         return str(seq.translate())    
 
-    def trim_data(self, region_string, divisible_by = 3,length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
+    def trim_data(self, region_string, length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
         aa_string = "aaSeq" + region_string
         nseq_string = "nSeq" + region_string
         assert aa_string in self.sequencing_report.columns.tolist(), f"{self.sequencing_report.columns.tolist()}"
@@ -86,7 +90,6 @@ class SequencingReport:
 
         sequencing_report = sequencing_report.reset_index()
 
-        sequencing_report = sequencing_report[(sequencing_report["lengthOfCDR3"] % divisible_by) == 0]
         sequencing_report = sequencing_report[(sequencing_report["aaSeq" + region_string].str.len()) > length_threshold ]
         sequencing_report = sequencing_report[(sequencing_report["readCount"] > (min_read_count + 1))]
 
@@ -95,15 +98,23 @@ class SequencingReport:
         self.sequencing_report[new_fraction] = np.array(new_column)
         self.sequencing_report.drop(columns = ["readFraction"], inplace = True)
         self.sequencing_report.drop(columns = ["index"], inplace = True)
-
+        
+        
     def remove_not_covered(self):
         self.sequencing_report = self.sequencing_report[~self.sequencing_report.applymap(lambda x: x == "region_not_covered").any(axis=1)]
 
-    def prepare_seq_report(self, region_string, divisible_by, length_threshold, min_read_count):
-        self.filter_region(region_string)
-        self.trim_data(region_string, divisible_by, length_threshold, min_read_count,)
-        self.remove_not_covered()
     
+    @staticmethod
+    def remove_seq_errors(sequencing_report, region_string):
+        sequencing_report = sequencing_report.loc[~sequencing_report["aaSeq" + region_string].str.contains("[*]")]
+        return sequencing_report
+    
+    def prepare_seq_report(self, region_string, length_threshold, min_read_count, remove_gaps = True):
+        self.filter_region(region_string, remove_gaps) # sequencing errors are removed here and sequences with gaps are indirectly removed with: divisible_by = 3
+        self.trim_data(region_string, length_threshold, min_read_count,)
+        self.remove_not_covered()
+       # self.remove_seq_errors()
+
     
     def check_sample_name(self, module_dir, experiment_name):
         sample_names = self.origin_seq_report["Experiment"].unique().tolist()

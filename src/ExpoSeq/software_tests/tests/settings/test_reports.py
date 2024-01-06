@@ -10,8 +10,12 @@ def test_sequencingreportclass():
     min_read_count = 10
     example_report = pd.read_csv(report_path)
     Report = SequencingReport(example_report)
-    Report.prepare_seq_report(region_string = "CDR3", divisible_by=divisble_by, length_threshold = length_threshold, min_read_count=min_read_count)
+    Report.prepare_seq_report(region_string = "CDR3",length_threshold = length_threshold, min_read_count=min_read_count, remove_gaps=False)
+    test = Report.sequencing_report    
+    assert Report.sequencing_report["aaSeqCDR3"].str.contains("_").any(), "There are no sequence errors in test file"
+    Report.prepare_seq_report(region_string = "CDR3", length_threshold = length_threshold, min_read_count=min_read_count, remove_gaps=True)
     test = Report.sequencing_report
+    assert not test["aaSeqCDR3"].str.contains("[*_]").any(), "There are still sequence errors in test file"
     experiment_names = test["Experiment"].unique().tolist()
     for exp in experiment_names:
         exp_specific = test[test["Experiment"] == exp]
@@ -20,12 +24,15 @@ def test_sequencingreportclass():
     assert "nSeqCDR3" in test.columns.tolist(), "Column not in sequencing report"
     assert test["aaSeqCDR3"].str.len().min() > length_threshold, "Sequence length filter does not work"
     assert test["readCount"].min() > min_read_count, "Read count filter does not work"
+    for exp in experiment_names:
+        sub_test = test[test["Experiment"] == exp]
+        assert sub_test["cloneFraction"].sum() == 1, "cloneFraction does not sum up to 1" # most important test, otherwise data is not tidied correctly
     unitest_dir = os.path.join("src", "ExpoSeq", "software_tests", "test_files","my_experiments", "unitest")
     if not os.path.isdir(unitest_dir):
         os.mkdir(unitest_dir)
     Report.check_sample_name(unitest_dir, "not_existent")
     assert not os.path.isfile(os.path.join(unitest_dir, "not_existend", "sequencing_report.csv"))
-    Report.prepare_seq_report(region_string="targetSequences", divisible_by=divisble_by, length_threshold = length_threshold, min_read_count=min_read_count)
+    Report.prepare_seq_report(region_string="targetSequences",  length_threshold = length_threshold, min_read_count=min_read_count)
     assert "nSeqtargetSequences" in Report.sequencing_report.columns.tolist()
     assert "aaSeqtargetSequences" in Report.sequencing_report.columns.tolist()
     assert "aaSeqCDR3" not in Report.sequencing_report.columns.tolist(), f"{Report.sequencing_report.columns.tolist()}"
@@ -34,3 +41,4 @@ def test_sequencingreportclass():
 
 
 
+test_sequencingreportclass()

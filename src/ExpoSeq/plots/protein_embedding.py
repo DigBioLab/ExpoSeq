@@ -21,7 +21,7 @@ class Plot_Embedding:
         peptides = selected_rows[region_of_interest].to_list()
         self.clones = selected_rows["cloneFraction"]
         if pca_components < perplexity:
-            warnings.warn(f"The number of reduced dimensions you have is {pca_components} but you need to have more than perplexity which is: {perplexity}") 
+            warnings.warn("The number of reduced dimensions you have is " + str(pca_components) + "but you need to have more than perplexity which is: " + str(perplexity)) 
             print(f"Perplexity is set to the half of reduced dimensions ({int(int(pca_components)/2)})")
             perplexity = int(int(pca_components)/2)
             if perplexity < 1:

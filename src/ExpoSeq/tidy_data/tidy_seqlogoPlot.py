@@ -18,7 +18,7 @@ def cleaning(sample_name, report, chosen_seq_length, region_string, method):
     for seq in sequences:
         for aa_position in range(len(seq)):
             aminoacid = seq[aa_position]
-            if aminoacid == '*':
+            if aminoacid == '*' or aminoacid == "_":
                 pass
             else:
                 compDict[aminoacid][aa_position] += 1
