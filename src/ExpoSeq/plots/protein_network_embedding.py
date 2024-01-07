@@ -60,7 +60,6 @@ class Network_Embedding:
             nodesize[y] = int(n * 500)
         return nodesize
     
-    @staticmethod     
     def generate_plot(self, G, nodesize, cmap):
         partition = community.best_partition(G)
         pos = nx.spring_layout(G)

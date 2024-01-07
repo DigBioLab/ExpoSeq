@@ -97,7 +97,6 @@ def clusterSeq(ax, sequencing_report, samples: list, max_ld, min_ld, batch_size,
 def cluster_single_AG(fig, sequencing_report, antigen, binding_data, max_ld, min_ld, batch_size, region_string,
                       preferred_cmap="Blues", specific_experiments=False, label_type="numbers"):
     assert antigen in binding_data.columns, "it seems like your antigen does not exist in the binding data. Please enter the correct value"
-
     if specific_experiments != False:
         report_batch = sequencing_report[sequencing_report['Experiment'].isin(specific_experiments)]
     else:

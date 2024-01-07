@@ -25,7 +25,7 @@ class MyFigure:
         self.use_style(self.figure_style)
         self.ax_visibility()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
-        if matplotlib.get_backend() == "Qt5Agg":
+        if matplotlib.get_backend() == "Qt5Agg" and self.test != True:
             figManager = plt.get_current_fig_manager()
             figManager.window.showMaximized()
         if self.test:
