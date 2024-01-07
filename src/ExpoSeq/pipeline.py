@@ -20,7 +20,7 @@ from .settings.markdown_builder import create_quarto
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
-                 min_read_count=3, no_automation = True, module_dir = None, allow_binding_data = True, remove_gaps = True):
+                 min_read_count=3, no_automation = False, module_dir = None, allow_binding_data = True, remove_gaps = True):
         """
         :param experiment: the name of the experiment you want to analyse
         :param test_version: Some settings are different if the pipeline is launched in test mode
@@ -73,7 +73,7 @@ class PlotManager:
         
         self.Report = reports.SequencingReport(self.sequencing_report)
         self.Report.check_sample_name(module_dir=self.module_dir, experiment_name = self.experiment)
-        self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
+        self.experiments_list  = self.sequencing_report["Experiment"].unique().tolist()
         self.Report.prepare_seq_report(self.region_string,
                                        length_threshold=length_threshold,
                                        min_read_count=min_read_count,
@@ -86,7 +86,6 @@ class PlotManager:
         self.ControlFigure.set_backend() 
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
-        self.experiments_list = self.unique_experiments
         self.preferred_sample = self.experiments_list[0]
         self.java_heap_size = 1000
         self.change_preferred_antigen()
@@ -151,7 +150,7 @@ class PlotManager:
         found_antigens = self.binding_data.columns.to_list()[1:]
         best_binding = {}
 
-        for i in self.unique_experiments:
+        for i in self.experiments_list:
             sub_report = self.sequencing_report[self.sequencing_report["Experiment"] == i]
             merged_report = sub_report.merge(self.binding_data, how = "inner")
             clone_fractions = merged_report["cloneFraction"]
@@ -583,40 +582,37 @@ class PlotManager:
     def close(self):
         plt.close()
 
-    def change_experiment_names(self, specific=None, change_whole_dic=False):
+    def change_experiment_names(self, specific=None):
         """
         :param specific: optional parameter. You can use this function to change the names of a specific sample.
-        :param change_whole_dic: optional Parameter. The renaming can be done by using a dictionary and map it to the labels. You can change multiple or all labels by adding the new dictionary for this parameter.
         :return:You can use this function to change the name of your samples. Thus, you can change the labels of your plots.
         """
 
-        self.unique_experiments = self.sequencing_report["Experiment"].unique().tolist()
-        self.unique_experiments = dict(zip(self.unique_experiments, self.unique_experiments))
+        self.expreiments_list = self.sequencing_report["Experiment"].unique().tolist()
+        experiments_dic = dict(zip(self.experiments_list, self.experiments_list))
         if specific != None:
             assert type(
                 specific) == str, "You have to give a string (inside: "") as input for the specific sample you want to change"
-        if change_whole_dic != False:
-            assert type(
-                change_whole_dic) == dict, "You have to give a dictionary as input for the specific sample you want to change"
-        if change_whole_dic == False:
-            if specific == None:
-                print(
-                    "You will no go through all your samples and you will be able to change their names. If you want to skip a samples, just press enter.")
-                for key in self.unique_experiments:
-                    print(f"Current value for {key}: {self.unique_experiments[key]}")
-                    new_value = input("Enter a new value or press any key to skip")
-                    if len(new_value) > 1:
-                        self.unique_experiments[key] = new_value
-                    else:
-                        pass
-            else:
-                new_value = input("Enter the new name for " + specific)
-                self.unique_experiments[specific] = new_value
-            self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(self.unique_experiments)
-        else:
-            with open("test_data" + "/experiment_names.pickle", "wb") as f:
-                pickle.dump(change_whole_dic, f)
 
+        if specific == None:
+            print(
+                "You will no go through all your samples and you will be able to change their names. If you want to skip a samples, just press enter.")
+            for key in self.experiments_list:
+                print(f"Current value for {key}: {experiments_dic[key]}")
+                new_value = input("Enter a new value or press any key to skip")
+                if len(new_value) > 1:
+                    experiments_dic[key] = new_value
+                else:
+                    pass
+        else:
+            new_value = input("Enter the new name for " + specific)
+            experiments_dic[specific] = new_value
+        self.Report.renew_exp_names_origin(experiments_dic, self.experiment_path)
+        self.experiments_list = list(experiments_dic.values())
+        self.sequencing_report["Experiment"] = self.sequencing_report["Experiment"].map(experiments_dic)
+
+        
+        
     def alignment_quality(self, log_transformation=False):
         """
 

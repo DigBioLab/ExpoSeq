@@ -128,6 +128,20 @@ class SequencingReport:
         if os.path.isdir(os.path.dirname(path_file)):
             self.origin_seq_report.to_csv(path_file, index = False)
         
+    def renew_exp_names_origin(self, replacement_mapping, path_report):
+        self.origin_seq_report["Experiment"] = self.origin_seq_report["Experiment"].replace(replacement_mapping)
+        user_input = input("Do you want to save and change the new names in the sequencing report? - If so, you will not have to change the names again if you restart the program. Y/n")
+        while True:
+            if user_input.lower() in ["Y", "y", "n", "N"]:
+                if user_input.lower() in ["Y", "y"]:
+                    self.origin_seq_report.to_csv(os.path.join(path_report, "sequencing_report.csv"), index = False)
+                else:
+                    pass
+                break
+            else:
+                print("Please enter Y or n")
+            
+        
 
 
 class BindingReport:
