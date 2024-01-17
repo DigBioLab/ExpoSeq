@@ -3,28 +3,54 @@ import matplotlib.pyplot as plt
 from ..plots.layout_finder import best_layout
 from textwrap import wrap
 
-def length_distribution_single(fig,ax, sequencing_report, sample, font_settings, region_string):
-    batch = sequencing_report[sequencing_report["Experiment"] == sample]
-    length = batch[region_string].str.len()
-    unique_length, counts_length = np.unique(np.array(length)
-                                                , return_counts = True)
-    ax.bar(unique_length, counts_length,  color = "lightskyblue")  # Or whatever you want in the subplot
-    #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
-    ax.title.set_text(sample)
-    ax.title.set_size(18)
-    ax.set_ylabel("Read Count",
-                    **font_settings)  # Y label
-    ax.set_xlabel('Read Length',
-                **font_settings)  # X label
 
-    original_fontsize = font_settings["fontsize"]
-    font_settings["fontsize"] = 20
-    title = "\n".join(wrap("Length Distribution of " + sample, 40))
-    plt.title(title,
-              pad=12,
-              **font_settings)
-    font_settings["fontsize"] = original_fontsize
 
+class LengthDistributionSingle:
+    def __init__(self, sequencing_report, sample, region_of_interest, ax = None, font_settings = {}, title_type = "single"):
+        unique_length, counts_length = self.tidy(sequencing_report, sample, region_of_interest)
+        self.plot(unique_length, counts_length, sample, ax, font_settings, title_type)
+        if title_type == "single":
+            self.title(sample, font_settings)
+        else:
+            pass
+    @staticmethod
+    def tidy(sequencing_report, sample, region_string):
+        batch = sequencing_report[sequencing_report["Experiment"] == sample]
+        length = batch[region_string].str.len()
+        unique_length, counts_length = np.unique(np.array(length)
+                                                    , return_counts = True)
+        return unique_length, counts_length
+    @staticmethod
+    def plot(unique_length, counts_length, sample, ax,font_settings, title_type = "single"):
+        ax.bar(unique_length, counts_length,  color = "lightskyblue")  # Or whatever you want in the subplot
+        #ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
+        ax.title.set_text(sample)
+        if title_type == "single":    
+            ax.title.set_size(18)
+        else:
+            ax.title.set_size(12)
+        ax.set_ylabel("Read Count",
+                        **font_settings)  # Y label
+        ax.set_xlabel('Read Length',
+                    **font_settings)  # X label
+
+        original_fontsize = font_settings["fontsize"]
+        font_settings["fontsize"] = 20
+        title = "\n".join(wrap("Length Distribution of " + sample, 40))
+        plt.title(title,
+                pad=12,
+                **font_settings)
+        font_settings["fontsize"] = original_fontsize
+        
+    def title(sample, font_settings):
+        original_fontsize = font_settings["fontsize"]
+        font_settings["fontsize"] = 20
+        title = "\n".join(wrap("Length Distribution of " + sample, 40))
+        plt.title(title,
+                pad=12,
+                **font_settings)
+        font_settings["fontsize"] = original_fontsize
+        
 
 
 def length_distribution_multi(fig, sequencing_report, samples, font_settings, region_string, test_version = False,):
@@ -42,24 +68,11 @@ def length_distribution_multi(fig, sequencing_report, samples, font_settings, re
 
    # fig = plt.figure(1, constrained_layout=True)
     for experiment in unique_experiments:
-        batch = sequencing_report[sequencing_report["Experiment"] == experiment]
-        length = batch[region_string].str.len()
-        unique_length, counts_length = np.unique(np.array(length)
-                                                 , return_counts = True)
             # add every single subplot to the figure with a for loop
         ax = fig.add_subplot(Rows, Cols, Position[n])
-        ax.bar(unique_length, counts_length)  # Or whatever you want in the subplot
-       # ax.set_xticks(range(0, max_length + 1, 1), range(0, max_length + 1, 1))
-        ax.title.set_text(experiment)
-        ax.title.set_size(10)
-
         adapted_fontsize = 10 - int(Cols) + 2
         font_settings["fontsize"] = adapted_fontsize
-        ax.set_ylabel("Read Count",
-                      **font_settings)  # Y label
-        ax.set_xlabel('Read Length',
-                      **font_settings)  # X label
-
+        LengthDistributionSingle(sequencing_report, sample = experiment, region_of_interest = region_string, ax = ax, font_settings = font_settings, title_type="multi")
         n += 1
     title = "\n".join(wrap("Length Distribution of given Samples", 40))
     fig.suptitle(title)

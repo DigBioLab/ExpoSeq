@@ -42,9 +42,7 @@ class VisFrac:
             filtered_seqs = filtered_seqs.iloc[:limit_seq_filter]
             filtered_length = len(filtered_seqs)
         empty_values = pd.Series([""] * int((seq_length - filtered_length)), dtype="str")
-        new_seqs = pd.concat([filtered_seqs, empty_values], ignore_index = True)
-
-            
+        new_seqs = pd.concat([filtered_seqs, empty_values], ignore_index = True)            
         return new_seqs
     
     @staticmethod
@@ -73,28 +71,5 @@ class VisFrac:
         squarify.plot(self.fracs, pad = pad, label = self.seqs, alpha = alpha_val, color = colors, ax = self.ax, text_kwargs={'fontsize':5}, **kwargs)
         
         
-class Test:
-    def __init__(self) -> None:
-        
-        sequencing_report = self.get_report()
-        self.get_fig()
-        region_string = "aaSeqCDR3"
-        print("Region String must be full sequence")
-        assert VisFrac.get_top_fraction(sequencing_report, "sample 0",force_reducing=1000, fraction = 0.95).shape[1] > 1
-        assert VisFrac.get_top_fraction(sequencing_report, "sample 0",force_reducing=3, fraction = 0.95).shape[0] == 3
-        assert VisFrac.prepare_labels(sequencing_report, region_string,limit_seq_filter = 10, fraction = 0.1).iloc[-1] == ""
-        Vis = VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = False, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=1000, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
-        assert Vis.seqs == None
-        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = False,force_reducing=None, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
-        assert VisFrac(sequencing_report, self.ax, "sample 0", visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.95, seqs_viz_fraction = 0.75, alpha_val = 0.6, pad_rectangles = True,force_reducing= 1000, region_string = region_string, limit_seq_filter=10, font_settings = {"fontsize": 12})
-        
-    def get_fig(self):
-        self.fig = plt.figure(1, figsize = (12, 10))
-        self.ax = self.fig.gca()
-        
-    def get_report(self):
-        sequencing_report = pd.read_csv("my_experiments/unitest/sequencing_report.csv")
-        return sequencing_report
-        
-        
+
 

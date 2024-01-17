@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
 import pandas as pd
-import pickle
 import os
 from .settings import change_settings, reports, plot_styler
 import subprocess
@@ -654,13 +653,15 @@ class PlotManager:
             region), "You have to give a list with the start and end position of the region you want to analyze. For instance: [3,7]"
         assert protein in [True, False], "You have to give True or False as input for the protein parameter"
         self.ControlFigure.clear_fig()
-        stacked_aa_distribution.stacked_aa_distr(self.ControlFigure.ax,
+        stacked_aa_distribution.StackedAADistribution(
                                                  self.sequencing_report,
                                                  sample,
                                                  region,
+                                                 self.region_of_interest,
                                                  protein,
                                                  self.font_settings,
-                                                 self.region_of_interest)
+                                                 self.ControlFigure.ax
+                                                 )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -786,12 +787,12 @@ class PlotManager:
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        length_distribution.length_distribution_single(self.ControlFigure.fig,
-                                                       self.ControlFigure.ax,
-                                                       self.sequencing_report,
+        length_distribution.LengthDistributionSingle(self.sequencing_report,
                                                        sample,
+                                                       self.region_of_interest,
+                                                       self.ControlFigure.ax,
                                                        self.font_settings,
-                                                       self.region_of_interest)
+                                                       )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1354,14 +1355,12 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
-        linked  = hist_lvst_dist.levenshtein_dend(self.ControlFigure.ax,
-                                        self.sequencing_report,
-                                        sample,
-                                        batch_size,
-                                        max_cluster_dist,
-                                        self.font_settings,
-                                        self.region_of_interest
-                                        )
+        hist_lvst_dist.LevenshteinDend(self.sequencing_report, 
+                                       self.region_of_interest,
+                                       sample,
+                                       self.font_settings,
+                                       batch_size, max_cluster_dist,
+                                       self.ControlFigure.ax)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)

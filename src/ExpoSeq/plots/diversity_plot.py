@@ -7,15 +7,17 @@ import time
 
 
 class DiversityPlot:
-    def __init__(self, sequencing_report, ax, region_of_interest, font_settings = {},  method = "InverseSimpson",):
+    def __init__(self, sequencing_report,  region_of_interest,ax = None, font_settings = {},  method = "InverseSimpson",):
         self.ax = ax
         self.method = method
         self.font_settings = font_settings
         values, unique_experiments = self.tidy(sequencing_report, region_of_interest)
-        self.create_base_plot(values, unique_experiments)
-        self.add_plot_addons()
-        self.set_title()
-        plt.tight_layout()
+        if ax != None:
+            self.ax = ax
+            self.create_base_plot(values, unique_experiments)
+            self.add_plot_addons()
+            self.set_title()
+            plt.tight_layout()
 
     @staticmethod
     def calc_simpson_index(clones):

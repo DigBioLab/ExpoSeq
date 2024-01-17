@@ -65,3 +65,6 @@ class Network_Embedding:
         nx.draw_networkx_nodes(G, pos,node_size=nodesize, cmap=cmap, node_color=list(partition.values()), ax=ax)
         nx.draw_networkx_edges(G, pos, alpha=0.3, ax=ax)
 
+
+
+
