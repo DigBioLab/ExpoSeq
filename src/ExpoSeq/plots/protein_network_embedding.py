@@ -23,7 +23,7 @@ class Network_Embedding:
         self.generate_plot(G = self.G,
                            nodesize = nodesize,
                            cmap = cmap)
-        title = "\n".join(wrap("t-SNE embedding of for given samples", 40))
+        title = "\n".join(wrap("t-SNE embedding for given samples", 40))
         self.ax.set_title(title, pad= 12, **font_settings)
 
     def add_edges(self, sequences_list, sequences_filtered, threshold_distance):
