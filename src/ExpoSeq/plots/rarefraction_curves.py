@@ -50,7 +50,7 @@ class RarefractionCurves:
         self.plot_data = self.prepare_data(sequencing_report, samples, region_of_interest, fraction_column)
         self.plot()
         self.customize_axis(font_settings)
-        self.legend(legend_settings)
+        self.legend(legend_settings, samples)
         self.title(font_settings)
         
     @staticmethod
@@ -68,9 +68,9 @@ class RarefractionCurves:
             plt.xlabel("Total sampled sequences", **font_settings)
             plt.ylabel("Total Unique Sequences", **font_settings)
             
-    def legend(self, legend_settings):
+    def legend(self, legend_settings, samples):
         if legend_settings != {}:
-            plt.legend(self.plot_data["samples"], title = "Sample Names", **legend_settings)
+            plt.legend(samples, title = "Sample Names", **legend_settings)
       
     @staticmethod      
     def title(font_settings):
@@ -82,4 +82,3 @@ class RarefractionCurves:
             plt.title(title,pad = 12, **font_settings)
             font_settings["fontsize"] = original_fontsize
 
-        
