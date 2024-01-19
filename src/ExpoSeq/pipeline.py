@@ -1,5 +1,5 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster, \
+    logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, rarefraction_curves, relative_sequence_abundance, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
         clone_fraction, diversity_plot
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -683,12 +683,14 @@ class PlotManager:
                 "You have to give the sample names in the list, also if it is only one! A list is a container which is marked through:[] . Please try again.")
         else:
             self.ControlFigure.clear_fig()
-            usq_plot.plot_USQ(fig=self.ControlFigure.fig,
+            rarefraction_curves.RarefractionCurves(
                               sequencing_report=self.sequencing_report,
                               samples=samples,
+                              region_of_interest=self.region_of_interest,
+                              ax=self.ControlFigure.ax,
                               font_settings=self.font_settings,
                               legend_settings=self.legend_settings,
-                              region_of_interest=self.region_of_interest,)
+                              )
 
             self.ControlFigure.update_plot()
             self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
