@@ -4,6 +4,7 @@ from ..plots.layout_finder import best_layout
 from textwrap import wrap
     
 
+    
 def relative_sequence_abundance(ax, sequencing_report, samples,max_levenshtein_distance,length_filter,batch,region_string, font_settings, legend_settings):
     all_samples = cleaning(sequencing_report,
                             max_levenshtein_distance,

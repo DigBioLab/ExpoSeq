@@ -981,22 +981,23 @@ class PlotManager:
         assert type(save_report_path) == str or save_report_path == None, "You have to give a string as input for the save_report_path parameter"
 
         self.ControlFigure.clear_fig()
-        EmbeddingPlot = protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
+        EmbeddingPlot = protein_embedding.PlotEmbedding( 
                                     self.sequencing_report,
                                     model,
                                     samples,
+                                    self.region_of_interest,
                                     strands,
                                     add_clone_size = 300,
                                     batch_size = batch_size,
                                     pca_components = pca_components,
                                     perplexity = perplexity,
                                     iterations_tsne = iterations_tsne,
+                                    antigens = antigens,
                                     font_settings=self.font_settings,
                                     legend_settings = self.legend_settings,
-                                    region_of_interest= self.region_of_interest,
                                     binding_data = self.binding_data,
                                     colorbar_settings = self.colorbar_settings,
-                                    antigens = antigens, 
+                                    ax = self.ControlFigure.ax,
                                     toxin_names = show_antigen_names,
                                     extra_figure = extra_figure
                                     )
@@ -1170,10 +1171,11 @@ class PlotManager:
         assert batch_size > perplexity, "The batch_size has to be larger than the perplexity"
         self.ControlFigure.clear_fig()
         if model in model_types_adv:
-            protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
+            protein_embedding.PlotEmbedding(
                                               self.sequencing_report,
                                               model,
                                               samples,
+                                              self.region_of_interest,
                                               strands,
                                               add_clone_size = 300,
                                               batch_size = batch_size,
@@ -1182,7 +1184,7 @@ class PlotManager:
                                               iterations_tsne = iterations_tsne,
                                                 font_settings=self.font_settings,
                                               legend_settings = self.legend_settings,
-                                              region_of_interest= self.region_of_interest
+                                              ax = self.ControlFigure.ax, 
                                               )
         elif model == "sgt":
             cluster_embedding.show_difference(self.sequencing_report,

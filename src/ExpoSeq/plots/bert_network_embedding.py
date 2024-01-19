@@ -2,7 +2,7 @@ import networkx as nx
 import math
 from textwrap import wrap
 import numpy as np
-from ..tidy_data.tidy_protbert_embedding import TransformerBased
+from .tidy_protbert_embedding import TransformerBased
 import matplotlib.pyplot as plt
 import community
 

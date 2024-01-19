@@ -2,18 +2,14 @@ import networkx as nx
 import math
 from textwrap import wrap
 import numpy as np
-from ..tidy_data.tidy_protbert_embedding import TransformerBased
+from .tidy_protbert_embedding import TransformerBased
 import matplotlib.pyplot as plt
 import community
 
 class Network_Embedding:
     def __init__(self, ax, sequencing_report, list_experiments,model_choice, batch_size,font_settings,cmap = plt.cm.RdYlBu, nodesize = None, threshold_distance = 1, region_of_interest="aaSeqCDR3") -> None:
         self.ax = ax
-        Transformer = TransformerBased(choice = model_choice)
-        sequences,sequences_filtered,  selected_rows = Transformer.filter_sequences(sequencing_report, batch_size=batch_size, experiments = list_experiments, region_of_interest=region_of_interest,binding_data = None )
-        sequences_filtered = sequences_filtered.to_list()
-        sequences_list = Transformer.embedding_per_seq(sequences, normalize = True)
-        
+        sequences_list, sequences_filtered, selected_rows = self.prepare_data(sequencing_report, model_choice, batch_size, list_experiments, region_of_interest)
         self.G = nx.Graph()
         self.add_edges(sequences_list, sequences_filtered, threshold_distance)
         if nodesize == None:
@@ -25,6 +21,15 @@ class Network_Embedding:
                            cmap = cmap)
         title = "\n".join(wrap("t-SNE embedding for given samples", 40))
         self.ax.set_title(title, pad= 12, **font_settings)
+
+    @staticmethod
+    def prepare_data(sequencing_report, model_choice, batch_size, list_experiments, region_of_interest, ):
+        Transformer = TransformerBased(choice = model_choice)
+        sequences,sequences_filtered,  selected_rows = Transformer.filter_sequences(sequencing_report, batch_size=batch_size, experiments = list_experiments, region_of_interest=region_of_interest,binding_data = None )
+        sequences_filtered = sequences_filtered.to_list()
+        sequences_list = Transformer.embedding_per_seq(sequences, normalize = True)
+        return sequences_list, sequences_filtered, selected_rows
+        
 
     def add_edges(self, sequences_list, sequences_filtered, threshold_distance):
         num_sequences = sequences_list.shape[0]

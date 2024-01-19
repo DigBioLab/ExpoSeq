@@ -43,6 +43,7 @@ class LogoPlot:
                 max_length = length_counts.idxmax()
                 chosen_seq_length = max_length
         return chosen_seq_length
+    
     def cleaningPlot(self, sample, sequencing_report, region_string, method):
         aa_distribution, sequence_length, length_filtered_seqs = cleaning(sample,
                                                                     sequencing_report,
@@ -84,53 +85,6 @@ class LogoPlot:
                                             alpha=.5)
 
 
-
-
-
-
-def plot_logo_single(ax, sequencing_report, sample, font_settings, highlight_specific_pos, region_string,method = "proportion", chosen_seq_length = 16, color_scheme = "skylign_protein"):
-    aa_distribution, chosen_seq_length, length_filtered_seqs = cleaning(sample,
-                                sequencing_report,
-                                chosen_seq_length,
-                                region_string,
-                                method)
-
-    logo_plot = logomaker.Logo(aa_distribution,
-                               shade_below=.5,
-                               fade_below=.5,
-                               font_name='Arial Rounded MT Bold',
-                               color_scheme=color_scheme,
-                               show_spines=False,
-                               ax=ax,
-                               )
-    logo_plot.style_xticks(anchor=1,
-                           spacing=1,
-                           rotation=0)
-    original_fontsize = font_settings["fontsize"]
-    if method == "bits":
-        ax.set_ylabel('information (bits)',  **font_settings)
-        ax.set_xlabel("Position on sequence", **font_settings)
-    else:
-        ax.set_ylabel("Frequency", **font_settings)
-        ax.set_xlabel("Position on sequence", **font_settings)
-    font_settings["fontsize"] = 22
-   # plt.title("Logo Plot of " + sample + " with sequence length " + str(chosen_seq_length), **font_settings)
-    font_settings["fontsize"] = original_fontsize
-    labels_true = list(range(0, chosen_seq_length))
-    numbers_true = list(range(1, chosen_seq_length + 1))
-    plt.xticks(labels_true, numbers_true)
-    title = "\n".join(wrap(sample, 40))
-    plt.title(title,
-            pad=12,
-            **font_settings)
-    if highlight_specific_pos != False:
-        logo_plot.highlight_position(p=5,
-                                     color='gold',
-                                     alpha=.5)
- #   if highlight_pos_range != False:
-  #      logo_plot.ax.highlight_position_range(pmin=3,
-   #                                           pmax=5,
-    #                                          color="lightcyan")
 
 
 def plot_logo_multi(fig, sequencing_report, samples, font_settings,region_string,method, chosen_seq_length = 16,):
