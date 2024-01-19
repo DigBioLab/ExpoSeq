@@ -1,24 +1,9 @@
-import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 from textwrap import wrap
 import time
 
-
-
-class DiversityPlot:
-    def __init__(self, sequencing_report,  region_of_interest,ax = None, font_settings = {},  method = "InverseSimpson",):
-        self.ax = ax
-        self.method = method
-        self.font_settings = font_settings
-        values, unique_experiments = self.tidy(sequencing_report, region_of_interest)
-        if ax != None:
-            self.ax = ax
-            self.create_base_plot(values, unique_experiments)
-            self.add_plot_addons()
-            self.set_title()
-            plt.tight_layout()
-
+class PrepareData:
     @staticmethod
     def calc_simpson_index(clones):
         return 1/ (np.sum(clones**2))
@@ -26,8 +11,8 @@ class DiversityPlot:
     @staticmethod
     def calc_shannon_index(clones):
         return -np.sum(clones * np.log(clones))
-        
-    def tidy(self, sequencing_report, region_of_interest):
+    
+    def cleaning(self, sequencing_report, region_of_interest):
         values = []
         unique_experiments = sequencing_report["Experiment"].unique().tolist()
         for experiment in unique_experiments:
@@ -38,6 +23,25 @@ class DiversityPlot:
                 values.append(self.calc_simpson_index(clones))
             if self.method == "Shannon":
                 values.append(self.calc_shannon_index(clones))
+        return values, unique_experiments
+
+class DiversityPlot:
+    def __init__(self, sequencing_report,  region_of_interest,ax = None, font_settings = {},  method = "InverseSimpson",):
+        self.ax = ax
+        self.method = method
+        self.font_settings = font_settings
+        values, unique_experiments = self.prepare_data(sequencing_report, region_of_interest)
+        if ax != None:
+            self.ax = ax
+            self.create_base_plot(values, unique_experiments)
+            self.add_plot_addons()
+            self.set_title()
+            plt.tight_layout()
+
+
+    @staticmethod
+    def prepare_data(sequencing_report, region_of_interest):
+        values, unique_experiments = PrepareData().cleaning(sequencing_report, region_of_interest)
         return values, unique_experiments
     
     def create_base_plot(self, values, unique_experiments, alpha = 1, color = "lightskyblue"):     

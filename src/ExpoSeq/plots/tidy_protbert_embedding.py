@@ -3,7 +3,6 @@ import re
 import pandas as pd
 # + pip install sentencepiece
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import numpy as np 
 
@@ -37,7 +36,8 @@ class TransformerBased:
             #mix = selected_rows.merge(binding_data, on = "aaSeqCDR3", how = "outer")
             mix = pd.concat([selected_rows, binding_data])
             selected_rows = mix.fillna(0)
-        selected_rows["cloneFraction"] = selected_rows["cloneFraction"].replace(0.0, max(selected_rows["cloneFraction"])) # all the added sequences from binding data get highest clone fraction to visualize them, otherwise they will not appear since the plot is fraction sensitive
+        max_fraction = max(selected_rows["cloneFraction"])
+        selected_rows.loc[selected_rows["cloneFraction"] == 0.0, "cloneFraction"] = max_fraction
         selected_rows = selected_rows.sort_values(by='cloneFraction', ascending=False)
         selected_rows.drop_duplicates(subset=region_of_interest, keep="first", inplace=True) # remove duplicates due to adding of binding data
         sequences_filtered = selected_rows[region_of_interest]

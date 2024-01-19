@@ -1,5 +1,4 @@
 import editdistance
-from ..tidy_data.tidy_sample_cluster import cleaning
 import networkx as nx
 import math
 import seaborn as sns
@@ -7,18 +6,44 @@ import community
 import matplotlib.pyplot as plt
 
 
+
+class PrepareData:
+    def __init__(self, summed_clonefraction, max_num_reads):
+        self.summed_clonefraction = summed_clonefraction
+        self.max_num_reads = max_num_reads
+        
+    def get_top_10_percent(self, group, summed_clonefraction, max_num_reads):
+        sorted_group = group.sort_values(by='cloneFraction', ascending=False)
+        cumulative_sum = sorted_group['cloneFraction'].cumsum()
+        return sorted_group[cumulative_sum <= self.summed_clonefraction][:self.max_num_reads]
+
+    def cleaning(self, report):
+        grouped = report.groupby('Experiment')
+        result_df = grouped.apply(self.get_top_10_percent)
+        # Step 4: Reset index (if needed)
+        result_df = result_df.reset_index(drop=True)
+        report = result_df
+        return report
+
+
 class ClusterExperiment():
-    def __init__(self, sequencing_report, ax, region_string, summed_clonefraction, max_num_reads, edge_color = "peachpuff", max_weight_lines = 100):
+    def __init__(self, sequencing_report, region_string, summed_clonefraction, max_num_reads, ax = None, edge_color = "peachpuff", max_weight_lines = 100):
         report = sequencing_report
         self.region_string = region_string
-        report = cleaning(report, summed_clonefraction=summed_clonefraction, max_num_reads=max_num_reads)
+        report = self.prepare_data(sequencing_report, summed_clonefraction, max_num_reads)
         self.G = nx.Graph()
         distances = self.nodes_and_edges(report, max_weight_lines)
         nodesize = self.customizations(report)
         sample_colors, node_colors = self.create_colors(report)
-        self.draw_plot(nodesize, node_colors, ax, edge_color)
-        self.legend(report, sample_colors)
+        if ax != None:
+            self.draw_plot(nodesize, node_colors, ax, edge_color)
+            self.legend(report, sample_colors)
         
+    @staticmethod
+    def prepare_data(sequencing_report, summed_clonefraction, max_num_reads):
+        report = PrepareData(summed_clonefraction, max_num_reads).cleaning(sequencing_report)
+        return report
+    
     def nodes_and_edges(self, report, max_weight_lines = 100):
         distances = []
         for sample, group in report.groupby('Experiment'):
@@ -72,10 +97,8 @@ class ClusterExperiment():
 
     def create_colors(self, report):
         num_samples = len(report['Experiment'].unique())
-
         # Generate a color palette with num_samples distinct colors
         palette = sns.color_palette("hsv", num_samples)
-
         # Create a dictionary to map samples to colors
         sample_colors = {sample: color for sample, color in zip(report['Experiment'].unique(), palette)}
         node_colors = [sample_colors[self.G.nodes[n]['sample']] for n in self.G.nodes]
