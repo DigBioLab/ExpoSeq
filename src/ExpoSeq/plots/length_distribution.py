@@ -42,6 +42,7 @@ class LengthDistributionSingle:
                 **font_settings)
         font_settings["fontsize"] = original_fontsize
         
+    @staticmethod
     def title(sample, font_settings):
         original_fontsize = font_settings["fontsize"]
         font_settings["fontsize"] = 20
