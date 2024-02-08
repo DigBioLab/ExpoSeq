@@ -1,7 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 from textwrap import wrap
-import time
 
 class PrepareData:
     @staticmethod
@@ -12,16 +11,16 @@ class PrepareData:
     def calc_shannon_index(clones):
         return -np.sum(clones * np.log(clones))
     
-    def cleaning(self, sequencing_report, region_of_interest):
+    def cleaning(self, sequencing_report, region_of_interest, method):
         values = []
         unique_experiments = sequencing_report["Experiment"].unique().tolist()
         for experiment in unique_experiments:
             exp_spec = sequencing_report[sequencing_report["Experiment"] == experiment]
             aa_seqs = exp_spec[region_of_interest]
             clones = exp_spec["cloneFraction"]
-            if self.method == "InverseSimpson":
+            if method == "InverseSimpson":
                 values.append(self.calc_simpson_index(clones))
-            if self.method == "Shannon":
+            if method == "Shannon":
                 values.append(self.calc_shannon_index(clones))
         return values, unique_experiments
 
@@ -30,7 +29,7 @@ class DiversityPlot:
         self.ax = ax
         self.method = method
         self.font_settings = font_settings
-        values, unique_experiments = self.prepare_data(sequencing_report, region_of_interest)
+        values, unique_experiments = self.prepare_data(sequencing_report, region_of_interest, self.method)
         if ax != None:
             self.ax = ax
             self.create_base_plot(values, unique_experiments)
@@ -40,8 +39,8 @@ class DiversityPlot:
 
 
     @staticmethod
-    def prepare_data(sequencing_report, region_of_interest):
-        values, unique_experiments = PrepareData().cleaning(sequencing_report, region_of_interest)
+    def prepare_data(sequencing_report, region_of_interest, method):
+        values, unique_experiments = PrepareData().cleaning(sequencing_report, region_of_interest, method )
         return values, unique_experiments
     
     def create_base_plot(self, values, unique_experiments, alpha = 1, color = "lightskyblue"):     

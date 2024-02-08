@@ -1,6 +1,7 @@
 from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, relative_sequence_abundance, stacked_aa_distribution, usq_plot, levenshtein_clustering, sample_cluster, \
+    logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
         clone_fraction, diversity_plot
+from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
@@ -10,7 +11,7 @@ from .settings import change_settings, reports, plot_styler
 import subprocess
 from .augment_data.uploader import create_alignment_report
 from .settings.general_instructions import print_instructions
-from .tidy_data.heatmaps.read_matrix import read_matrix
+from .plots.matrices.read_matrix import read_matrix
 from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
@@ -684,12 +685,14 @@ class PlotManager:
                 "You have to give the sample names in the list, also if it is only one! A list is a container which is marked through:[] . Please try again.")
         else:
             self.ControlFigure.clear_fig()
-            usq_plot.plot_USQ(fig=self.ControlFigure.fig,
+            rarefraction_curves.RarefractionCurves(
                               sequencing_report=self.sequencing_report,
                               samples=samples,
+                              region_of_interest=self.region_of_interest,
+                              ax=self.ControlFigure.ax,
                               font_settings=self.font_settings,
                               legend_settings=self.legend_settings,
-                              region_of_interest=self.region_of_interest,)
+                              )
 
             self.ControlFigure.update_plot()
             self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1218,21 +1221,22 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "morosita_horn",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "morosita_horn",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
+         
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def jaccard(self,cmap = "Blues",  annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
@@ -1247,22 +1251,22 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "jaccard",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "jaccard",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
 
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def sample_diversity(self, method = "InverseSimpson"):
         """
@@ -1274,8 +1278,8 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         diversity_plot.DiversityPlot(self.sequencing_report,
+                                     self.region_of_interest,
                                      self.ControlFigure.ax,
-                                     self.region_of_interest, 
                                      self.font_settings,
                                      method = method)
         self.ControlFigure.update_plot()
@@ -1295,21 +1299,21 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "sorensen",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "sorensen",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def relative(self, cmap = "Blues",  annotate_cells=False, specific_experiments=False):
         """
@@ -1324,21 +1328,21 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "relative",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "relative",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix)
+        save_matrix(Matrix.matrix)
 
     def levenshtein_dendrogram(self, sample=None, max_cluster_dist=2, batch_size=1000):
         """
