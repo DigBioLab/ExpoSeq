@@ -35,7 +35,8 @@ class TransformerBased:
         selected_rows = report_batch.loc[report_batch["Experiment"].isin(experiments)]
         if binding_data is not None:
             #mix = selected_rows.merge(binding_data, on = "aaSeqCDR3", how = "outer")
-            mix = pd.concat([selected_rows, binding_data])
+            mix = selected_rows.merge(binding_data, on = region_of_interest, how = "left")
+
             selected_rows = mix.fillna(0)
         selected_rows["cloneFraction"] = selected_rows["cloneFraction"].replace(0.0, max(selected_rows["cloneFraction"])) # all the added sequences from binding data get highest clone fraction to visualize them, otherwise they will not appear since the plot is fraction sensitive
         selected_rows = selected_rows.sort_values(by='cloneFraction', ascending=False)
