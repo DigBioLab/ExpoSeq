@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from numpy import unique
 import networkx as nx
 import math
 import pandas as pd

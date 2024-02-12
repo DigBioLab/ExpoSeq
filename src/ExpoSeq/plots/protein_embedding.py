@@ -8,6 +8,27 @@ import warnings
 class PrepareData:
     
     @staticmethod
+    def logical_check(batch_size, perplexity, pca_components, model, iterations_tsne):
+        # in the pipeline is another test, where the sample name is checked which has to be in the sequencing report 
+        assert batch_size > perplexity, "The batch_size has to be larger than the perplexity"
+        assert batch_size > pca_components, "The batch_size has to be larger than the pca_components"
+        assert batch_size != 0, "batch_size value must not be 0" # indirectly tests that perplexity and pca components must not be 0 as well
+        # more models will follow
+        models_all = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find the models at: https://huggingface.co/Rostlab"
+        assert iterations_tsne != 0, "the number of iterations for the tsne algorithm must not be 0."
+        
+    @staticmethod
+    def datatype_check(samples, pca_components, perplexity, iterations_tsne, batch_size, model):
+        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
+        assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
+        assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
+        assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
+        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
+        assert type(model) == str, "The input for model must be a string"
+           
+    
+    @staticmethod
     def check_warnings(sequences, pca_components, perplexity):
         if len(sequences) < pca_components:
             warnings.warn(f"The number of sequences you have is {len(sequences)} but you need to have more sequences than principal components which is: {pca_components}") 
@@ -15,8 +36,8 @@ class PrepareData:
             pca_components = len(sequences) 
         if pca_components < perplexity:
             warnings.warn("The number of reduced dimensions you have is " + str(pca_components) + "but you need to have more than perplexity which is: " + str(perplexity)) 
-            print(f"Perplexity is set to the half of reduced dimensions ({int(int(pca_components)/2)})")
-            perplexity = int(int(pca_components)/2)
+            print(f"Perplexity is set to the half of reduced dimensions ({pca_components//2})")
+            perplexity = pca_components//2
             if perplexity < 1:
                 perplexity = 1
         return pca_components, perplexity
@@ -27,14 +48,34 @@ class PrepareData:
             merged_columns = [region_of_interest] + antigens
             binding_data = binding_data[merged_columns]
     
-    def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 300, pca_components = 70, perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",binding_data = None,):
-        self.filter_binding_data(binding_data, region_of_interest, antigens)
+    def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 300, pca_components = 70,
+             perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+        self.logical_check(batch_size,
+                           perplexity,
+                           pca_components,
+                           model_choice,
+                           iterations_tsne)
+        self.datatype_check(list_experiments,
+                            pca_components,
+                            perplexity,
+                            iterations_tsne, 
+                            batch_size,
+                            model_choice)
+        self.filter_binding_data(binding_data,
+                                 region_of_interest, 
+                                 antigens)
         Transformer = TransformerBased(choice = model_choice)
-        sequences, selected_rows, selected_rows = Transformer.filter_sequences(sequencing_report, batch_size, list_experiments, binding_data, region_of_interest=region_of_interest, )
+        sequences,sequences_filtered, selected_rows = Transformer.filter_sequences(sequencing_report,
+                                                                               batch_size,
+                                                                               list_experiments,
+                                                                               binding_data,
+                                                                               region_of_interest=region_of_interest, 
+                                                                               cf_column_name=cf_column_name,
+                                                                               sample_column_name=sample_column_name)
         pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
         X = Transformer.do_pca(sequences, batch_size, pca_components)
         peptides = selected_rows[region_of_interest].to_list()
-        self.clones = selected_rows["cloneFraction"]
+        self.clones = selected_rows[cf_column_name]
         tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
         return peptides, selected_rows, tsne_results
     

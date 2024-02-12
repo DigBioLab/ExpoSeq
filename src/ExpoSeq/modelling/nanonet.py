@@ -3,6 +3,9 @@ from modeller import *
 import os
 from .create_fasta import Fasta
 
+
+
+# LIcence states: "Research Use" means research, evaluation, or development for the purpose of advancing knowledge, teaching, learning, or customizing the Technology or Modifications for personal use. Research Use expressly excludes use or distribution for direct or indirect commercial (including strategic) gain or advantage.
 class Use_NanoNet:
     def __init__(self,module_dir, fasta_path, modeller = False) -> None:
         self.module_dir = module_dir
