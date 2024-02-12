@@ -1147,62 +1147,38 @@ class PlotManager:
                        batch_size=1000):
         """
         :param samples: type is list. The samples you would like to compare towards their sequences
-        :param strands: Default is True. It means that you will plot a batch of the strands in your plot
+        :param strands: Default is True. It means that you will visualize a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
-        :param model: The model you would like to choose for the embedding. Default is 'Rostlab/prot_t5_xl_half_uniref50-enc'. You can choose all models on https://huggingface.co/Rostlab and sgt.
+        :param model: The model you would like to choose for the embedding. Default is 'Rostlab/prot_t5_xl_half_uniref50-enc'. You can choose all models on https://huggingface.co/Rostlab.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        models_all = model_types_adv + ["sgt"]
-        assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         assert type(strands) == bool, "You have to give True or False as input for the strands parameter"
-        assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
-        assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
-        assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
-        assert batch_size > pca_components, "The batch_size has to be larger than the pca_components"
-        assert batch_size > perplexity, "The batch_size has to be larger than the perplexity"
         self.ControlFigure.clear_fig()
-        if model in model_types_adv:
-            protein_embedding.PlotEmbedding(
-                                              self.sequencing_report,
-                                              model,
-                                              samples,
-                                              self.region_of_interest,
-                                              strands,
-                                              add_clone_size = 300,
-                                              batch_size = batch_size,
-                                              pca_components = pca_components,
-                                              perplexity = perplexity,
-                                              iterations_tsne = iterations_tsne,
-                                                font_settings=self.font_settings,
-                                              legend_settings = self.legend_settings,
-                                              ax = self.ControlFigure.ax, 
-                                              )
-        elif model == "sgt":
-            cluster_embedding.show_difference(self.sequencing_report,
+        protein_embedding.PlotEmbedding(
+                                            self.sequencing_report,
+                                            model,
                                             samples,
-                                            strands,
-                                            batch_size,
-                                            pca_components,
-                                            perplexity,
-                                            iterations_tsne,
                                             self.region_of_interest,
-                                            self.ControlFigure.ax,
-                                            self.legend_settings,
-                                            self.font_settings)
-        else: 
-            return
+                                            strands,
+                                            add_clone_size = 300,
+                                            batch_size = batch_size,
+                                            pca_components = pca_components,
+                                            perplexity = perplexity,
+                                            iterations_tsne = iterations_tsne,
+                                            font_settings=self.font_settings,
+                                            legend_settings = self.legend_settings,
+                                            ax = self.ControlFigure.ax, 
+                                            )
+
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
