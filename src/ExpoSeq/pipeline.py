@@ -931,10 +931,47 @@ class PlotManager:
                                            self.ControlFigure.plot_type)
         self.save_cluster_report(cluster_report = cluster_report,
                                  path = save_report_path)
-        if second_figure == True:
-            print("close the second window before you continue")
 
-    def ls_distance_binding():
+
+    def ls_distance_binding(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None, antigen_names = None):
+        """
+        :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
+        :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
+        :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
+        :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
+        :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
+        :param antigen_names: Names of the antigens with the corresponidng sequences you want to cluster with your ngs data. Input type is a list
+        """
+        if self.binding_data is None:
+            print("Please upload binding data to use this functionality")
+            return 
+        if samples == None:
+            samples = [self.preferred_sample]
+            
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+      #  assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        self.ControlFigure.clear_fig()
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
+            self.sequencing_report,
+            samples,
+            self.ControlFigure.ax,
+            self.region_of_interest,
+            max_ld,
+            min_ld,
+            batch_size,
+            label_type,
+            self.font_settings,     
+            self.binding_data,
+            antigen_names       
+            )
+
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        self.save_cluster_report(cluster_report = cluster_report,
+                                 path = save_report_path)
+
         
     
     def show(self):
