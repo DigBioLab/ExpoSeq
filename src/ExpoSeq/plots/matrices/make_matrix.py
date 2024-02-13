@@ -16,7 +16,7 @@ class IdentityMatrix:
 
         self.font_settings = font_settings
         if ax != None:
-            self.createPlot(cmap = cmap, fmt = fmt, annotate_cells = annotate_cells)
+            self.createPlot(cmap = cmap, fmt = fmt, annotate_cells = annotate_cells, colorbar_settings=colorbar_settings)
             if font_settings != {}:
                 self.add_style()
                 

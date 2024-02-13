@@ -22,7 +22,14 @@ def test_transformerBased():
     binding_data = pd.DataFrame(data = {"aaSeqCDR3": ["CASSRLAGGTDTQYF", "ADDS"], "antigen_1": [12345,2]}, index = [1,2])
     sequences,sequences_filtered, selected_rows = Model.filter_sequences(sequencing_report, batch_size = 3, experiments = ["GeneMind_1", "GeneMind_5"], binding_data = binding_data)
     assert ~selected_rows["aaSeqCDR3"].isin(["ADDS"]).any(), "ADDS must not be in the dataframe since there is not ADDS sequence in both of the samples. The merge failed"
-    
+    Model = TransformerBased()
+    output_embed = Model.embedding_per_seq(sequences)
+    assert output_embed.shape[0] == 6, "First dimension does not have 6 values for the 6 sequences"
+    assert output_embed.shape[1] == 1024, "There are not 1024 dimensions in the second dimension"
+    Model = TransformerBased("Rostlab/prot_bert")
+    output_embed = Model.embedding_per_seq(sequences)
+    assert output_embed.shape[0] == 6, "First dimension does not have 6 values for the 6 sequences"
+    assert output_embed.shape[1] == 1024, "There are not 1024 dimensions in the second dimension"
     
     
         
