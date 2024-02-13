@@ -20,8 +20,8 @@ class PrepareData:
         assert batch_size > 1
         assert max_ld > min_ld
         assert max_ld >= 1
-        assert type(antigens) == list
-        assert antigens in binding_data.columns.tolist()
+        assert type(antigens) == list or type(antigens) == None
+        assert antigens in binding_data.columns.tolist() or type(binding_data) == None # for case when class is used to solely cluster ngs sequences
         
     
     @staticmethod
