@@ -5,6 +5,7 @@ from pandas import DataFrame
 
 
 class PrepareData:
+    @staticmethod
     def cleaning_data(all_alignment_reports, sequencing_report):
         all_alignment_reports = all_alignment_reports.sort_values("Input file(s)").reset_index(drop=True)
         unique_experiments = sequencing_report.sort_values("Experiment")["Experiment"].unique()

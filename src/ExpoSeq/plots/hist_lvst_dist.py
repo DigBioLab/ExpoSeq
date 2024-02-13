@@ -23,12 +23,12 @@ class PrepareData:
 
         return distance_matrix
     @staticmethod
-    def get_clustered_sequences(aa):
+    def get_clustered_sequences(aa, max_cluster_dist):
         clustered_sequences = set()
 
         for i in range(len(aa)):
             for j in range(i+1, len(aa)):
-                if editdistance.distance(aa[i], aa[j]) < 2:
+                if editdistance.distance(aa[i], aa[j]) < max_cluster_dist:
                     clustered_sequences.add(aa[i])
                     clustered_sequences.add(aa[j])
 

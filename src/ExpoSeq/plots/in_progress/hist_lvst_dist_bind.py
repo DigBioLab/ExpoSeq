@@ -2,10 +2,6 @@ import pandas as pd
 
 
 
-class PrepareData:
-    
-
-
 def dendo_binding(fig, sequencing_report,binding_data, sample,antigens, batch_size,max_cluster_dist,font_settings, region_string, ascending ):
     ax = fig.gca()
 

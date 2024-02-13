@@ -8,8 +8,9 @@ import numpy as np
 
 class TransformerBased:
 
-    def __init__(self, choice='Rostlab/prot_t5_xl_half_uniref50-enc'):
-        
+    def __init__(self, choice='Rostlab/prot_t5_xl_half_uniref50-enc', truncation = False, max_length = None):
+        self.truncation = truncation
+        self.max_length = max_length
         self.choice = choice
         self.prep_model()
 
@@ -19,7 +20,7 @@ class TransformerBased:
         if "t5" in self.choice.lower():
             from transformers import T5Tokenizer, T5EncoderModel
             self.tokenizer = T5Tokenizer.from_pretrained(self.choice,
-                                                    do_lower_case=False)
+                                                    do_lower_case=False,)
 
             self.model = T5EncoderModel.from_pretrained(self.choice)
         else:
@@ -34,7 +35,7 @@ class TransformerBased:
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
         if binding_data is not None:
-            mix = selected_rows.merge(binding_data, on = region_of_interest, how = "left")
+            mix = selected_rows.merge(binding_data, on = region_of_interest, how = "outer")
             selected_rows = mix.fillna(0)
         max_fraction = max(selected_rows[cf_column_name])
         selected_rows.loc[selected_rows[cf_column_name] == 0.0, cf_column_name] = max_fraction
@@ -45,21 +46,21 @@ class TransformerBased:
         return sequences,sequences_filtered, selected_rows
         
     def prepare_sequences(self,sequences, device = "cpu"):
-        ids = self.tokenizer.batch_encode_plus(sequences, add_special_tokens=True, padding="longest")
+        ids = self.tokenizer.batch_encode_plus(sequences, add_special_tokens=True, truncation = True, max_length = 1430)
         input_ids = torch.tensor(ids['input_ids'])
         attention_mask = torch.tensor(ids['attention_mask'])
         return attention_mask, input_ids
     
-    def get_result(self, sequences):
-        if self.choice == "T5":
-            attention_mask, input_ids = self.prepare_sequences(sequences, self.tokenizer)
-            with torch.no_grad():
-                embedding_repr = self.model(input_ids=input_ids, attention_mask=attention_mask)
+    def get_result(self, sequences):        
+        if not self.truncation:    
+            encoded_input = self.tokenizer(sequences, return_tensors='pt', padding=True)
         else:
-            
-            encoded_input = self.tokenizer(sequences, return_tensors='pt', padding=True, truncation=True)
-            embedding_repr = self.model(**encoded_input)
-
+            if self.max_length == None:
+                max_length = 1440
+            else:
+                max_length = self.max_length
+            encoded_input = self.tokenizer(sequences, return_tensors = "pt", truncation = True, max_length = max_length)
+        embedding_repr = self.model(**encoded_input)
         return embedding_repr
     
     

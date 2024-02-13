@@ -1,5 +1,5 @@
 import pandas as pd
-from ..tidy_data.tidy_cluster_embedding import tidy_embed
+from .tidy_cluster_embedding import tidy_embed
 from textwrap import wrap
 import pandas as pd
 from sgt.SGT import SGT

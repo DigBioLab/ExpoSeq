@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import logomaker
-from ..tidy_data.tidy_seqlogoPlot import cleaning
 import numpy as np
 from ..plots.layout_finder import best_layout
 from textwrap import wrap
@@ -50,7 +49,7 @@ class LogoPlot:
     def __init__(self,ax, sequencing_report, region_string, sample, highlight_spec_position, font_settings, chosen_seq_length, method, color_scheme, **kwargs):
         self.ax = ax
         self.chosen_seq_length = self.find_seq_length(sequencing_report, sample, chosen_seq_length)
-        self.aa_distribution = PrepareData().cleaning(sample, sequencing_report, chosen_seq_length, region_string, method)
+        self.aa_distribution = PrepareData().cleaning(sample, sequencing_report, self.chosen_seq_length, region_string, method)
        # self.createPlot()
         self.font_settings = font_settings
         self.func_type = {
@@ -66,6 +65,7 @@ class LogoPlot:
         self.createPlot(color_scheme=color_scheme, **kwargs)
         self.add_style(highlight_spec_position, sample)
         
+
     
     @staticmethod
     def find_seq_length(sequencing_report, sample, chosen_seq_length):

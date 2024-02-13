@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.manifold import TSNE
 from textwrap import wrap
 
+
+    
 def cluster_toxins_tsne(fig, sequencing_report, sample, toxins, binding_data, toxin_names, pca_components, perplexity, iterations_tsne, font_settings, colorbar_settings, extra_figure, region_of_interest):
     report = sequencing_report[sequencing_report["Experiment"] == sample]
     batch = report.groupby("Experiment").head(1000)

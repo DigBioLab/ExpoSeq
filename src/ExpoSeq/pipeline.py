@@ -1,4 +1,5 @@
-from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
+from .plots.deprecated import cluster_embedding, embedding_with_binding
+from .plots import barplot, hist_lvst_dist, length_distribution, \
     logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
         clone_fraction, diversity_plot
 from .plots.matrices import make_matrix
@@ -16,7 +17,7 @@ from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
-
+import warnings
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
@@ -897,12 +898,13 @@ class PlotManager:
             cluster_report.to_excel(path)
 
 
-    def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, second_figure = False, label_type = "numbers", save_report_path = None):
+
+
+    def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None):
         """
         :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
         :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
         :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
-        :param second_figure: Default is False. Creates a second figure with the levenshtein distance as bars
         :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
         :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         """
@@ -911,22 +913,18 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
       #  assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(samples) == list, "You have to give a string as input for the sample"
-        assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
-        assert type(second_figure) == bool, "You have to give True or False as input for the second figure"
         self.ControlFigure.clear_fig()
-        cluster_report = levenshtein_clustering.clusterSeq(
-            self.ControlFigure.ax,
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
             self.sequencing_report,
             samples,
+            self.ControlFigure.ax,
+            self.region_of_interest,
             max_ld,
             min_ld,
             batch_size,
-            self.font_settings,
-            second_figure,
-            self.region_of_interest,
-            label_type)
+            label_type,
+            self.font_settings,            
+            )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -936,6 +934,9 @@ class PlotManager:
         if second_figure == True:
             print("close the second window before you continue")
 
+    def ls_distance_binding():
+        
+    
     def show(self):
         self.ControlFigure.fig.show()
 
@@ -960,8 +961,7 @@ class PlotManager:
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigens == None:
             antigens = [self.preferred_antigen]
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        models_all = model_types_adv + ["sgt"]
+        models_all = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
         assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
@@ -1013,6 +1013,7 @@ class PlotManager:
 
 
     def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, preferred_cmap = "Blues", label_type = "numbers", save_report_path = None):
+        warnings.warn("This function will be removed in the future. Use the function cluster_binding_data instead.")
         """
         :param antigen: is the name of the antigen you would like to analyze
         :param max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
@@ -1055,9 +1056,11 @@ class PlotManager:
 
     def tsne_cluster_AG(self, sample=None, antigen=None, antigen_names=True, pca_components=70, perplexity=25,
                         iterations_tsne=2500, save_report_path = None):
+        warnings.warn("This function will be removed in the future. Use the function cluster_binding_data instead.")
+
         """
         :param sample: the sample you would like to analyze
-        :param antigen: the toxins you would like to cluster
+        :param antigen: Input is a list. the toxins you would like to cluster
         :param antigen_names: Default is True. Prints the name of the toxin for the corresponding embedded sequence in the plot
         :param pca_components: optional. Default is 70
         :param perplexity: optional. Default 25
@@ -1107,29 +1110,25 @@ class PlotManager:
         :param nodesize: Default is 300. This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size.
         :threshold_distance: Default is 5. This value is multiplied with the summed batch_size of the samples. This defines the cluster size. The higher the values, the more complex the clusters.
         """
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        assert model in model_types_adv, f"Please enter a valid model name which are\n{model_types_adv}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
+        assert type(threshold_distance) == int, "Please enter an integer for the threshold distance"
+
         assert type(nodesize) == int, "Nodesize has to be an integer"
         assert nodesize > 0 & nodesize < 1000, "Please enter a value between 0 and 1000"
-        assert type(threshold_distance) == int, "Please enter an integer for the threashold distance"
-        if model in model_types_adv:
-            protein_network_embedding.Network_Embedding(self.ControlFigure.ax,
-                                                     self.sequencing_report,
-                                                     samples,
-                                                     model,
-                                                     batch_size, 
-                                                     self.font_settings,
-                                                     cmap,
-                                                     nodesize,
-                                                     threshold_distance,
-                                                     self.region_of_interest)
+        protein_network_embedding.Network_Embedding(self.ControlFigure.ax,
+                                                    self.sequencing_report,
+                                                    samples,
+                                                    model,
+                                                    batch_size, 
+                                                    self.font_settings,
+                                                    cmap,
+                                                    nodesize,
+                                                    threshold_distance,
+                                                    self.region_of_interest)
         
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
