@@ -34,3 +34,4 @@ exposeq_venv
 !src/ExpoSeq/software_tests/test_files/binding_data.csv
 pdm.lock
 .pdm-python
+.pypirc
