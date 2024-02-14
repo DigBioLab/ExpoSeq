@@ -40,18 +40,25 @@ class IdentityMatrix:
         if colorbar_settings != None:
             colorbar_sets = {**colorbar_settings,
                             **{'label': "Degree of Identity"}}
+            self.morosita_horn_matrix = sns.heatmap(matrix,
+                                        cbar_kws=colorbar_sets,
+                                        ax = self.ax,
+                                        linewidths=linewidth,
+                                        linecolor = line_color,
+                                        annot = annotate_cells,
+                                        annot_kws=annot_kws,
+                                        fmt = fmt,
+                                        cmap= cmap)
         else:
-            colorbar_sets = {}
-            
-        self.morosita_horn_matrix = sns.heatmap(matrix,
-                                                cbar_kws=colorbar_sets,
-                                                ax = self.ax,
-                                                linewidths=linewidth,
-                                                linecolor = line_color,
-                                                annot = annotate_cells,
-                                                annot_kws=annot_kws,
-                                                fmt = fmt,
-                                                cmap= cmap)
+            self.morosita_horn_matrix = sns.heatmap(matrix,
+                            ax = self.ax,
+                            linewidths=linewidth,
+                            linecolor = line_color,
+                            annot = annotate_cells,
+                            annot_kws=annot_kws,
+                            fmt = fmt,
+                            cmap= cmap)
+
 
     def add_style(self):
         plt.xticks(ticks = np.arange(0.5, len(self.unique_experiments) + 0.5 ,1),

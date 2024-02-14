@@ -1,6 +1,6 @@
 import pandas as pd
-from ExpoSeq.plots.matrices.morosita_horn_matrix import PrepareData
-from ExpoSeq.plots.matrices.make_matrix import IdentityMatrix
+from src.ExpoSeq.plots.matrices.morosita_horn_matrix import PrepareData
+from src.ExpoSeq.plots.matrices.make_matrix import IdentityMatrix
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -23,13 +23,15 @@ def test_matrix():
     IdentityMatrix(sequencing_report, "aaSeqCDR3", "morosita_horn", {})
     fig = plt.figure(1, figsize = (12, 10))
     ax = fig.gca()
-    IdentityMatrix(sequencing_report, "aaSeqCDR3","sorensen",{}, ax = ax)
+    IdentityMatrix(sequencing_report, "aaSeqCDR3","sorensen",{})
     fig = plt.figure(1, figsize = (12, 10))
     ax = fig.gca()
-    IdentityMatrix(sequencing_report, "aaSeqCDR3","jaccard", {}, ax = ax)
+    font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
+    colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
+    IdentityMatrix(sequencing_report, "aaSeqCDR3","jaccard", colorbar_settings=colorbar_settings)
     fig = plt.figure(1, figsize = (12, 10))
     ax = fig.gca()
-    IdentityMatrix(sequencing_report, "aaSeqCDR3","relative", {}, ax = ax)
+    IdentityMatrix(sequencing_report, "aaSeqCDR3","relative", {})
 
     
     
