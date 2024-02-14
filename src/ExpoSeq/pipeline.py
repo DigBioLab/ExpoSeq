@@ -1,7 +1,7 @@
 from .plots.deprecated import cluster_embedding, embedding_with_binding
 from .plots import barplot, hist_lvst_dist, length_distribution, \
     logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
-        clone_fraction, diversity_plot
+        clone_fraction, diversity_plot, hist_lvst_dist_bind
 from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -1048,11 +1048,11 @@ class PlotManager:
 
         self.save_cluster_report(EmbeddingPlot.tsne_results, path = save_report_path)
 
-
-    def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, preferred_cmap = "Blues", label_type = "numbers", save_report_path = None):
+    #@DeprecationWarning
+    def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, prefered_cmap = "Blues", label_type = "numbers", save_report_path = None):
         warnings.warn("This function will be removed in the future. Use the function cluster_binding_data instead.")
         """
-        :param antigen: is the name of the antigen you would like to analyze
+        :param antigen: is the name of the antigen you would like to analyze in a list. You can also add multiple.
         :param max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
         :param min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
         :param batch_size: optional Parameter where its default is 1000. Is the batch size you want to use for the analysis
@@ -1061,29 +1061,35 @@ class PlotManager:
         :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         :return: Creates a figure where sequences are clustered based on Levenshtein distance. Additionally the binding data of the sequences against a specific antigen is given.
         """
-
+    
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigen == None:
             antigen = self.preferred_antigen
-        assert type(antigen) == str, "You have to give a string as input for the antigen"
+        antigen = [antigen]
+        assert type(antigen) == list, "You have to give a string as input for the antigen"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
+        else:
+            specific_experiments = [self.preferred_sample]
         self.ControlFigure.clear_fig()
-        cluster_report = levenshtein_clustering.cluster_single_AG(self.ControlFigure.fig,
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
                                                  self.sequencing_report,
-                                                 antigen,
-                                                 self.binding_data,
-                                                 max_ld,
+                                                 specific_experiments,
+                                                 self.ControlFigure.ax,
+                                                 self.region_of_interest,
+                                                 max_ld, 
                                                  min_ld,
                                                  batch_size,
-                                                 self.region_of_interest,
-                                                 preferred_cmap,
-                                                 specific_experiments,
-                                                 label_type
+                                                 label_type,
+                                                 self.font_settings,
+                                                 self.binding_data,
+                                                 antigen,
+                                                 prefered_cmap
+
                                                  )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1091,9 +1097,10 @@ class PlotManager:
         self.save_cluster_report(cluster_report = cluster_report,
                                  path = save_report_path)
 
+   # @DeprecationWarning
     def tsne_cluster_AG(self, sample=None, antigen=None, antigen_names=True, pca_components=70, perplexity=25,
                         iterations_tsne=2500, save_report_path = None):
-        warnings.warn("This function will be removed in the future. Use the function cluster_binding_data instead.")
+
 
         """
         :param sample: the sample you would like to analyze
@@ -1398,26 +1405,21 @@ class PlotManager:
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigens == None:
             antigens = [self.preferred_antigen]
-        assert type(sample) == str, "You have to give a string as input for the sample"
+        
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(
-            max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
-        assert type(ascending) == bool, "You have to give True or False as input for the ascending parameter"
-
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
-        fig2 = hist_lvst_dist.dendo_binding(self.ControlFigure.fig,
-                                     self.sequencing_report,
-                                     self.binding_data,
-                                     sample,
-                                     antigens,
-                                     batch_size,
-                                     max_cluster_dist,
-                                     self.font_settings,
-                                     self.region_of_interest,
-                                     ascending
+        fig2 = hist_lvst_dist_bind.DendroBind(self.sequencing_report,
+                                              sample,
+                                              self.region_of_interest,
+                                              antigens,
+                                              batch_size,
+                                              max_cluster_dist,
+                                              self.binding_data,
+                                              ascending,
+                                              self.ControlFigure.fig,
+                                              self.font_settings
                                      )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1436,10 +1438,11 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         sample_cluster.ClusterExperiment(self.sequencing_report,
-                                         self.ControlFigure.ax,
                                          self.region_of_interest,
                                          summed_clonefraction=summed_clonefraction,
-                                         max_num_reads=max_num_reads,
+                                        max_num_reads=max_num_reads,
+                                        ax = self.ControlFigure.ax,
+
                                          edge_color = color_lines,
                                          max_weight_lines=max_weight_lines)
         self.ControlFigure.update_plot()

@@ -34,13 +34,13 @@ class TransformerBased:
                          region_of_interest = "aaSeqCDR3", cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
+        selected_rows = selected_rows.drop_duplicates(subset = [region_of_interest])
         if binding_data is not None:
             mix = selected_rows.merge(binding_data, on = region_of_interest, how = "outer")
             selected_rows = mix.fillna(0)
         max_fraction = max(selected_rows[cf_column_name])
         selected_rows.loc[selected_rows[cf_column_name] == 0.0, cf_column_name] = max_fraction
         selected_rows = selected_rows.sort_values(by=cf_column_name, ascending=False)
-        selected_rows.drop_duplicates(subset=region_of_interest, keep="first", inplace=True) # remove duplicates due to adding of binding data
         sequences_filtered = selected_rows[region_of_interest]
         sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
         return sequences,sequences_filtered, selected_rows
