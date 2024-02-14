@@ -137,36 +137,38 @@ def plot_logo_multi(fig, sequencing_report, samples, font_settings,region_string
     font_settings["fontsize"] = adapted_fontsize
   #  fig = plt.figure(1, constrained_layout=True)
     for i in unique_experiments:
-        aa_distribution, sequence_length, length_filtered_seqs = cleaning(i,
-                                                                          sequencing_report,
-                                                                          chosen_seq_length,
-                                                                          region_string,
-                                                                          method)
-        if length_filtered_seqs != 0:
-            if length_filtered_seqs < 100:
-                print("only " + str(length_filtered_seqs) + " sequences with the given length were found. The results might be biased")
-            ax = fig.add_subplot(Rows,
-                                 Cols,
-                                 Position[n],
-                                 xticks = (np.arange(0, chosen_seq_length, step = 1)))
-            logo_plot = logomaker.Logo(aa_distribution,
-                                        shade_below=.5,
-                                        fade_below=.5,
-                                        font_name='Arial Rounded MT Bold',
-                                        color_scheme="skylign_protein",
-                                        show_spines=False,
-                                        ax=ax,
-                                        )
-            #logo_plot.set_xticks(range(aa_distribution.shape[0]))
-            logo_plot.style_xticks(anchor=0,
-                                   spacing=1,
-                                   rotation=0,)
-            plt.title(i, **font_settings) # check out https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.title.html
+        aa_distribution = PrepareData().cleaning(i,
+                                                sequencing_report,
+                                                chosen_seq_length,
+                                                region_string,
+                                                method)
+        if aa_distribution.isna().any().any():
+            continue
+
+        ax = fig.add_subplot(Rows,
+                                Cols,
+                                Position[n],
+                                xticks = (np.arange(0, chosen_seq_length, step = 1)))
+        print(aa_distribution)
+        logo_plot = logomaker.Logo(aa_distribution,
+                                    shade_below=.5,
+                                    fade_below=.5,
+                                    font_name='Arial Rounded MT Bold',
+                                    color_scheme="skylign_protein",
+                                    show_spines=False,
+                                    ax=ax,
+                                    allow_nan = True
+                                    )
+        #logo_plot.set_xticks(range(aa_distribution.shape[0]))
+        logo_plot.style_xticks(anchor=0,
+                                spacing=1,
+                                rotation=0,)
+        plt.title(i, **font_settings) # check out https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.title.html
 
 
-            n = n + 1
-        else:
-            print("Sample " + i + "was skipped because no sequence was found")
+        n = n + 1
+    else:
+        print("Sample " + i + "was skipped because no sequence was found")
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
     fig.suptitle("Logo Plots for sequence Length " + str(chosen_seq_length), **font_settings)

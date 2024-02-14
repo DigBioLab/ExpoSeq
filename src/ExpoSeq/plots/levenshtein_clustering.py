@@ -12,7 +12,7 @@ import editdistance
 
 class PrepareData:
     @staticmethod
-    def check_input(samples, max_ld, min_ld, batch_size, binding_data):
+    def check_input(samples, max_ld, min_ld, batch_size, binding_data, antigens):
         assert type(samples) == list, "You have to give a string as input for the sample"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
@@ -20,8 +20,10 @@ class PrepareData:
         assert batch_size > 1
         assert max_ld > min_ld
         assert max_ld >= 1
-        assert type(antigens) == list or type(antigens) == None
-        assert antigens in binding_data.columns.tolist() or type(binding_data) == None # for case when class is used to solely cluster ngs sequences
+        if binding_data is not None:
+            assert type(antigens) == list
+            for antigen in antigens:
+                assert antigen in binding_data.columns.tolist()
         
     
     @staticmethod
@@ -34,11 +36,12 @@ class PrepareData:
             binding_data = binding_data[merged_columns]
             mix = sample_report.merge(binding_data, on = region_of_interest, how = "outer")
             sample_report = mix.fillna(0)
+            
         return sample_report
         
     def calc_edges(self, sequencing_report,samples, batch_size, max_ld, min_ld, region_string,
                    binding_data = None, antigens = None, experiment_column = "Experiment"):
-        self.check_input()
+        self.check_input(samples, max_ld, min_ld, batch_size, binding_data, antigens)
         report = self.clean_data(sequencing_report, samples, batch_size, experiment_column, binding_data, antigens, region_string)
         G = nx.Graph()
         aa = list(report[region_string])
@@ -65,7 +68,7 @@ class PrepareData:
 
 class LevenshteinClustering:
     def __init__(self, sequencing_report, samples, ax = None, region_string = "aaSeqCDR3", max_ld = 2, min_ld =0, 
-                 batch_size = 200,label_type = "numbers", font_settings = {}, binding_data = None, antigens = None):
+                 batch_size = 200,label_type = "numbers", font_settings = {}, binding_data = None, antigens = None, prefered_cmap="viridis"):
         self.ax = ax
         self.G, report = PrepareData().calc_edges(sequencing_report, samples, batch_size,
                                                   max_ld, min_ld, region_string, binding_data, antigens)
@@ -74,7 +77,7 @@ class LevenshteinClustering:
         partition = self.get_partition(self.G)
         if ax != None:
             partition = self.create_network(label_type, label_numbers, label_sequences,
-                                            nodesize, partition, region_string, report, binding_data, antigens)
+                                            nodesize, partition, region_string, report, binding_data, antigens, prefered_cmap)
             if font_settings != {}:
                 self.add_header(font_settings, samples)
             
@@ -113,7 +116,6 @@ class LevenshteinClustering:
         node_ids = list(G.nodes())
         n = 0
         for index, g in enumerate(G):
-            print(g)
             if n == 9:
                 label_sequences[g] = g
                 n = 0
@@ -128,13 +130,13 @@ class LevenshteinClustering:
         return partition
     
     
-    def map_binding(self, binding_data, region_of_interest, report, antigens):
+    def map_binding(self, binding_data, region_of_interest, report, antigens, prefered_cmap):
         node_colors = {}
         assert region_of_interest in binding_data.columns, "You do not have binding data for the corresponding region of interest"
         new_df = binding_data.loc[:, antigens]     
         maximum_binding_value = new_df.max().max()
         minimum_binding_value = new_df.min().min()
-        cmap = plt.colormaps.get_cmap("viridis")
+        cmap = plt.colormaps.get_cmap(prefered_cmap)
         norm = plt.Normalize(minimum_binding_value, maximum_binding_value)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm) # for colorbar
         for i, g in enumerate(self.G):
@@ -146,9 +148,9 @@ class LevenshteinClustering:
         return node_colors_norm_heatmap, sm 
         
         
-    def create_network(self, label_type, label_numbers, label_sequences, nodesize, partition, region_of_interest, report, binding_data, antigens):
+    def create_network(self, label_type, label_numbers, label_sequences, nodesize, partition, region_of_interest, report, binding_data, antigens, prefered_cmap):
         if binding_data is not None:
-            node_colors, sm = self.map_binding(binding_data, region_of_interest, report, antigens)
+            node_colors, sm = self.map_binding(binding_data, region_of_interest, report, antigens, prefered_cmap)
         else:
             node_colors = list(partition.values())
         pos = nx.spring_layout(self.G)
@@ -186,19 +188,19 @@ class LevenshteinClustering:
         
         
 
-import pandas as pd
-file = r"C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\Binding_data\Chris_main_df.csv"
-binding_data = pd.read_csv(file)
-antigens = ["Ecarpholin_S_DDEL_5ug/mL", "Myotoxin_II_DDEL_5ug/mL"]
-filename = r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\sequencing_report.csv"
-sequencing_report = pd.read_csv(filename)
-sequencing_report["cloneFraction"] = sequencing_report["readFraction"]
-fig = plt.figure(1)
-ax = fig.gca()
-samples = ["Library_1_F11_2", "test_1_F10"]
-font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
-LevenshteinClustering(sequencing_report, samples, ax, font_settings=font_settings, batch_size=800, binding_data=binding_data, antigens = antigens)
-plt.show()
+#import pandas as pd
+#file = r"C:\Users\nilsh\OneDrive\Desktop\DTU\NGS_pipeline\data\Binding_data\Chris_main_df.csv"
+#binding_data = pd.read_csv(file)
+#antigens = ["Ecarpholin_S_DDEL_5ug/mL", "Myotoxin_II_DDEL_5ug/mL"]
+#filename = r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\test_all_samples\sequencing_report.csv"
+#sequencing_report = pd.read_csv(filename)
+#sequencing_report["cloneFraction"] = sequencing_report["readFraction"]
+#fig = plt.figure(1)
+#ax = fig.gca()
+#samples = ["Library_1_F11_2", "test_1_F10"]
+#font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
+#LevenshteinClustering(sequencing_report, samples, ax, font_settings=font_settings, batch_size=800, binding_data=binding_data, antigens = antigens)
+#plt.show()
 
 
 

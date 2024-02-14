@@ -50,6 +50,8 @@ class PrepareData:
     
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 300, pca_components = 70,
              perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+        for sample in list_experiments:
+            assert sample in list(sequencing_report[sample_column_name].unique()), f"{sample} does not exist"
         self.logical_check(batch_size,
                            perplexity,
                            pca_components,
@@ -94,7 +96,8 @@ class PlotEmbedding:
                  colorbar_settings = None,  toxin_names = None, extra_figure = False):
         self.ax = ax
         self.binding_data = binding_data
-        peptides, selected_rows, tsne_results = PrepareData().tidy(sequencing_report=sequencing_report,
+        self.data_prep  = PrepareData()
+        peptides, selected_rows, tsne_results = self.data_prep.tidy(sequencing_report=sequencing_report,
                                                             list_experiments=list_experiments,
                                                             region_of_interest=region_of_interest,
                                                             antigens = antigens,
@@ -131,7 +134,6 @@ class PlotEmbedding:
         
     def create_plot(self, tsne_results, selected_rows):
         experiments_batch = selected_rows["Experiment"]
-
         self.tsne_plot = self.ax.scatter(tsne_results.tsne1,
                                     tsne_results.tsne2,
                                     c = pd.factorize(experiments_batch)[0],
@@ -141,7 +143,7 @@ class PlotEmbedding:
 
             
     def add_size(self, add_clone_size):
-        size_points = self.clones * add_clone_size
+        size_points = self.data_prep.clones * add_clone_size
         self.tsne_plot.set_sizes(size_points)
         
     def add_legend(self, list_experiments, legend_settings):
@@ -162,7 +164,7 @@ class PlotEmbedding:
             
 
     def return_binding_results(self,  selected_rows, antigens, region_of_interest):
-        kds = selected_rows[antigens].max(axis = 1)
+        kds = selected_rows[antigens].max(axis = 1) # if there are multiple values for the same sequence this will find the highest one 
         ids = selected_rows[antigens].idxmax(axis = 1)
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]

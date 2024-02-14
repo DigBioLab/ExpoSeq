@@ -12,7 +12,7 @@ class PrepareData:
         self.summed_clonefraction = summed_clonefraction
         self.max_num_reads = max_num_reads
         
-    def get_top_10_percent(self, group, summed_clonefraction, max_num_reads):
+    def get_top_10_percent(self, group):
         sorted_group = group.sort_values(by='cloneFraction', ascending=False)
         cumulative_sum = sorted_group['cloneFraction'].cumsum()
         return sorted_group[cumulative_sum <= self.summed_clonefraction][:self.max_num_reads]
