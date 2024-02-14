@@ -56,6 +56,10 @@ Plot Commands
 - plot.rel_seq_abundance(): 
     Shows the clone fractions of a given sample in a tree map plot
 
+- plot.ls_distance_binding():
+    Advanced and new version of clustser_one_AG. You can include multiple samples and antigens here. 
+    You will cluster sequences based on Levenshtein distance and combine them with your binding data.
+
 - plot.cluster_one_AG(): 
     Clusters sequences based on Levenshtein distance and shows binding data against a specific antigen.
 
