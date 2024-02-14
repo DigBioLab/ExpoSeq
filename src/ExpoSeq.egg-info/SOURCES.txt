@@ -40,6 +40,7 @@ src/ExpoSeq/modelling/set_env.py
 src/ExpoSeq/plots/__init__.py
 src/ExpoSeq/plots/barplot.py
 src/ExpoSeq/plots/bert_network_embedding.py
+src/ExpoSeq/plots/chord_diagram.py
 src/ExpoSeq/plots/clone_fraction.py
 src/ExpoSeq/plots/cluster_embedding.py
 src/ExpoSeq/plots/diversity_plot.py
@@ -53,11 +54,11 @@ src/ExpoSeq/plots/plt_heatmap.py
 src/ExpoSeq/plots/protbert_embedding.py
 src/ExpoSeq/plots/protein_embedding.py
 src/ExpoSeq/plots/protein_network_embedding.py
+src/ExpoSeq/plots/rarefraction_curves.py
 src/ExpoSeq/plots/relative_sequence_abundance.py
 src/ExpoSeq/plots/sample_cluster.py
 src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
-src/ExpoSeq/plots/usq_plot.py
 src/ExpoSeq/settings/__init__.py
 src/ExpoSeq/settings/alignment_plot.md
 src/ExpoSeq/settings/aumotative_report.py
@@ -96,7 +97,6 @@ src/ExpoSeq/tidy_data/barplot.py
 src/ExpoSeq/tidy_data/clustering.py
 src/ExpoSeq/tidy_data/interpret_data.py
 src/ExpoSeq/tidy_data/read_extract_data.py
-src/ExpoSeq/tidy_data/tidy_USQ_plot_.py
 src/ExpoSeq/tidy_data/tidy_alignment_reports.py
 src/ExpoSeq/tidy_data/tidy_cluster_embedding.py
 src/ExpoSeq/tidy_data/tidy_dendro.py

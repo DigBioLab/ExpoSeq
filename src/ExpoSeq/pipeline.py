@@ -1,22 +1,23 @@
-from .plots import barplot, cluster_embedding, embedding_with_binding, hist_lvst_dist, length_distribution, \
-    logo_plot, plt_heatmap, protein_embedding, protein_network_embedding, rarefraction_curves, relative_sequence_abundance, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
-        clone_fraction, diversity_plot
+from .plots.deprecated import cluster_embedding, embedding_with_binding
+from .plots import barplot, hist_lvst_dist, length_distribution, \
+    logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
+        clone_fraction, diversity_plot, hist_lvst_dist_bind
+from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
 from .augment_data.uploader import upload
 import pandas as pd
-import pickle
 import os
 from .settings import change_settings, reports, plot_styler
 import subprocess
 from .augment_data.uploader import create_alignment_report
 from .settings.general_instructions import print_instructions
-from .tidy_data.heatmaps.read_matrix import read_matrix
+from .plots.matrices.read_matrix import read_matrix
 from .augment_data.mixcr_nils import check_mixcr
 from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
-
+import warnings
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
@@ -654,13 +655,15 @@ class PlotManager:
             region), "You have to give a list with the start and end position of the region you want to analyze. For instance: [3,7]"
         assert protein in [True, False], "You have to give True or False as input for the protein parameter"
         self.ControlFigure.clear_fig()
-        stacked_aa_distribution.stacked_aa_distr(self.ControlFigure.ax,
+        stacked_aa_distribution.StackedAADistribution(
                                                  self.sequencing_report,
                                                  sample,
                                                  region,
+                                                 self.region_of_interest,
                                                  protein,
                                                  self.font_settings,
-                                                 self.region_of_interest)
+                                                 self.ControlFigure.ax
+                                                 )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -788,12 +791,12 @@ class PlotManager:
         assert type(sample) == str, "You have to give a string as input for the sample"
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        length_distribution.length_distribution_single(self.ControlFigure.fig,
-                                                       self.ControlFigure.ax,
-                                                       self.sequencing_report,
+        length_distribution.LengthDistributionSingle(self.sequencing_report,
                                                        sample,
+                                                       self.region_of_interest,
+                                                       self.ControlFigure.ax,
                                                        self.font_settings,
-                                                       self.region_of_interest)
+                                                       )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -895,12 +898,13 @@ class PlotManager:
             cluster_report.to_excel(path)
 
 
-    def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, second_figure = False, label_type = "numbers", save_report_path = None):
+
+
+    def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None):
         """
         :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
         :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
         :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
-        :param second_figure: Default is False. Creates a second figure with the levenshtein distance as bars
         :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
         :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         """
@@ -909,31 +913,67 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
       #  assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(samples) == list, "You have to give a string as input for the sample"
-        assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
-        assert type(second_figure) == bool, "You have to give True or False as input for the second figure"
         self.ControlFigure.clear_fig()
-        cluster_report = levenshtein_clustering.clusterSeq(
-            self.ControlFigure.ax,
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
             self.sequencing_report,
             samples,
+            self.ControlFigure.ax,
+            self.region_of_interest,
             max_ld,
             min_ld,
             batch_size,
-            self.font_settings,
-            second_figure,
-            self.region_of_interest,
-            label_type)
+            label_type,
+            self.font_settings,            
+            )
 
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
         self.save_cluster_report(cluster_report = cluster_report,
                                  path = save_report_path)
-        if second_figure == True:
-            print("close the second window before you continue")
 
+
+    def ls_distance_binding(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None, antigen_names = None):
+        """
+        :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
+        :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
+        :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
+        :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
+        :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
+        :param antigen_names: Names of the antigens with the corresponidng sequences you want to cluster with your ngs data. Input type is a list
+        """
+        if self.binding_data is None:
+            print("Please upload binding data to use this functionality")
+            return 
+        if samples == None:
+            samples = [self.preferred_sample]
+            
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+      #  assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        self.ControlFigure.clear_fig()
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
+            self.sequencing_report,
+            samples,
+            self.ControlFigure.ax,
+            self.region_of_interest,
+            max_ld,
+            min_ld,
+            batch_size,
+            label_type,
+            self.font_settings,     
+            self.binding_data,
+            antigen_names       
+            )
+
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        self.save_cluster_report(cluster_report = cluster_report,
+                                 path = save_report_path)
+
+        
+    
     def show(self):
         self.ControlFigure.fig.show()
 
@@ -958,8 +998,7 @@ class PlotManager:
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigens == None:
             antigens = [self.preferred_antigen]
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        models_all = model_types_adv + ["sgt"]
+        models_all = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
         assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
@@ -982,22 +1021,23 @@ class PlotManager:
         assert type(save_report_path) == str or save_report_path == None, "You have to give a string as input for the save_report_path parameter"
 
         self.ControlFigure.clear_fig()
-        EmbeddingPlot = protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
+        EmbeddingPlot = protein_embedding.PlotEmbedding( 
                                     self.sequencing_report,
                                     model,
                                     samples,
+                                    self.region_of_interest,
                                     strands,
                                     add_clone_size = 300,
                                     batch_size = batch_size,
                                     pca_components = pca_components,
                                     perplexity = perplexity,
                                     iterations_tsne = iterations_tsne,
+                                    antigens = antigens,
                                     font_settings=self.font_settings,
                                     legend_settings = self.legend_settings,
-                                    region_of_interest= self.region_of_interest,
                                     binding_data = self.binding_data,
                                     colorbar_settings = self.colorbar_settings,
-                                    antigens = antigens, 
+                                    ax = self.ControlFigure.ax,
                                     toxin_names = show_antigen_names,
                                     extra_figure = extra_figure
                                     )
@@ -1008,10 +1048,11 @@ class PlotManager:
 
         self.save_cluster_report(EmbeddingPlot.tsne_results, path = save_report_path)
 
-
-    def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, preferred_cmap = "Blues", label_type = "numbers", save_report_path = None):
+    #@DeprecationWarning
+    def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, prefered_cmap = "Blues", label_type = "numbers", save_report_path = None):
+        warnings.warn("This function will be removed in the future. Use the function cluster_binding_data instead.")
         """
-        :param antigen: is the name of the antigen you would like to analyze
+        :param antigen: is the name of the antigen you would like to analyze in a list. You can also add multiple.
         :param max_ld: optional Parameter where its default is 1. Is the maximum Levenshtein distance you allow per cluster
         :param min_ld: optional Parameter where its default is 0. Is the minimum Levenshtein distance between sequences you allow
         :param batch_size: optional Parameter where its default is 1000. Is the batch size you want to use for the analysis
@@ -1020,29 +1061,35 @@ class PlotManager:
         :param save_report_path: Default is None which saves your report in my_experiments/reports_pipeline. If you want to change it somewhere else you need to insert the full path with filename.
         :return: Creates a figure where sequences are clustered based on Levenshtein distance. Additionally the binding data of the sequences against a specific antigen is given.
         """
-
+    
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigen == None:
             antigen = self.preferred_antigen
-        assert type(antigen) == str, "You have to give a string as input for the antigen"
+        antigen = [antigen]
+        assert type(antigen) == list, "You have to give a string as input for the antigen"
         assert type(max_ld) == int, "You have to give an integer as input for the maximum levenshtein distance"
         assert type(min_ld) == int, "You have to give an integer as input for the minimum levenshtein distance"
         if specific_experiments != False:
             assert type(specific_experiments) == list, "You have to give a list with the samples you want to analyze"
+        else:
+            specific_experiments = [self.preferred_sample]
         self.ControlFigure.clear_fig()
-        cluster_report = levenshtein_clustering.cluster_single_AG(self.ControlFigure.fig,
+        cluster_report = levenshtein_clustering.LevenshteinClustering(
                                                  self.sequencing_report,
-                                                 antigen,
-                                                 self.binding_data,
-                                                 max_ld,
+                                                 specific_experiments,
+                                                 self.ControlFigure.ax,
+                                                 self.region_of_interest,
+                                                 max_ld, 
                                                  min_ld,
                                                  batch_size,
-                                                 self.region_of_interest,
-                                                 preferred_cmap,
-                                                 specific_experiments,
-                                                 label_type
+                                                 label_type,
+                                                 self.font_settings,
+                                                 self.binding_data,
+                                                 antigen,
+                                                 prefered_cmap
+
                                                  )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1050,11 +1097,14 @@ class PlotManager:
         self.save_cluster_report(cluster_report = cluster_report,
                                  path = save_report_path)
 
+   # @DeprecationWarning
     def tsne_cluster_AG(self, sample=None, antigen=None, antigen_names=True, pca_components=70, perplexity=25,
                         iterations_tsne=2500, save_report_path = None):
+
+
         """
         :param sample: the sample you would like to analyze
-        :param antigen: the toxins you would like to cluster
+        :param antigen: Input is a list. the toxins you would like to cluster
         :param antigen_names: Default is True. Prints the name of the toxin for the corresponding embedded sequence in the plot
         :param pca_components: optional. Default is 70
         :param perplexity: optional. Default 25
@@ -1104,29 +1154,25 @@ class PlotManager:
         :param nodesize: Default is 300. This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size.
         :threshold_distance: Default is 5. This value is multiplied with the summed batch_size of the samples. This defines the cluster size. The higher the values, the more complex the clusters.
         """
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        assert model in model_types_adv, f"Please enter a valid model name which are\n{model_types_adv}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
+        assert type(threshold_distance) == int, "Please enter an integer for the threshold distance"
+
         assert type(nodesize) == int, "Nodesize has to be an integer"
         assert nodesize > 0 & nodesize < 1000, "Please enter a value between 0 and 1000"
-        assert type(threshold_distance) == int, "Please enter an integer for the threashold distance"
-        if model in model_types_adv:
-            protein_network_embedding.Network_Embedding(self.ControlFigure.ax,
-                                                     self.sequencing_report,
-                                                     samples,
-                                                     model,
-                                                     batch_size, 
-                                                     self.font_settings,
-                                                     cmap,
-                                                     nodesize,
-                                                     threshold_distance,
-                                                     self.region_of_interest)
+        protein_network_embedding.Network_Embedding(self.ControlFigure.ax,
+                                                    self.sequencing_report,
+                                                    samples,
+                                                    model,
+                                                    batch_size, 
+                                                    self.font_settings,
+                                                    cmap,
+                                                    nodesize,
+                                                    threshold_distance,
+                                                    self.region_of_interest)
         
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1144,61 +1190,38 @@ class PlotManager:
                        batch_size=1000):
         """
         :param samples: type is list. The samples you would like to compare towards their sequences
-        :param strands: Default is True. It means that you will plot a batch of the strands in your plot
+        :param strands: Default is True. It means that you will visualize a batch of the strands in your plot
         :param pca_components: Default is 80. Has to be applied for better accuracy of t-SNE. You can indirectly change the described variance with this.
-        :param model: The model you would like to choose for the embedding. Default is 'Rostlab/prot_t5_xl_half_uniref50-enc'. You can choose all models on https://huggingface.co/Rostlab and sgt.
+        :param model: The model you would like to choose for the embedding. Default is 'Rostlab/prot_t5_xl_half_uniref50-enc'. You can choose all models on https://huggingface.co/Rostlab.
         :param perplexity: Default is 30. It roughly determines the number of nearest neighbors that are considered in the embedding. A higher perplexity value results in a more global structure in the low-dimensional embedding, while a lower perplexity value emphasizes local structure. The optimal perplexity value for a given dataset depends on the dataset's intrinsic dimensionality, and it is usually determined by trial and err
         :param iterations_tsne: Default is 2500. number of times that the algorithm will repeat the optimization process for reducing the cost function. The optimization process aims to minimize the difference between the high-dimensional and low-dimensional representations of the data. More iterations result in a more optimized low-dimensional representation, but also increases the computational cost.
         :param batch_size: Default is 1000. The size of the sample which is chosen. The higher it is, the more computational intense.
         :return: Returns a plot where the sequences of the input samples are transformed in a vector space. Dimension reduction such as PCA and following t-SNE is used to plot it on a two dimensional space. The different colors indicate the different samples.
         """
-        model_types_adv = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        models_all = model_types_adv + ["sgt"]
-        assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find nearly all of the models at: https://huggingface.co/Rostlab"
         if samples == None:
             samples = [self.experiments_list[0]]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         incorrect_samples = [x for x in samples if x not in self.experiments_list]
         assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         assert type(strands) == bool, "You have to give True or False as input for the strands parameter"
-        assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
-        assert type(perplexity) == int, "You have to give an integer as input for the perplexity"
-        assert type(iterations_tsne) == int, "You have to give an integer as input for the iterations_tsne"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
-        assert batch_size > pca_components, "The batch_size has to be larger than the pca_components"
-        assert batch_size > perplexity, "The batch_size has to be larger than the perplexity"
         self.ControlFigure.clear_fig()
-        if model in model_types_adv:
-            protein_embedding.Plot_Embedding(self.ControlFigure.ax, 
-                                              self.sequencing_report,
-                                              model,
-                                              samples,
-                                              strands,
-                                              add_clone_size = 300,
-                                              batch_size = batch_size,
-                                              pca_components = pca_components,
-                                              perplexity = perplexity,
-                                              iterations_tsne = iterations_tsne,
-                                                font_settings=self.font_settings,
-                                              legend_settings = self.legend_settings,
-                                              region_of_interest= self.region_of_interest
-                                              )
-        elif model == "sgt":
-            cluster_embedding.show_difference(self.sequencing_report,
+        protein_embedding.PlotEmbedding(
+                                            self.sequencing_report,
+                                            model,
                                             samples,
-                                            strands,
-                                            batch_size,
-                                            pca_components,
-                                            perplexity,
-                                            iterations_tsne,
                                             self.region_of_interest,
-                                            self.ControlFigure.ax,
-                                            self.legend_settings,
-                                            self.font_settings)
-        else: 
-            return
+                                            strands,
+                                            add_clone_size = 300,
+                                            batch_size = batch_size,
+                                            pca_components = pca_components,
+                                            perplexity = perplexity,
+                                            iterations_tsne = iterations_tsne,
+                                            font_settings=self.font_settings,
+                                            legend_settings = self.legend_settings,
+                                            ax = self.ControlFigure.ax, 
+                                            )
+
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
@@ -1217,21 +1240,22 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "morosita_horn",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "morosita_horn",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
+         
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def jaccard(self,cmap = "Blues",  annotate_cells=False, specific_experiments=False, matrix_save_path = None):
         """
@@ -1246,22 +1270,22 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "jaccard",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "jaccard",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
 
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def sample_diversity(self, method = "InverseSimpson"):
         """
@@ -1273,8 +1297,8 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         diversity_plot.DiversityPlot(self.sequencing_report,
+                                     self.region_of_interest,
                                      self.ControlFigure.ax,
-                                     self.region_of_interest, 
                                      self.font_settings,
                                      method = method)
         self.ControlFigure.update_plot()
@@ -1294,21 +1318,21 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "sorensen",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "sorensen",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix, matrix_save_path)
+        save_matrix(Matrix.matrix, matrix_save_path)
 
     def relative(self, cmap = "Blues",  annotate_cells=False, specific_experiments=False):
         """
@@ -1323,21 +1347,21 @@ class PlotManager:
             incorrect_samples = [x for x in specific_experiments if x not in self.experiments_list]
             assert not incorrect_samples, f"The following sample(s) are not in your sequencing report: {', '.join(incorrect_samples)}. Please check the spelling or use the print_samples function to see the names of your samples"
         self.ControlFigure.clear_fig()
-        matrix = plt_heatmap.plot_heatmap(self.sequencing_report,
-                                          True,
-                                          "relative",
-                                          self.ControlFigure.ax,
-                                          self.colorbar_settings,
-                                          self.font_settings,
-                                          annotate_cells,
-                                          self.region_of_interest,
-                                          cmap,
-                                          specific_experiments=specific_experiments,
+        Matrix = make_matrix.IdentityMatrix(self.sequencing_report,
+                                            self.region_of_interest,
+                                            "relative",
+                                            self.colorbar_settings,
+                                            specific_experiments,
+                                            self.ControlFigure.ax,
+                                            True,
+                                            self.font_settings,
+                                            cmap,
+                                            annotate_cells=annotate_cells                    
                                           )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        save_matrix(matrix)
+        save_matrix(Matrix.matrix)
 
     def levenshtein_dendrogram(self, sample=None, max_cluster_dist=2, batch_size=1000):
         """
@@ -1356,14 +1380,12 @@ class PlotManager:
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
-        linked  = hist_lvst_dist.levenshtein_dend(self.ControlFigure.ax,
-                                        self.sequencing_report,
-                                        sample,
-                                        batch_size,
-                                        max_cluster_dist,
-                                        self.font_settings,
-                                        self.region_of_interest
-                                        )
+        hist_lvst_dist.LevenshteinDend(self.sequencing_report, 
+                                       self.region_of_interest,
+                                       sample,
+                                       self.font_settings,
+                                       batch_size, max_cluster_dist,
+                                       self.ControlFigure.ax)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
@@ -1383,26 +1405,21 @@ class PlotManager:
         assert self.binding_data is not None, "You have not given binding data. You can add it with the add_binding_data function"
         if antigens == None:
             antigens = [self.preferred_antigen]
-        assert type(sample) == str, "You have to give a string as input for the sample"
+        
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(
-            max_cluster_dist) == int, "You have to give an integer as input for the maximum levenshtein distance"
-        assert type(batch_size) == int, "You have to give an integer as input for the batch size"
-        assert type(ascending) == bool, "You have to give True or False as input for the ascending parameter"
-
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()
-        fig2 = hist_lvst_dist.dendo_binding(self.ControlFigure.fig,
-                                     self.sequencing_report,
-                                     self.binding_data,
-                                     sample,
-                                     antigens,
-                                     batch_size,
-                                     max_cluster_dist,
-                                     self.font_settings,
-                                     self.region_of_interest,
-                                     ascending
+        fig2 = hist_lvst_dist_bind.DendroBind(self.sequencing_report,
+                                              sample,
+                                              self.region_of_interest,
+                                              antigens,
+                                              batch_size,
+                                              max_cluster_dist,
+                                              self.binding_data,
+                                              ascending,
+                                              self.ControlFigure.fig,
+                                              self.font_settings
                                      )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
@@ -1421,10 +1438,11 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
         sample_cluster.ClusterExperiment(self.sequencing_report,
-                                         self.ControlFigure.ax,
                                          self.region_of_interest,
                                          summed_clonefraction=summed_clonefraction,
-                                         max_num_reads=max_num_reads,
+                                        max_num_reads=max_num_reads,
+                                        ax = self.ControlFigure.ax,
+
                                          edge_color = color_lines,
                                          max_weight_lines=max_weight_lines)
         self.ControlFigure.update_plot()
