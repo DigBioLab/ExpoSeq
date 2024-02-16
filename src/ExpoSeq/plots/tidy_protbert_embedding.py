@@ -23,10 +23,15 @@ class TransformerBased:
                                                     do_lower_case=False,)
 
             self.model = T5EncoderModel.from_pretrained(self.choice)
-        else:
+        elif "bert" in self.choice.lower():
             from transformers import BertModel, BertTokenizer
             self.tokenizer = BertTokenizer.from_pretrained(self.choice, do_lower_case=False )
             self.model = BertModel.from_pretrained(self.choice)
+        elif "esm" in self.choice.lower():
+            from transformers import AutoTokenizer, EsmModel
+            self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
+            self.model = EsmModel.from_pretrained(self.choice)
+        
         
 
     
