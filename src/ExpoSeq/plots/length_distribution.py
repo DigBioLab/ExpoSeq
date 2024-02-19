@@ -9,6 +9,7 @@ class LengthDistributionSingle:
     def __init__(self, sequencing_report, sample, region_of_interest, ax = None, font_settings = {}, title_type = "single"):
         unique_length, counts_length = self.tidy(sequencing_report, sample, region_of_interest)
         self.plot(unique_length, counts_length, sample, ax, font_settings, title_type)
+
         if title_type == "single":
             self.title(sample, font_settings)
         else:
@@ -41,6 +42,7 @@ class LengthDistributionSingle:
                 pad=12,
                 **font_settings)
         font_settings["fontsize"] = original_fontsize
+
         
     @staticmethod
     def title(sample, font_settings):

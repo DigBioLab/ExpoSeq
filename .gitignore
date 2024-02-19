@@ -35,3 +35,8 @@ exposeq_venv
 pdm.lock
 .pdm-python
 .pypirc
+Data_and_Code
+models
+model_weights
+predict_fold.py
+predict.py
