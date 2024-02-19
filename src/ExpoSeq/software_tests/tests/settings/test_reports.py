@@ -24,9 +24,10 @@ def test_sequencingreportclass():
     assert "nSeqCDR3" in test.columns.tolist(), "Column not in sequencing report"
     assert test["aaSeqCDR3"].str.len().min() > length_threshold, "Sequence length filter does not work"
     assert test["readCount"].min() > min_read_count, "Read count filter does not work"
+    tolerance = 0.000001
     for exp in experiment_names:
         sub_test = test[test["Experiment"] == exp]
-        assert sub_test["cloneFraction"].sum() == 1, "cloneFraction does not sum up to 1" # most important test, otherwise data is not tidied correctly
+        assert abs(sub_test["cloneFraction"].sum() - 1) < tolerance, "cloneFraction does not sum up to 1" # most important test, otherwise data is not tidied correctly
     unitest_dir = os.path.join("src", "ExpoSeq", "software_tests", "test_files","my_experiments", "unitest")
     if not os.path.isdir(unitest_dir):
         os.mkdir(unitest_dir)
@@ -41,4 +42,3 @@ def test_sequencingreportclass():
 
 
 
-test_sequencingreportclass()
