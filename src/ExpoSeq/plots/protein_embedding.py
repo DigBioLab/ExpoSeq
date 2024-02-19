@@ -1,5 +1,5 @@
 from textwrap import wrap
-from ExpoSeq.plots.tidy_protbert_embedding import TransformerBased
+from .tidy_protbert_embedding import TransformerBased
 import pandas as pd
 import matplotlib.pyplot as plt
 import warnings
