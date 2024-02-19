@@ -95,6 +95,9 @@ Plot Commands
     
 - plot.sample_diversity()
     Shows the diversity of your samples based on the Inverse Simpson Index or the Shannon Index.
+    
+- plot.length_distribution_all()
+    Shows you the length distribution for all of your samples separately in one plot as Violin or Boxplot.
 -----------------------
 Non-Plot Commands
 -----------------------

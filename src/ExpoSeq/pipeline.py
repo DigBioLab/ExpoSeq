@@ -1,7 +1,7 @@
 from .plots.deprecated import cluster_embedding, embedding_with_binding
 from .plots import barplot, hist_lvst_dist, length_distribution, \
     logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
-        clone_fraction, diversity_plot, hist_lvst_dist_bind
+        clone_fraction, diversity_plot, hist_lvst_dist_bind, multiple_length_plot
 from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -825,6 +825,22 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
       #  self.ControlFigure.tighten()
+      
+    def length_distribution_all(self, plot_type = "boxplot"):
+        """Returns either a box or a violin plot which shows the distribution of the nucleotide sequence length.
+
+        Args:
+            plot_type (str, optional): This parameter controls if you want to have the length distribution visualized as box or violin plot. Type violin to show the Violinplot. Defaults to "boxplot".
+        """
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        multiple_length_plot.LengthPlotMultiple(sequencing_report=self.sequencing_report,
+                                                region_of_interest=self.region_of_interest,
+                                                ax = self.ControlFigure.ax,
+                                                font_settings=self.font_settings,
+                                                plot_type=plot_type
+                                                )
+        
 
     def rel_seq_abundance(self, sample=None, visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.75, seqs_viz_fraction = 0.3, alpha_val = 0.75, pad_rectangles = True, force_reducing = 500, limit_seq_filter = 10):
         """
