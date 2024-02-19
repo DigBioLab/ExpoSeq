@@ -73,6 +73,25 @@ class PrepareData:
     
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 300, pca_components = 70,
              perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+        """creates tsne_results as class object which is a table containing all necessary data for the final plot
+
+        Args:
+            sequencing_report (pd.DataFrame): report which contains all sequencing information from all samples after the processing with mixcr
+            list_experiments (list): List containing the names of the samples which should be used for the final plot. 
+            region_of_interest (str): A string which indicates the column name from which the amino acid sequences should be taken from.
+            antigens (list, optional): list containing the names of the antigens which are the headers of the binding data. From these antigens the binding data will be taken for the plot. Defaults to None.
+            batch_size (int, optional): Equals to the number of sequences which are drawn from the sequencing report for the embedding and the final plot. Defaults to 300.
+            pca_components (int, optional): Equals to the number of principal components which are used as input for tsne. This helps to remove noise and complexity before using t-SNe. Defaults to 70.
+            perplexity (int, optional): Number for the parameter perplexity in t-SNE. Defaults to 25.
+            iterations_tsne (int, optional): Equals to the number of iterations the t-SNE algorithm has to run. Defaults to 1000.
+            model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to "Rostlab/prot_bert".
+            binding_data (pd.DataFrame, optional): Dataframe which contains the sequences and the binding values to the antigens. Defaults to None.
+            cf_column_name (str, optional): Name of the column which contains the clone fraction in the sequencing report. Defaults to "cloneFraction".
+            sample_column_name (str, optional): Name of the column which contains the sample names in the sequencing report. Defaults to "Experiment".
+
+        Returns:
+            _type_: _description_
+        """
         for sample in list_experiments:
             assert sample in list(sequencing_report[sample_column_name].unique()), f"{sample} does not exist"
         if binding_data is not None:

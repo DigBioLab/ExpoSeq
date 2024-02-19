@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np 
 
 def test_ProteinEmbedding():
-    
     sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
     sequencing_report = pd.read_csv(sequencing_report_path)
     sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
@@ -46,35 +45,40 @@ def test_ProteinEmbedding():
     assert kds is not None
     assert ids is not None
     
+    font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
+    
+    PlotEmbedding(sequencing_report=sequencing_report,
+                model_choice="Rostlab/prot_bert", 
+                list_experiments=["GeneMind_1"],
+                region_of_interest="aaSeqCDR3",
+                strands = False, 
+                add_clone_size=None,
+                batch_size = 100, 
+                pca_components=70,
+                perplexity=25, 
+                iterations_tsne=251,
+                antigens = None, 
+                ax = ax,
+                font_settings = font_settings)
+    
+    fig = plt.figure(1, figsize = (12, 10))
+    ax = fig.gca()
+    colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
 
-    
-    
-    
-#    PlotEmbedding(sequencing_report=sequencing_report,
-#                model_choice="Rostlab/prot_bert", 
-#                list_experiments=["GeneMind_1"],
-#                region_of_interest="aaSeqCDR3",
- #               strands = False, 
- #               add_clone_size=None,
- #               batch_size = 200, 
- #               pca_components=70,
- #               perplexity=25, 
- #               iterations_tsne=1000,
- #               antigens = None, 
- #               ax = ax)
-    
-    
-
- #   PlotEmbedding(sequencing_report=sequencing_report,
- #               model_choice="Rostlab/prot_bert", 
- #               list_experiments=["GeneMind_1"],
- #               region_of_interest="aaSeqCDR3",
- #               strands = False, 
- #               add_clone_size=None,
- #               batch_size = 200, 
- #               pca_components=70,
- #               perplexity=25, 
- #               iterations_tsne=1000,
- #               antigens = None,
- #               ax = ax,
- #               )
+    PlotEmbedding(sequencing_report=sequencing_report,
+                model_choice="Rostlab/prot_bert", 
+                list_experiments=["GeneMind_1"],
+                region_of_interest="aaSeqCDR3",
+                strands = False, 
+                add_clone_size=None,
+                batch_size = 100, 
+                pca_components=70,
+                perplexity=25, 
+                iterations_tsne=251,
+                ax = ax,
+                font_settings=font_settings,
+                extra_figure=True,
+                antigens = ["Antigen 1"],
+                binding_data=binding_data,
+                colorbar_settings=colorbar_settings
+                )
