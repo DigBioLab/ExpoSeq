@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import math
 import pandas as pd
-import community
+import community.community_louvain as community
 import editdistance
 
 
@@ -58,7 +58,7 @@ class PrepareData:
                 if distance>= min_ld and distance <= max_ld: # sequences are not added to Graph if tehy dont meet the threshold requirements
                     G.add_edge(string1, string2)
         G_deg = G.degree()
-        to_remove = [n for (n, deg) in G_deg if deg == 0]
+        to_remove = [n for (n, deg) in G_deg if deg == 0] # degree = 0 means that these nodes are not connected to any other nodes. Since they have their own cluster they can be removed
         G.remove_nodes_from(to_remove)
         return G, report
 
@@ -128,29 +128,39 @@ class LevenshteinClustering:
         return partition
     
     
-    def map_binding(self, binding_data, region_of_interest, report, antigens, prefered_cmap):
+    def map_binding(self, binding_data, region_of_interest, report, antigens, prefered_cmap, partition):
         node_colors = {}
         assert region_of_interest in binding_data.columns, "You do not have binding data for the corresponding region of interest"
-        new_df = binding_data.loc[:, antigens]     
+       # new_df = binding_data.loc[:, antigens]     
+        new_df = report.loc[:, antigens]
         maximum_binding_value = new_df.max().max()
         minimum_binding_value = new_df.min().min()
-        cmap = plt.colormaps.get_cmap(prefered_cmap)
-        norm = plt.Normalize(minimum_binding_value, maximum_binding_value)
-        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm) # for colorbar
-        for i, g in enumerate(self.G):
-            sequence_row = report[report[region_of_interest] == g]
-            right_binding_value = max([sequence_row[column].iloc[0] for column in antigens]) # if you have multiple antigens this will find the right value to map
-            sequence = sequence_row[region_of_interest].iloc[0]
-            node_colors[sequence] = right_binding_value
-        node_colors_norm_heatmap = [cmap(norm(node_colors[node])) if node_colors[node] != 0 else 'gray' for node in self.G.nodes()] # all nodes without binding values are gray
-        return node_colors_norm_heatmap, sm 
+        if maximum_binding_value == 0:
+            print("no binding values mapped")
+            node_colors_norm_heatmap = list(partition.values())
+            sm = None
+        else:
+            cmap = plt.colormaps.get_cmap(prefered_cmap)
+            norm = plt.Normalize(minimum_binding_value, maximum_binding_value)
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm) # for colorbar
+            for i, g in enumerate(self.G):
+                sequence_row = report[report[region_of_interest] == g]
+                right_binding_value = max([sequence_row[column].iloc[0] for column in antigens]) # if you have multiple antigens this will find the right value to map
+                sequence = sequence_row[region_of_interest].iloc[0]
+                node_colors[sequence] = right_binding_value
+            node_colors_norm_heatmap = [cmap(norm(node_colors[node])) if node_colors[node] != 0 else 'gray' for node in self.G.nodes()] # all nodes without binding values are gray
+        return node_colors_norm_heatmap, sm , maximum_binding_value
         
         
     def create_network(self, label_type, label_numbers, label_sequences, nodesize, partition, region_of_interest, report, binding_data, antigens, prefered_cmap):
         if binding_data is not None:
-            node_colors, sm = self.map_binding(binding_data, region_of_interest, report, antigens, prefered_cmap)
+            sequences_clustered = list(self.G.nodes)
+            report_new = report[report[region_of_interest].isin(sequences_clustered)] # remove those  which are not in self.G
+            node_colors, sm, maximum_binding_value = self.map_binding(binding_data, region_of_interest, report_new, antigens, prefered_cmap, partition)
         else:
+            maximum_binding_value = 0
             node_colors = list(partition.values())
+
         pos = nx.spring_layout(self.G)
         nx.draw_networkx_nodes(self.G, pos, node_size=nodesize, cmap=plt.cm.RdYlBu, node_color=node_colors, ax=self.ax)
         nx.draw_networkx_edges(self.G, pos, alpha=0.3, ax=self.ax)
@@ -165,7 +175,7 @@ class LevenshteinClustering:
                         font_color="grey",
                         horizontalalignment="right",
                         verticalalignment="bottom", ax=self.ax)
-        if binding_data is not None:
+        if maximum_binding_value > 0:
             plt.colorbar(sm, ax = self.ax)
         return partition
         
