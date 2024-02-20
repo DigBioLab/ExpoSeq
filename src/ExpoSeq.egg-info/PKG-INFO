@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ExpoSeq
-Version: 4.3.5
+Version: 4.3.6
 Summary: A pacakge which provides various ways to analyze NGS data from phage display campaigns
 Home-page: https://github.com/nilshof01/ExpoSeq
 Author: Nils Hofmann
