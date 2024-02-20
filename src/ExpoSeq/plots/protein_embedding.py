@@ -58,8 +58,8 @@ class PrepareData:
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
         unique_experiments_num = pd.factorize(experiments_batch)[0]
-        self.tsne_results["experiments_factorized"] = list(unique_experiments_num)
-        self.tsne_results["experiments_string"] = list(experiments_batch)
+        #self.tsne_results["experiments_factorized"] = list(unique_experiments_num)
+        #self.tsne_results["experiments_string"] = list(experiments_batch)
         self.tsne_results["sequences"] = list(aminoacids)
         self.tsne_results['sequence_id'] = pd.Series(range(self.tsne_results.shape[0]))
         return kds, ids
@@ -126,6 +126,7 @@ class PrepareData:
         self.clones = selected_rows[cf_column_name]
         self.tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
         kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
+        self.tsne_results["cloneFraction"] = self.clones
         return peptides, selected_rows, kds, ids
     
     def make_csv(self):
@@ -211,20 +212,20 @@ class PlotEmbedding:
     
     def create_second_bind_plot(self, font_settings):
         tsne_results = self.data_prep.tsne_results
-        fig2 = plt.figure()
-        ax2 = fig2.gca()
-        ax2.scatter(tsne_results.tsne1, tsne_results.tsne2, alpha = 0.0)
-        ax2.set_xlabel('t-SNE 1', **font_settings)
-        ax2.set_ylabel('t-SNE 2', **font_settings)
+        self.fig2 = plt.figure(100)
+        self.ax2 = self.fig2.gca()
+        self.ax2.scatter(tsne_results.tsne1, tsne_results.tsne2, alpha = 0.0)
+        self.ax2.set_xlabel('t-SNE 1', **font_settings)
+        self.ax2.set_ylabel('t-SNE 2', **font_settings)
         n = 0
         for j, row in tsne_results.iterrows():
             if row["binding"] > 1:
-                    ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=10, weight = "bold")
+                    self.ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=10, weight = "bold")
 
             else:
                 if n == 6:
                     n = 0
-                    ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=8)
+                    self.ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=8)
             n += 1
     
     def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings):
