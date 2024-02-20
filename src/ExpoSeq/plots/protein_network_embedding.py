@@ -4,7 +4,7 @@ from textwrap import wrap
 import numpy as np
 from .tidy_protbert_embedding import TransformerBased
 import matplotlib.pyplot as plt
-import community
+import community.community_louvain as community
 from sklearn.cluster import KMeans
 
 class PrepareData:
