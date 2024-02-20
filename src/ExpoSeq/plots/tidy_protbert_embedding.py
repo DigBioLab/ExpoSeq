@@ -15,18 +15,30 @@ class TransformerBased:
         self.prep_model()
 
     def prep_model(self):
-        model_types = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        model_types = ["facebook/esm2_t6_8M_UR50D", "Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50",
+                       "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization",
+                       "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        
+        t5 = ["Rostlab/ProstT5", "Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        bertis = ["Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd"]
+        esm = ["facebook/esm2_t6_8M_UR50D"]
         assert self.choice in model_types, f"Your choice has to be a model from https://huggingface.co/Rostlab and has to be one of {model_types}"
-        if "t5" in self.choice.lower():
+        if self.choice in t5:
             from transformers import T5Tokenizer, T5EncoderModel
             self.tokenizer = T5Tokenizer.from_pretrained(self.choice,
                                                     do_lower_case=False,)
 
             self.model = T5EncoderModel.from_pretrained(self.choice)
-        else:
+        elif self.choice in bertis:
             from transformers import BertModel, BertTokenizer
             self.tokenizer = BertTokenizer.from_pretrained(self.choice, do_lower_case=False )
             self.model = BertModel.from_pretrained(self.choice)
+        elif self.choice in esm:
+            from transformers import AutoTokenizer, EsmModel
+            self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
+            self.model = EsmModel.from_pretrained(self.choice)
+        
+        
         
 
     

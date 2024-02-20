@@ -41,3 +41,5 @@ model_weights
 predict_fold.py
 predict.py
 exposeq_install_test
+NanoNet
+.pypirc

@@ -10,7 +10,7 @@ class PrepareData:
     @staticmethod
     def calculate_entropy(probs):
         """Calculate Shannon entropy."""
-        return -np.sum([p * np.log2(p) if p > 0 else 0 for p in probs])
+        return -np.sum([p * np.log2(p) if p > 0 else 0 for p in probs]) # https://biology.stackexchange.com/questions/64368/how-to-determine-the-height-bits-in-a-sequence-logo
 
     def cleaning(self, sample_name, report, chosen_seq_length, region_string, method):
         sample = report[report["Experiment"] == sample_name]
