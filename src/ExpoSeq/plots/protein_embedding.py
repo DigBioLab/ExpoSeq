@@ -172,7 +172,7 @@ class PlotEmbedding:
             self.ax.set_ylabel("t-SNE2", **font_settings)
 
             if strands == True:
-                self.add_seq_anotation(peptides, self.data_prep.tsne_results)
+                self.add_seq_anotation(peptides)
             if add_clone_size != None:
                 self.add_size(add_clone_size)
             

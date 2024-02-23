@@ -41,7 +41,9 @@ def test_pipeline():
     plot.embedding_network(batch_size = 100)
     
     plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data="src/ExpoSeq/software_tests/test_files/binding_data.csv", test_version=True)
-    
+    plot.cluster_binding_data(batch_size = 100, iterations_tsne = 251)
+    plot.ls_distance_binding()
+    plot.tsne_cluster_AG(iterations_tsne = 251)
     sample_names = plot.experiments_list
     plot.lengthDistribution_single(sample = sample_names[0])
     samples_multi = [sample_names[0], sample_names[1]]
