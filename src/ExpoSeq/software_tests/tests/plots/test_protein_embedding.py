@@ -49,7 +49,7 @@ def test_ProteinEmbedding():
     
     PlotEmbedding(sequencing_report=sequencing_report,
                 model_choice="Rostlab/prot_bert", 
-                list_experiments=["GeneMind_1"],
+                list_experiments=["GeneMind_1", "GeneMind_2"],
                 region_of_interest="aaSeqCDR3",
                 strands = False, 
                 add_clone_size=None,
@@ -61,25 +61,27 @@ def test_ProteinEmbedding():
                 ax = ax,
                 font_settings = font_settings)
     
-    fig = plt.figure(1, figsize = (12, 10))
-    ax = fig.gca()
+    plt.show()
+    
+   # fig = plt.figure(1, figsize = (12, 10))
+    #ax = fig.gca()
     colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
 
-    PlotEmbedding(sequencing_report=sequencing_report,
-                model_choice="Rostlab/prot_bert", 
-                list_experiments=["GeneMind_1"],
-                region_of_interest="aaSeqCDR3",
-                strands = False, 
-                add_clone_size=None,
-                batch_size = 100, 
-                pca_components=70,
-                perplexity=25, 
-                iterations_tsne=251,
-                ax = ax,
-                font_settings=font_settings,
-                extra_figure=True,
-                antigens = ["Antigen 1"],
-                binding_data=binding_data,
-                colorbar_settings=colorbar_settings
-                )
+  #  PlotEmbedding(sequencing_report=sequencing_report,
+   #             model_choice="Rostlab/prot_bert", 
+    #            list_experiments=["GeneMind_1"],
+  #              region_of_interest="aaSeqCDR3",
+  #              strands = False, 
+   #             add_clone_size=None,
+    #            batch_size = 100, 
+     #           pca_components=70,
+     #           perplexity=25, 
+     #           iterations_tsne=251,
+     #           ax = ax,
+     #           font_settings=font_settings,
+     #           extra_figure=True,
+     #           antigens = ["Antigen 1"],
+     #           binding_data=binding_data,
+     #           colorbar_settings=colorbar_settings
+     #           )
     
