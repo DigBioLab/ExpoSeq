@@ -963,6 +963,8 @@ class PlotManager:
             return 
         if samples == None:
             samples = [self.preferred_sample]
+        if antigen_names == None:
+            antigen_names = [self.preferred_antigen]
             
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
