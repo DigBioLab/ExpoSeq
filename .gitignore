@@ -43,3 +43,5 @@ predict.py
 exposeq_install_test
 NanoNet
 .pypirc
+markdown_builder_show.py
+Show*Quarto*
