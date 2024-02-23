@@ -1,0 +1,1 @@
+scale = ["EMBOSS","Murray", "Sillero", "Solomon", "Stryer", "Lehninger", "Dawson", "Rodwell"]
