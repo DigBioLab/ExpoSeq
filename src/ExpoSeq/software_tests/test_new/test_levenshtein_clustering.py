@@ -15,7 +15,7 @@ def test_LevenshteinClustering():
     region_string = "aaSeqCDR3"
     Prep = PrepareData()
     G, report = Prep.calc_edges(sequencing_report, samples, batch_size, max_ld, min_ld, region_string)
-    assert report.shape[0] > len(list(G.nodes)), "Single nodes were not removed"
+    assert report.shape[0] == len(list(G.nodes)), "report is tidy"
     assert len(list(G.edges)) > len(list(G.nodes)), "No cluster had been formed"
     max_ld = 1
     G2, report2 = Prep.calc_edges(sequencing_report, samples, batch_size, max_ld, min_ld, region_string)

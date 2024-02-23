@@ -1,6 +1,6 @@
 [project]
 name = "ExpoSeq"
-version = "4.3.6"
+version = "4.4.2"
 description = "A pacakge which provides various ways to analyze NGS data from phage display campaigns"
 authors = [
     {name = "Nils Hofmann", email = "nilhof01@gmail.com"},

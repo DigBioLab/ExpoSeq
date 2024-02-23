@@ -37,8 +37,25 @@ class PrepareData:
             
         return sample_report
         
-    def calc_edges(self, sequencing_report,samples, batch_size, max_ld, min_ld, region_string,
+    def calc_edges(self, sequencing_report,samples, batch_size = 1000, max_ld = 2, min_ld = 0, region_string = "aaSeqCDR3",
                    binding_data = None, antigens = None, experiment_column = "Experiment"):
+        """ Create the Graph object for networkx which can be used to visualize the clusters 
+
+        Args:
+            sequencing_report (pd.DataFrame):  report which contains all sequencing information from all samples after the processing with mixcr
+            samples (list): List containing the names of the samples which should be used for the final plot. 
+            batch_size (_type_): Equals to the number of sequences which are drawn from the sequencing report for the embedding and the final plot. Defaults to 1000.
+            max_ld (int): Is the maximum allowed difference between two sequences based on levenshtein distance to be still in one cluster. Default is 2.
+            min_ld (int): Is the minimum allowed levenshtein distance between two sequence to be still in one cluster. Default is 0. 
+            region_string (str): A string which indicates the column name from which the amino acid sequences should be taken from.
+            binding_data (pd.DataFrame, optional): Dataframe which contains the sequences and the binding values to the antigens. Defaults to None.
+            antigens (list, optional): list containing the names of the antigens which are the headers of the binding data. From these antigens the binding data will be taken for the plot. Defaults to None.
+            experiment_column (str, optional): Name of the column which contains the sample names in the sequencing report. Defaults to "Experiment".
+
+        Returns:
+            G: Graph object for networkx containing the nodes and edges. 
+            report: tidied report as input for the threshold algorithm based on levenshtein distance
+        """
         self.check_input(samples, max_ld, min_ld, batch_size, binding_data, antigens)
         report = self.clean_data(sequencing_report, samples, batch_size, experiment_column, binding_data, antigens, region_string)
         G = nx.Graph()
@@ -60,6 +77,8 @@ class PrepareData:
         G_deg = G.degree()
         to_remove = [n for (n, deg) in G_deg if deg == 0] # degree = 0 means that these nodes are not connected to any other nodes. Since they have their own cluster they can be removed
         G.remove_nodes_from(to_remove)
+        sequences_clustered = list(G.nodes)
+        report = report[report[region_string].isin(sequences_clustered)] # remove those  which are not in self.G
         return G, report
 
 
@@ -84,6 +103,19 @@ class LevenshteinClustering:
     
     @staticmethod
     def calculate_nodesize(sample_report, region_string, G, cf_column_name = "cloneFraction"):
+        """ Calculates the nodesize and sets the labels for the corresponding sequences. The label can be either a number which indicates the id of the sequence in the report (sample_report) or a sequence.
+
+        Args:
+            sample_report (pd.DataFrame): is the report as output from PrepareData.tidy()
+            region_string (str): A string which indicates the column name from which the amino acid sequences should be taken from.
+            G (networkx.Graph): Graph object from networkx which contains the nodes and the edges for the plot.
+            cf_column_name (str, optional):  Name of the column which contains the clone fraction in the sequencing report. Defaults to "cloneFraction".
+
+        Returns:
+            nodesize: size of the nodes in order
+            label_numbers: dictionary containing the ids for the corresponding sequences
+            label_sequencse: dicitinoary containing the sequences as label for the corresponding sequences
+        """
         nodesize = []
         label_numbers = {}
         label_sequences = {}
@@ -124,11 +156,30 @@ class LevenshteinClustering:
     
     @staticmethod
     def get_partition(G):
+        """This function is used to partition the graph G into communities using the Louvain method, which is a popular algorithm for community detection. It returns a dictionary where the keys are the nodes of the graph G, and the values are the community assignments for each node.
+
+        Args:
+            G (networkx.Graph): Graph object from networkx which contains the nodes and the edges for the plot.
+
+        Returns:
+            _type_: _description_
+        """
         partition = community.best_partition(G)
         return partition
     
-    
-    def map_binding(self, binding_data, region_of_interest, report, antigens, prefered_cmap, partition):
+    @staticmethod
+    def map_binding(G, binding_data, region_of_interest, report, antigens, prefered_cmap, partition):
+        """_summary_
+
+        Args:
+            G (networkx.Graph): Graph object from networkx which contains the nodes and the edges for the plot.
+            binding_data (pd.DataFrame, optional): Dataframe which contains the sequences and the binding values to the antigens. Defaults to None.
+            region_of_interest (str): A string which indicates the column name from which the amino acid sequences should be taken from.
+            report: tidied report from PrepareData().tidy()
+            antigens (list, optional): list containing the names of the antigens which are the headers of the binding data. From these antigens the binding data will be taken for the plot. Defaults to None.
+            prefered_cmap (str): cmap for the colorbar
+            partition (dict): output from LevenshteinClustering.get_partition()
+        """
         node_colors = {}
         assert region_of_interest in binding_data.columns, "You do not have binding data for the corresponding region of interest"
        # new_df = binding_data.loc[:, antigens]     
@@ -143,20 +194,18 @@ class LevenshteinClustering:
             cmap = plt.colormaps.get_cmap(prefered_cmap)
             norm = plt.Normalize(minimum_binding_value, maximum_binding_value)
             sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm) # for colorbar
-            for i, g in enumerate(self.G):
+            for i, g in enumerate(G):
                 sequence_row = report[report[region_of_interest] == g]
                 right_binding_value = max([sequence_row[column].iloc[0] for column in antigens]) # if you have multiple antigens this will find the right value to map
                 sequence = sequence_row[region_of_interest].iloc[0]
                 node_colors[sequence] = right_binding_value
-            node_colors_norm_heatmap = [cmap(norm(node_colors[node])) if node_colors[node] != 0 else 'gray' for node in self.G.nodes()] # all nodes without binding values are gray
+            node_colors_norm_heatmap = [cmap(norm(node_colors[node])) if node_colors[node] != 0 else 'gray' for node in G.nodes()] # all nodes without binding values are gray
         return node_colors_norm_heatmap, sm , maximum_binding_value
         
         
     def create_network(self, label_type, label_numbers, label_sequences, nodesize, partition, region_of_interest, report, binding_data, antigens, prefered_cmap):
         if binding_data is not None:
-            sequences_clustered = list(self.G.nodes)
-            report_new = report[report[region_of_interest].isin(sequences_clustered)] # remove those  which are not in self.G
-            node_colors, sm, maximum_binding_value = self.map_binding(binding_data, region_of_interest, report_new, antigens, prefered_cmap, partition)
+            node_colors, sm, maximum_binding_value = self.map_binding(self.G, binding_data, region_of_interest, report, antigens, prefered_cmap, partition)
         else:
             maximum_binding_value = 0
             node_colors = list(partition.values())
