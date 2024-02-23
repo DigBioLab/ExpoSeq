@@ -152,6 +152,7 @@ class PlotEmbedding:
                                                             iterations_tsne=iterations_tsne,
                                                             model_choice=model_choice,
                                                             binding_data=binding_data)
+        self.tsne_results = self.data_prep.tsne_results
         if self.ax != None:
             if self.binding_data is not None:
                 self.create_binding_plot(kds, ids, toxin_names, colorbar_settings)
@@ -178,10 +179,10 @@ class PlotEmbedding:
     
         
     def create_plot(self, selected_rows):
-        tsne_results = self.data_prep.tsne_results
+
         experiments_batch = selected_rows["Experiment"]
-        self.tsne_plot = self.ax.scatter(tsne_results.tsne1,
-                                    tsne_results.tsne2,
+        self.tsne_plot = self.ax.scatter(self.tsne_results.tsne1,
+                                    self.tsne_results.tsne2,
                                     c = pd.factorize(experiments_batch)[0],
                                     alpha = 0.5,
                                     )
@@ -199,9 +200,9 @@ class PlotEmbedding:
 
         
 
-    def add_seq_anotation(self,peptides, tsne_results):
-        x = tsne_results["tsne1"].values.tolist()
-        y = tsne_results["tsne2"].values.tolist()
+    def add_seq_anotation(self,peptides):
+        x = self.tsne_results["tsne1"].values.tolist()
+        y = self.tsne_results["tsne2"].values.tolist()
         for i in range(0, len(x), 10):
             self.ax.annotate(peptides[i],
                         (x[i][0], y[i][0]),
@@ -211,14 +212,13 @@ class PlotEmbedding:
 
     
     def create_second_bind_plot(self, font_settings):
-        tsne_results = self.data_prep.tsne_results
         self.fig2 = plt.figure(100)
         self.ax2 = self.fig2.gca()
-        self.ax2.scatter(tsne_results.tsne1, tsne_results.tsne2, alpha = 0.0)
+        self.ax2.scatter(self.tsne_results.tsne1, self.tsne_results.tsne2, alpha = 0.0)
         self.ax2.set_xlabel('t-SNE 1', **font_settings)
         self.ax2.set_ylabel('t-SNE 2', **font_settings)
         n = 0
-        for j, row in tsne_results.iterrows():
+        for j, row in self.tsne_results.iterrows():
             if row["binding"] > 1:
                     self.ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=10, weight = "bold")
 
@@ -229,15 +229,14 @@ class PlotEmbedding:
             n += 1
     
     def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings):
-        tsne_results = self.data_prep.tsne_results
-        self.tsne_plot = self.ax.scatter(tsne_results.tsne1,
-                            tsne_results.tsne2,
-                            c = tsne_results.binding,
+        self.tsne_plot = self.ax.scatter(self.tsne_results.tsne1,
+                            self.tsne_results.tsne2,
+                            c = self.tsne_results.binding,
                             alpha = 1,
                             cmap = "magma"
                             )
-        x_cor = list(tsne_results.tsne1.iloc[:, 0])
-        y_cor = list(tsne_results.tsne2.iloc[:, 0])
+        x_cor = list(self.tsne_results.tsne1.iloc[:, 0])
+        y_cor = list(self.tsne_results.tsne2.iloc[:, 0])
         if toxin_names == True:
             for i, txt in enumerate(list(ids)):
                 if list(kds)[i] > 0:
