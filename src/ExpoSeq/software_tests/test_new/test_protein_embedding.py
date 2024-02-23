@@ -83,4 +83,3 @@ def test_ProteinEmbedding():
                 colorbar_settings=colorbar_settings
                 )
     
-    plt.show()
