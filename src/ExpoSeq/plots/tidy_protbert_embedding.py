@@ -24,20 +24,21 @@ class TransformerBased:
         bertis = ["Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd"]
         esm = ["facebook/esm2_t6_8M_UR50D"]
         assert self.choice in model_types, f"Your choice has to be a model from https://huggingface.co/Rostlab and has to be one of {model_types}"
-        if self.choice.lower() in t5:
+        if self.choice in t5:
             from transformers import T5Tokenizer, T5EncoderModel
             self.tokenizer = T5Tokenizer.from_pretrained(self.choice,
                                                     do_lower_case=False,)
 
             self.model = T5EncoderModel.from_pretrained(self.choice)
-        elif self.choice.lower() in bertis:
+        elif self.choice in bertis:
             from transformers import BertModel, BertTokenizer
             self.tokenizer = BertTokenizer.from_pretrained(self.choice, do_lower_case=False )
             self.model = BertModel.from_pretrained(self.choice)
-        elif self.choice.lower() in esm:
+        elif self.choice in esm:
             from transformers import AutoTokenizer, EsmModel
             self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
             self.model = EsmModel.from_pretrained(self.choice)
+        
         
         
 
