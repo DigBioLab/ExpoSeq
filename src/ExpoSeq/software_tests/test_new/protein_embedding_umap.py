@@ -1,9 +1,10 @@
-import pandas as pd
-from src.ExpoSeq.plots.protein_embedding import PrepareData, PlotEmbedding
 import matplotlib.pyplot as plt
-import numpy as np 
+from src.ExpoSeq.plots.protein_embedding_umap import PrepareData, PlotEmbedding
+import pandas as pd
+import numpy as np
 
-def test_ProteinEmbedding():
+    
+def test_PlotEmbedding():
     sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
     sequencing_report = pd.read_csv(sequencing_report_path)
     sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
@@ -11,16 +12,16 @@ def test_ProteinEmbedding():
     ax = fig.gca()
     list_experiments = ["GeneMind_1"]
     PrepData = PrepareData()
-    peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, iterations_tsne = 251)
-    assert isinstance(PrepData.tsne_results, pd.DataFrame)
-    result_cols = PrepData.tsne_results.columns
+    peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80)
+    assert isinstance(PrepData.umap_results, pd.DataFrame)
+    result_cols = PrepData.umap_results.columns
     assert "binding" not in result_cols
     assert "sequences" in result_cols
     assert "sequence_id" in result_cols
-    assert "tsne1" in result_cols
-    assert "tsne2" in result_cols
-    tsne_results = PrepData.tsne_results
-    assert tsne_results.shape[0] == 80
+    assert "UMAP_1" in result_cols
+    assert "UMAP_2" in result_cols
+    umap_results = PrepData.umap_results
+    assert umap_results.shape[0] == 80
     assert kds == None
     assert ids == None
     grouped = sequencing_report.groupby('Experiment')
@@ -37,11 +38,11 @@ def test_ProteinEmbedding():
         binding_data = pd.concat([binding_data, sample_values])
         
     PrepBinding = PrepareData()
-    peptides, selected_rows, kds, ids = PrepBinding.tidy(sequencing_report, list_experiments, region_of_interest="aaSeqCDR3", batch_size = 80, iterations_tsne = 251, binding_data = binding_data, 
+    peptides, selected_rows, kds, ids = PrepBinding.tidy(sequencing_report, list_experiments, region_of_interest="aaSeqCDR3", batch_size = 80, binding_data = binding_data, 
                                                     antigens=["Antigen 1"])
-    tsne_binding = PrepBinding.tsne_results
-    result_cols = tsne_binding.columns
-    assert "binding" in tsne_binding
+    umap_results = PrepBinding.umap_results
+    result_cols = umap_results.columns
+    assert "binding" in umap_results
     assert kds is not None
     assert ids is not None
     
@@ -52,35 +53,14 @@ def test_ProteinEmbedding():
                 list_experiments=["GeneMind_1", "GeneMind_2"],
                 region_of_interest="aaSeqCDR3",
                 strands = False, 
-                add_clone_size=None,
-                batch_size = 100, 
+                add_clone_size=True,
+                batch_size = 1000, 
                 pca_components=70,
-                perplexity=25, 
-                iterations_tsne=251,
+                n_neighbors=15,
+                min_dist=0.3,
+                random_seed=24,
                 antigens = None, 
                 ax = ax,
-                font_settings = font_settings)
-    
-    
-   # fig = plt.figure(1, figsize = (12, 10))
-    #ax = fig.gca()
-    colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
-
-  #  PlotEmbedding(sequencing_report=sequencing_report,
-   #             model_choice="Rostlab/prot_bert", 
-    #            list_experiments=["GeneMind_1"],
-  #              region_of_interest="aaSeqCDR3",
-  #              strands = False, 
-   #             add_clone_size=None,
-    #            batch_size = 100, 
-     #           pca_components=70,
-     #           perplexity=25, 
-     #           iterations_tsne=251,
-     #           ax = ax,
-     #           font_settings=font_settings,
-     #           extra_figure=True,
-     #           antigens = ["Antigen 1"],
-     #           binding_data=binding_data,
-     #           colorbar_settings=colorbar_settings
-     #           )
-    
+                font_settings = font_settings, 
+)
+    plt.show()

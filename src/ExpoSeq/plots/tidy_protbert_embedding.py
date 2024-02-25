@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import numpy as np 
+import umap 
 
 class TransformerBased:
 
@@ -129,5 +130,24 @@ class TransformerBased:
         tsne_results = pd.DataFrame(tsne_results,
                                     columns = [["tsne1", "tsne2"]])
         return tsne_results
-    
+    @staticmethod
+    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None):
+        """_summary_
 
+        Args:
+            X (array): an array with the PC's from PCA
+            n_neighbors (int): Larger values will result in more global structure being preserved at the loss of detailed local structure. In general this parameter should be between 5 to 50.
+            random_seed: Set a certrain seed for reproducing your results
+            densmap: This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other. You can have an idea about this here: https://umap-learn.readthedocs.io/en/latest/densmap_demo.html
+
+        Returns:
+            pd.DataFrame: return a pandas dataframe with the two umap_dimensions
+        """
+        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist)
+        if y == None:
+            reduced_dim = reducer.fit_transform(X)
+        else:
+            reduced_dim = reducer.fit_transform(X, y = y)
+        assert reduced_dim.shape[1] == 2
+        results = pd.DataFrame(reduced_dim, columns = [["UMAP_1", "UMAP_2"]])
+        return results
