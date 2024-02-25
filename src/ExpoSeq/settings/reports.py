@@ -7,8 +7,9 @@ try:
     from tkinter import filedialog
 except:
     pass
+import warnings
 
-
+                
 
 
 class SequencingReport:
@@ -47,7 +48,7 @@ class SequencingReport:
         return avail_cols
 
     
-    def filter_region(self, region_string, remove_gaps = True):
+    def filter_region(self, region_string, remove_gaps = True, remove_errors = True):
         fixed_cols = ["Experiment", "cloneId", "readCount", "readFraction"]
         if region_string == "targetSequences":
             aa_string = "aaSeqtargetSequences"
@@ -56,7 +57,10 @@ class SequencingReport:
             self.sequencing_report.rename(columns={region_string: nseq_string}, inplace=True) 
             if remove_gaps:
                 self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
-            self.sequencing_report[aa_string] = self.sequencing_report[nseq_string].apply(self.translate_nucleotide_to_amino_acid)
+            else:
+                warnings.warn("You decided to not remove the gaps which means that sequences potentially are not divisible by 3.\nThere is no functionality for finding the open reading frame. Thus, translating the full sequence to a peptide sequence will start at position 1.")
+            self.sequencing_report[aa_string] = self.sequencing_report[nseq_string].apply(self.translate_nucleotide_to_amino_acid) 
+            
             added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
             cols_of_interest = fixed_cols + added_columns
             self.sequencing_report = self.sequencing_report[cols_of_interest]
@@ -66,7 +70,9 @@ class SequencingReport:
             self.sequencing_report = self.origin_seq_report[cols_of_interest]
             if remove_gaps:
                 self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)] # removes gaps indirectly
-        self.sequencing_report = self.remove_seq_errors(self.sequencing_report, region_string)
+        
+        if remove_errors:
+            self.sequencing_report = self.remove_seq_errors(self.sequencing_report, region_string)
 
        # self.sequencing_report["aaSeq" + region_string] = self.sequencing_report["nSeq" + region_string].apply(self.translate_sequence)
     
@@ -95,7 +101,6 @@ class SequencingReport:
 
         sequencing_report = sequencing_report[(sequencing_report["aaSeq" + region_string].str.len()) > length_threshold ]
         sequencing_report = sequencing_report[(sequencing_report["readCount"] > (min_read_count + 1))]
-
         new_column = sequencing_report['readCount'] / sequencing_report.groupby('Experiment')['readCount'].transform('sum')
         self.sequencing_report = sequencing_report.copy()
         self.sequencing_report[new_fraction] = np.array(new_column)
@@ -112,8 +117,8 @@ class SequencingReport:
         sequencing_report = sequencing_report.loc[~sequencing_report["aaSeq" + region_string].str.contains("[*]")]
         return sequencing_report
     
-    def prepare_seq_report(self, region_string, length_threshold, min_read_count, remove_gaps = True):
-        self.filter_region(region_string, remove_gaps) # sequencing errors are removed here and sequences with gaps are indirectly removed with: divisible_by = 3
+    def prepare_seq_report(self, region_string, length_threshold, min_read_count, remove_gaps = True, remove_errors = True):
+        self.filter_region(region_string, remove_gaps, remove_errors) # sequencing errors are removed here and sequences with gaps are indirectly removed with: divisible_by = 3
         self.trim_data(region_string, length_threshold, min_read_count,)
         self.remove_not_covered()
        # self.remove_seq_errors()

@@ -21,7 +21,7 @@ import warnings
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
-                 min_read_count=3, no_automation = False, module_dir = None, allow_binding_data = True, remove_gaps = True):
+                 min_read_count=3, no_automation = False, module_dir = None, allow_binding_data = True, remove_gaps = True, remove_errors = True):
         """
         :param experiment: the name of the experiment you want to analyse
         :param test_version: Some settings are different if the pipeline is launched in test mode
@@ -31,6 +31,7 @@ class PlotManager:
         :param module_dir: If you want to use the pipeline in a different directory than the main directory, you can specify it here
         :param allow_binding_data: Default is True. If set to False, the pipeline will not ask for binding data
         :param remove_gaps: Default is True. If set to False, the pipeline will not remove sequences with gaps
+        :param remove_errors: Default is True. If set to Flse, the pipeline will not remove sequences with errors (*).
         """
         self.is_test = test_version
         self.Settings = change_settings.Settings()
@@ -78,7 +79,8 @@ class PlotManager:
         self.Report.prepare_seq_report(self.region_string,
                                        length_threshold=length_threshold,
                                        min_read_count=min_read_count,
-                                       remove_gaps = self.remove_gaps)
+                                       remove_gaps = self.remove_gaps,
+                                       remove_errors = remove_errors)
        # self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
         self.sequencing_report = self.Report.sequencing_report
@@ -199,33 +201,33 @@ class PlotManager:
         report_seq_cluster = os.path.join(self.plot_path, "sequence_cluster", "reports")
         jaccard_report = os.path.join(self.report_path, "jaccard_identity" + ".xlsx")
         if not os.path.isdir(self.plot_path):
-            os.mkdir(self.plot_path)
+            os.makedirs(self.plot_path)
         if not os.path.isdir(os.path.join(self.plot_path, "length_distributions")):
-            os.mkdir(os.path.join(self.plot_path, "length_distributions"))
+            os.makedirs(os.path.join(self.plot_path, "length_distributions"))
             
         if not os.path.isdir(os.path.join(self.plot_path, "clone_fraction")):
-            os.mkdir(os.path.join(self.plot_path, "clone_fraction"))
+            os.makedirs(os.path.join(self.plot_path, "clone_fraction"))
         if not os.path.isdir(os.path.join(self.plot_path, "rarefraction_curves")):
-            os.mkdir(os.path.join(self.plot_path, "rarefraction_curves"))
+            os.makedirs(os.path.join(self.plot_path, "rarefraction_curves"))
         if not os.path.isdir(os.path.join(self.plot_path, "logo_plots")):
-            os.mkdir(os.path.join(self.plot_path, "logo_plots"))
+            os.makedirs(os.path.join(self.plot_path, "logo_plots"))
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_cluster")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_cluster"))
+            os.makedirs(os.path.join(self.plot_path, "sequence_cluster"))
 
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_embedding"))
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding"))
             
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "sgt")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_embedding", "sgt")) 
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "sgt")) 
             
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "protbert")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_embedding", "protbert")) 
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "protbert")) 
             
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "T5")):
-            os.mkdir(os.path.join(self.plot_path, "sequence_embedding", "T5")) 
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "T5")) 
         
         if not os.path.isdir(report_seq_cluster):
-            os.mkdir(report_seq_cluster)
+            os.makedirs(report_seq_cluster)
             
         #plot 
         try:
@@ -486,19 +488,26 @@ class PlotManager:
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.preferred_sample = sample
 
-    def change_filter(self, divisible_by=3, length_threshold_aa=6, min_read_count=2):
+    def change_filter(self, length_threshold_aa=6, min_read_count=2, remove_gaps = True, remove_errors = True):
         """
-        :param divisible_by: filter all sequences which are not divisible by this value
-        :param length_threshold: filter out all sequences which are shorter than this value
-        :min_read_count: filter out all sequences which have less clones/reads than this value
+        length_threhsold_aa: The minimum sequence length the sequence should at least have.
+        min_read_count (int): The minimum read count the sequences should at least have.
+        remove_gaps (bool): You can decide whether you want to discard sequences which have a gap or are not divisible by 3.
+        remove_errors (bool): You can decide whether you want to discard sequences which have sequencing errors (*).
         """
-        self.Report.prepare_seq_report(self.region_string, divisible_by, length_threshold_aa, min_read_count)
+        self.Report.prepare_seq_report(self.region_string, length_threshold_aa, min_read_count, remove_gaps, remove_errors)
         self.sequencing_report = self.Report.sequencing_report
 
-    def change_region(self, region = None):
+    def change_region(self, region = None, remove_gaps = True, remove_errors = True, length_threshold_aa = 6, min_read_count = 3):
         """
+        region (str): The region of interest you would like to analyse
+        remove_gaps (bool): You can decide whether you want to discard sequences which have a gap or are not divisible by 3.
+        remove_errors (bool): You can decide whether you want to discard sequences which have sequencing errors (*).
+        length_threhsold_aa: The minimum sequence length the sequence should at least have.
+        min_read_count (int): The minimum read count the sequences should at least have.
         :return: changes the region you want to analyse
         """
+        
         intermediate = self.region_of_interest
         possible_regions = self.avail_regions 
         if region == None:
@@ -506,15 +515,16 @@ class PlotManager:
                 f"Which region do you want to plot? ExpoSeq could find the following regions: {self.avail_regions}.")
         else:
             region_string = region
+        self.remove_gaps = remove_gaps
         if region_string in possible_regions:
             if not region_string == "targetSequences":
-                region_string = region_string.replace("nSeq", "")
-                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0, remove_gaps = self.remove_gaps)
+                self.region_string = region_string.replace("nSeq", "")
+                self.Report.prepare_seq_report(region_string,length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors)
             else:
-                region_string = "targetSequences"
-                self.Report.prepare_seq_report(region_string, divisible_by=3, length_threshold=9, min_read_count=0, remove_gaps = self.remove_gaps )
+                self.region_string = "targetSequences"
+                self.Report.prepare_seq_report(region_string,  length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors )
             self.sequencing_report = self.Report.sequencing_report
-            self.region_of_interest = "aaSeq" + region_string
+            self.region_of_interest = "aaSeq" + self.region_string
         else:
             print(f"The region you want to plot is not valid. The options are: {self.avail_regions}")
             self.region_of_interest = intermediate
@@ -840,7 +850,9 @@ class PlotManager:
                                                 font_settings=self.font_settings,
                                                 plot_type=plot_type
                                                 )
-        
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
 
     def rel_seq_abundance(self, sample=None, visualize_sequences = True, prefered_cmap = "Reds", top_clone_fraction = 0.75, seqs_viz_fraction = 0.3, alpha_val = 0.75, pad_rectangles = True, force_reducing = 500, limit_seq_filter = 10):
         """
@@ -945,8 +957,9 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.save_cluster_report(cluster_report = cluster_report,
-                                 path = save_report_path)
+        if self.is_test == True:
+            self.save_cluster_report(cluster_report = cluster_report,
+                                    path = save_report_path)
 
 
     def ls_distance_binding(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None, antigen_names = None):
@@ -987,8 +1000,9 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.save_cluster_report(cluster_report = cluster_report,
-                                 path = save_report_path)
+        if self.is_test == True:
+            self.save_cluster_report(cluster_report = cluster_report,
+                                    path = save_report_path)
 
         
     
@@ -1063,8 +1077,9 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-
-        self.save_cluster_report(EmbeddingPlot.tsne_results, path = save_report_path)
+        
+        if self.is_test == True:
+            self.save_cluster_report(EmbeddingPlot.tsne_results, path = save_report_path)
 
     #@DeprecationWarning
     def cluster_one_AG(self, antigen=None, max_ld=1, min_ld=0, batch_size=1000, specific_experiments=False, prefered_cmap = "Blues", label_type = "numbers", save_report_path = None):
@@ -1112,7 +1127,9 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        self.save_cluster_report(cluster_report = cluster_report,
+        
+        if self.is_test == True:
+            self.save_cluster_report(cluster_report = cluster_report,
                                  path = save_report_path)
 
    # @DeprecationWarning
@@ -1161,8 +1178,8 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-
-        self.save_cluster_report(tsne_results, path = save_report_path)
+        if self.is_test == True:
+            self.save_cluster_report(tsne_results, path = save_report_path)
         
     def embedding_network(self, samples = None,model = 'Rostlab/prot_t5_xl_half_uniref50-enc', batch_size = 200, cmap = "Blues", nodesize = 300, threshold_distance = 5):
         """

@@ -23,28 +23,28 @@ class Settings:
     def check_dirs(self):
         if not os.path.isdir(os.path.join(self.module_dir, "my_experiments")):
             print("create my_experiments directory")
-            os.mkdir(os.path.join(self.module_dir, "my_experiments"))
+            os.makedirs(os.path.join(self.module_dir, "my_experiments"))
         if not os.path.isdir(os.path.join(self.module_dir, "temp")):
             print("create temp directory")
-            os.mkdir(os.path.join(self.module_dir, "temp"))
+            os.makedirs(os.path.join(self.module_dir, "temp"))
         if not os.path.isdir(os.path.join(self.module_dir, "settings")):
             print("create settings directory")
-            os.mkdir(os.path.join(self.module_dir, "settings"))
+            os.makedirs(os.path.join(self.module_dir, "settings"))
             
     def check_dirs_automation(self, experiment, region_of_interest):
         experiment_path = os.path.join(self.module_dir, "my_experiments", experiment)
         report_path = os.path.join(experiment_path, "reports_pipeline")
         if not os.path.isdir(report_path):
-            os.mkdir(report_path)
+            os.makedirs(report_path)
         if not os.path.isdir(os.path.join(experiment_path, "plots")):
-            os.mkdir(os.path.join(experiment_path, "plots"))
+            os.makedirs(os.path.join(experiment_path, "plots"))
         plot_path = os.path.join(experiment_path, "plots", region_of_interest)
         mixcr_plots_path = os.path.join(plot_path, "mixcr_plots")
         if not os.path.isdir(plot_path):
-            os.mkdir(plot_path)
+            os.makedirs(plot_path)
             self.automation = True
             if not os.path.isdir(mixcr_plots_path):
-                os.mkdir(mixcr_plots_path)
+                os.makedirs(mixcr_plots_path)
                 
         return plot_path, mixcr_plots_path, experiment_path, report_path
     
@@ -63,7 +63,7 @@ class Settings:
         if not os.path.isfile(os.path.join(self.module_dir, "settings", "preset_list.csv")):
             destination_folder= os.path.join(self.module_dir, "settings")
             if not os.path.isdir(destination_folder):
-                os.mkdir(destination_folder)
+                os.makedirs(destination_folder)
             source = os.path.dirname(os.path.abspath(ExpoSeq.__file__))
             source_folder = os.path.join(source,"settings")
             filename = "preset_list.csv"

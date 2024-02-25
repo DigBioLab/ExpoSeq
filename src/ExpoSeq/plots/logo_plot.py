@@ -48,7 +48,7 @@ class PrepareData:
 class LogoPlot:
     def __init__(self,ax, sequencing_report, region_string, sample, highlight_spec_position, font_settings, chosen_seq_length, method, color_scheme, **kwargs):
         self.ax = ax
-        self.chosen_seq_length = self.find_seq_length(sequencing_report, sample, chosen_seq_length)
+        self.chosen_seq_length = self.find_seq_length(sequencing_report, sample, chosen_seq_length, region_string)
         self.aa_distribution = PrepareData().cleaning(sample, sequencing_report, self.chosen_seq_length, region_string, method)
        # self.createPlot()
         self.font_settings = font_settings
@@ -68,9 +68,9 @@ class LogoPlot:
 
     
     @staticmethod
-    def find_seq_length(sequencing_report, sample, chosen_seq_length):
+    def find_seq_length(sequencing_report, sample, chosen_seq_length, region_of_interest):
         filtered_data = sequencing_report[sequencing_report["Experiment"] == sample]
-        length_counts = filtered_data["aaSeqCDR3"].str.len().value_counts()
+        length_counts = filtered_data[region_of_interest].str.len().value_counts()
 
         if chosen_seq_length == None:
             max_length = length_counts.idxmax()

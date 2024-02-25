@@ -3,6 +3,24 @@ import pandas as pd
 import random 
 
 def test_pipeline():
+    
+    plot = PlotManager(experiment = "multi_region", module_dir=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\software_tests\test_files", allow_binding_data=False, test_version=True)
+    assert "targetSequences" in plot.avail_regions
+    plot.change_region(region = "aaSeqCDR2")
+    plot.change_region(region = "targetSequences")
+    plot.change_filter(length_threshold_aa=2, min_read_count=2, remove_gaps = False, remove_errors = True)
+    print(plot.region_string)
+    seq_report = plot.sequencing_report
+    assert "aaSeqtargetSequences" in seq_report.columns.to_list()
+    assert "nSeqtargetSequences" in seq_report.columns.to_list()
+    
+    plot.print_antigens()
+    plot.print_samples()
+    assert plot.region_of_interest == "aaSeqtargetSequences"
+    plot.discard_samples(["Pool1_R1_001"])
+    seq_report = plot.sequencing_report
+    assert plot.sequencing_report.shape[0] == 0
+    
     plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data=False, test_version=True,)
 
     plot.lengthDistribution_single()
@@ -62,3 +80,4 @@ def test_pipeline():
     plot.rel_seq_abundance(sample = sample_names[0], alpha_val = 0.5, top_clone_fraction = 0.5)
        
 
+    
