@@ -39,6 +39,6 @@ def test_sequencingreportclass():
     assert "aaSeqCDR3" not in Report.sequencing_report.columns.tolist(), f"{Report.sequencing_report.columns.tolist()}"
     assert "aaSeqCDR3" in Report.origin_seq_report.columns.tolist()
     assert "targetSequences" in Report.origin_seq_report.columns.tolist()
-
+    
 
 

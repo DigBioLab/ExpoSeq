@@ -61,7 +61,6 @@ def test_ProteinEmbedding():
                 ax = ax,
                 font_settings = font_settings)
     
-    plt.show()
     
    # fig = plt.figure(1, figsize = (12, 10))
     #ax = fig.gca()

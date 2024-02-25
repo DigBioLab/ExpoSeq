@@ -7,7 +7,6 @@ def test_GetProteinProperty():
     sequences = sequencing_report["aaSeqCDR3"].head(10)
     Property = GetProteinProperty(sequences)
     Property.calc_attribute(attribute = "hydrophobicity")
-    print(Property.sequence_property_interest)
     assert len(list(Property.sequence_property_interest.values()))
     Property = GetProteinProperty(sequences)
     Property.calc_attribute(attribute = "mass_charge_ratio")

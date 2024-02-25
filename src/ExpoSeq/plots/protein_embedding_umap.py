@@ -21,7 +21,14 @@ class GetProteinProperty:
         "hydrophobicity": self.get_hydrophobicity,
         "weight": self.get_weight,
         "mass_charge_ratio": self.mass_charge_ratio,
+        "length": self.calc_len,
      }
+        
+    @staticmethod
+    def calc_len(peptide_object):
+        return len(peptide_object.sequence)
+    
+    
         
     @staticmethod
     def create_peptide_object(single_sequence):
@@ -58,9 +65,8 @@ class GetProteinProperty:
             attribute_value = func(PepObj, **kwargs)
             self.sequence_property_interest[sequence] = attribute_value
             
-    def add_attributes_to_table(self, table, attribute, region_of_interest):
-        new_values = pd.Series(list(self.sequence_property_interest.values()), name = attribute) 
-        pd.merge(table, new_values, how = "left", left_on = region_of_interest,right_index=True )
+    def add_attributes_to_table(self, table, attribute):
+        table[attribute] = list(self.sequence_property_interest.values())
       
     
 
@@ -73,7 +79,7 @@ class PrepareData:
         self.clones = None
     
     @staticmethod
-    def logical_check(batch_size, pca_components, model, n_neighbors):
+    def logical_check(batch_size, pca_components, model, n_neighbors, characteristic, binding_data):
         # in the pipeline is another test, where the sample name is checked which has to be in the sequencing report 
         assert batch_size > pca_components, "The batch_size has to be larger than the pca_components"
         assert batch_size != 0, "batch_size value must not be 0" # indirectly tests that perplexity and pca components must not be 0 as well
@@ -81,8 +87,11 @@ class PrepareData:
         models_all = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
         assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find the models at: https://huggingface.co/Rostlab"
         assert n_neighbors > 1
+        if characteristic != None:
+            assert binding_data == None, "You cannot combine a binding data analysis and a sequence attribute analysis"
+        
     @staticmethod
-    def datatype_check(samples, pca_components, n_neighbors, random_seed, batch_size, model, densmap):
+    def datatype_check(samples, pca_components, n_neighbors, random_seed, batch_size, model, densmap, characteristic):
         assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
         assert type(n_neighbors) == int, "You have to give an integer as input for the perplexity"
@@ -90,7 +99,9 @@ class PrepareData:
         assert type(batch_size) == int, "You have to give an integer as input for the batch_size"
         assert type(model) == str, "The input for model must be a string"
         assert type(densmap) == bool, "densmap must be boolean"
-    
+        if characteristic != None:
+            assert characteristic in list(GetProteinProperty().attribute_funcs.keys()), f"Please enter a valid characteristic from: {list(GetProteinProperty().attribute_funcs.keys())}"
+        
     @staticmethod
     def check_warnings(sequences, pca_components, perplexity):
         if len(sequences) < pca_components:
@@ -130,8 +141,19 @@ class PrepareData:
             binding_data = binding_data[merged_columns]
         return binding_data
     
+    def label_sequence_characteristic(self, characteristic, sequences, region_of_interest):
+        if characteristic != None:
+            Property = GetProteinProperty(sequences)
+            Property.calc_attribute(attribute=characteristic)
+            Property.add_attributes_to_table(self.umap_results, attribute = characteristic, region_of_interest = region_of_interest)
+        else:
+            pass
+            
+
+            
+    
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 2000, pca_components = 50,
-             n_neighbors = 15, min_dist = 0.2, random_seed = 42, densmap = True, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+             n_neighbors = 15, min_dist = 0.2, random_seed = 42, densmap = True, characteristic = None, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
         """creates umap_results as class object which is a table containing all necessary data for the final plot
 
         Args:
@@ -162,7 +184,9 @@ class PrepareData:
         self.logical_check(batch_size,
                            pca_components,
                            model_choice,
-                           n_neighbors
+                           n_neighbors,
+                           characteristic,
+                           binding_data
                            )
         self.datatype_check(list_experiments,
                             pca_components,
@@ -170,7 +194,8 @@ class PrepareData:
                             random_seed, 
                             batch_size,
                             model_choice,
-                            densmap)
+                            densmap,
+                            characteristic)
         binding_data = self.filter_binding_data(binding_data,
                                                 region_of_interest, 
                                                 antigens)
@@ -189,6 +214,7 @@ class PrepareData:
         self.umap_results = Transformer.do_umap(X, n_neighbors, min_dist, random_seed, densmap)
         kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
         self.umap_results["cloneFraction"] = self.clones
+        self.label_sequence_characteristic(characteristic, sequences)
         return peptides, selected_rows, kds, ids
     
     def make_csv(self):
