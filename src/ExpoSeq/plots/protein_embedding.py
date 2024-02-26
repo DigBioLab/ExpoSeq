@@ -59,7 +59,7 @@ class PrepareData:
         experiments_batch = selected_rows["Experiment"]
         unique_experiments_num = pd.factorize(experiments_batch)[0]
         #self.tsne_results["experiments_factorized"] = list(unique_experiments_num)
-        #self.tsne_results["experiments_string"] = list(experiments_batch)
+        self.tsne_results["experiments_string"] = list(experiments_batch)
         self.tsne_results["sequences"] = list(aminoacids)
         self.tsne_results['sequence_id'] = pd.Series(range(self.tsne_results.shape[0]))
         return kds, ids
@@ -96,7 +96,8 @@ class PrepareData:
             assert sample in list(sequencing_report[sample_column_name].unique()), f"{sample} does not exist"
         if binding_data is not None:
             assert region_of_interest in binding_data.columns.to_list(), f"You must have sequences for {region_of_interest} in your binding data"    
-        
+        batch_size = batch_size * len(list_experiments)
+
         
         self.logical_check(batch_size,
                            perplexity,
@@ -127,6 +128,9 @@ class PrepareData:
         self.tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
         kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
         self.tsne_results["cloneFraction"] = self.clones
+        for sample in list_experiments:
+            assert self.tsne_results[self.umap_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
+        
         return peptides, selected_rows, kds, ids
     
     def make_csv(self):

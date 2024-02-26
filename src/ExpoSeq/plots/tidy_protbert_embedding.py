@@ -45,9 +45,15 @@ class TransformerBased:
     
     def filter_sequences(self, sequencing_report, batch_size, experiments,binding_data,
                          region_of_interest = "aaSeqCDR3", cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+        
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
+
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
+        
+        assert selected_rows.shape[0] <= len(experiments) * batch_size
         selected_rows = selected_rows.drop_duplicates(subset = [region_of_interest])
+        
+        assert selected_rows.shape[0] <= len(experiments) * batch_size
         if binding_data is not None:
             mix = selected_rows.merge(binding_data, on = region_of_interest, how = "outer")
             selected_rows = mix.fillna(0)
@@ -55,7 +61,8 @@ class TransformerBased:
         selected_rows.loc[selected_rows[cf_column_name] == 0.0, cf_column_name] = max_fraction
         selected_rows = selected_rows.sort_values(by=cf_column_name, ascending=False)
         sequences_filtered = selected_rows[region_of_interest]
-        sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
+        sequences = [" ".join(list(re.sub(r"[UZOB*_]", "X", sequence))) for sequence in sequences_filtered]
+        selected_rows.reset_index(drop = True, inplace = True) # very important for multiple samples. 
         return sequences,sequences_filtered, selected_rows
         
     def prepare_sequences(self,sequences, device = "cpu"):
