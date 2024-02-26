@@ -3,6 +3,22 @@ from src.ExpoSeq.plots.protein_embedding_umap import PrepareData, PlotEmbedding
 import pandas as pd
 import numpy as np
 
+
+def test_plots():
+    sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
+    sequencing_report = pd.read_csv(sequencing_report_path)
+    sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
+    fig = plt.figure(1, figsize = (12, 10))
+    ax = fig.gca()
+    list_experiments = ["GeneMind_1"]
+    font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
+    legend_settings = {'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
+    
+    #PrepData = PrepareData()
+    #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
+
+    Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 15, pca_components=10, ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings)
+    
     
 def test_PlotEmbedding():
     sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
@@ -10,7 +26,8 @@ def test_PlotEmbedding():
     sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
     fig = plt.figure(1, figsize = (12, 10))
     ax = fig.gca()
-    list_experiments = ["GeneMind_1"]
+    list_experiments = ["GeneMind_1", ""]
+    
     PrepData = PrepareData()
     peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80)
     assert isinstance(PrepData.umap_results, pd.DataFrame)
