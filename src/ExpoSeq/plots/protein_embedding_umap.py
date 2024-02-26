@@ -24,7 +24,7 @@ class PrepareData:
             assert binding_data == None, "You cannot combine a binding data analysis and a sequence attribute analysis"
 
     @staticmethod
-    def datatype_check(samples, pca_components, n_neighbors, random_seed, batch_size, model, densmap, characteristic, add_clone_size):
+    def datatype_check(samples, pca_components, n_neighbors, random_seed, batch_size, model, densmap, characteristic, add_clone_size, metric):
         assert type(samples) == list, "You have to give a list with the samples you want to analyze"
         assert type(pca_components) == int, "You have to give an integer as input for the pca_components"
         assert type(n_neighbors) == int, "You have to give an integer as input for the perplexity"
@@ -38,6 +38,11 @@ class PrepareData:
             assert type(add_clone_size) == int, "add_clone_size must be an integer if it is not None"
         else:
             assert add_clone_size == None
+        avail_metrics = ["euclidian", "manhatten", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine", "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"]
+        assert metric in avail_metrics, f"Please choose one of the metrics from this list: {avail_metrics}"
+        possible_characteristics = ["isoelecrtric_point", "aliphatic_index", "hydrophobicity", "weight", "mass_charge_ratio", "length", None]
+        assert characteristic in possible_characteristics, f"Please choose one of the values from: {possible_characteristics}"    
+        
     @staticmethod
     def check_warnings(sequences, pca_components, perplexity):
         if len(sequences) < pca_components:
@@ -96,7 +101,7 @@ class PrepareData:
             
     
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 2000, pca_components = 50,
-             n_neighbors = 50, min_dist = 0.2, random_seed = 42, densmap = True, characteristic = None, add_clone_size = 500,
+             n_neighbors = 50, min_dist = 0.2, random_seed = 42, densmap = True, metric = "cosine", characteristic = None, add_clone_size = 500,
              model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
         """creates umap_results as class object which is a table containing all necessary data for the final plot
 
@@ -111,6 +116,7 @@ class PrepareData:
             min_dist (float, optional): controls how tightly the points will be set to each other. It should be the minimum distance points are allowed to be apart from each other in the low dimensional representation
             random_seed (int, optional): Set a certain seed for reprodubility
             densmap (bool, optional): This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other. You can have an idea about this here: https://umap-learn.readthedocs.io/en/latest/densmap_demo.html
+            metric (str, optional): You need to insert a string as input which is the distance metric for the UMAP algorithm.
             model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to "Rostlab/prot_bert".
             binding_data (pd.DataFrame, optional): Dataframe which contains the sequences and the binding values to the antigens. Defaults to None.
             cf_column_name (str, optional): Name of the column which contains the clone fraction in the sequencing report. Defaults to "cloneFraction".
@@ -141,7 +147,8 @@ class PrepareData:
                             model_choice,
                             densmap,
                             characteristic,
-                            add_clone_size)
+                            add_clone_size,
+                            metric)
         binding_data = self.filter_binding_data(binding_data,
                                                 region_of_interest, 
                                                 antigens)
@@ -159,7 +166,7 @@ class PrepareData:
         X = Transformer.do_pca(sequences, batch_size, pca_components)
         peptides = selected_rows[region_of_interest].to_list()
         self.clones = selected_rows[cf_column_name]
-        self.umap_results = Transformer.do_umap(X, n_neighbors, min_dist, random_seed, densmap, y = property_result)
+        self.umap_results = Transformer.do_umap(X, n_neighbors, min_dist, random_seed, densmap, y = property_result, metric= metric)
         if property_result != None:
             self.umap_results[characteristic] = property_result
         kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest, add_clone_size)
@@ -176,7 +183,7 @@ class PrepareData:
 
 class PlotEmbedding:
     def __init__(self,sequencing_report,  list_experiments, region_of_interest, strands = True,add_clone_size = 300, batch_size = 500, pca_components = 50, 
-                 n_neighbors = 45, min_dist = 0.01, random_seed = 42, densmap = True,model_choice = "Rostlab/prot_bert", characteristic = None, antigens = None, 
+                 n_neighbors = 45, min_dist = 0.01, random_seed = 42, densmap = True, metric = "cosine", model_choice = "Rostlab/prot_bert", characteristic = None, antigens = None, 
                  font_settings = {}, legend_settings = {}, ax = None, binding_data = None, # antigens mutual attribute 
                  colorbar_settings = None,  toxin_names = None, extra_figure = False, prefered_cmap = "viridis"):
         self.ax = ax
@@ -212,7 +219,7 @@ class PlotEmbedding:
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
                 if font_settings != {}:
                     self.ax.set_title(title, pad= 12, **font_settings)
-                if colorbar_settings != {}:
+                if colorbar_settings != {} and characteristic != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
                     
             if font_settings != {}:
@@ -228,6 +235,7 @@ class PlotEmbedding:
         markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
         if characteristic == None:
             self.umap_results["color"] = self.umap_results["experiments_factorized"]
+            sm = None
         else:
             self.umap_results["color"]  = self.umap_results[characteristic]
             global_min_color = self.umap_results["color"].min()
@@ -242,11 +250,11 @@ class PlotEmbedding:
             local_results = self.umap_results[self.umap_results[("experiments_string",)] == experiment]
             umap_1_values = local_results["UMAP_1"]
             umap_2_values = local_results["UMAP_2"]
-            if "color" in local_results.columns:
-                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index], c=local_results["color"], alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
+            if characteristic != None:
+                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],s = local_results["size"], c=local_results["color"], alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
                 
             else:
-                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index], s = local_results["size"], alpha=1, cmap=prefered_cmap, label = experiment)
+                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index], s = local_results["size"], alpha=0.5, cmap=prefered_cmap, label = experiment)
         
         return sm
 
@@ -321,5 +329,7 @@ colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'p
 #PrepData = PrepareData()
 #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
 
-Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 500, pca_components=70, ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, characteristic = "hydrophobicity")
+Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 1000, pca_components=50, 
+                     n_neighbors=25,
+                     ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
 plt.show()

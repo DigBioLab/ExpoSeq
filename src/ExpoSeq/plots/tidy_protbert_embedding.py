@@ -138,7 +138,7 @@ class TransformerBased:
                                     columns = [["tsne1", "tsne2"]])
         return tsne_results
     @staticmethod
-    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None):
+    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian"):
         """_summary_
 
         Args:
@@ -150,7 +150,7 @@ class TransformerBased:
         Returns:
             pd.DataFrame: return a pandas dataframe with the two umap_dimensions
         """
-        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist)
+        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist, metric= metric)
         if y == None:
             reduced_dim = reducer.fit_transform(X)
         else:
@@ -158,3 +158,5 @@ class TransformerBased:
         assert reduced_dim.shape[1] == 2
         results = pd.DataFrame(reduced_dim, columns = [["UMAP_1", "UMAP_2"]])
         return results
+    
+    
