@@ -53,12 +53,16 @@ src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
 src/ExpoSeq/plots/multiple_length_plot.py
 src/ExpoSeq/plots/protein_embedding.py
+src/ExpoSeq/plots/protein_embedding_umap.py
 src/ExpoSeq/plots/protein_network_embedding.py
 src/ExpoSeq/plots/rarefraction_curves.py
 src/ExpoSeq/plots/sample_cluster.py
 src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
 src/ExpoSeq/plots/tidy_protbert_embedding.py
+src/ExpoSeq/plots/contents/__init__.py
+src/ExpoSeq/plots/contents/hytdrophobicity_metrics.py
+src/ExpoSeq/plots/contents/isoelectric_point_scales.py
 src/ExpoSeq/plots/deprecated/__init__.py
 src/ExpoSeq/plots/deprecated/bert_network_embedding.py
 src/ExpoSeq/plots/deprecated/cluster_embedding.py
@@ -85,6 +89,7 @@ src/ExpoSeq/settings/dendrogram_cluster.md
 src/ExpoSeq/settings/directory_manager.py
 src/ExpoSeq/settings/figure.py
 src/ExpoSeq/settings/font_settings.txt
+src/ExpoSeq/settings/full_sequence_finder.py
 src/ExpoSeq/settings/general_instructions.py
 src/ExpoSeq/settings/global_vars.txt
 src/ExpoSeq/settings/legend_settings.txt
