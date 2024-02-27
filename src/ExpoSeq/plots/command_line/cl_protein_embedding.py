@@ -1,24 +1,32 @@
-from .collecting_all_arguments import ExpoSeqArgs
+from .collecting_all_arguments import ExpoSeqArgs,  prep_args
 from ExpoSeq.plots.protein_embedding import PrepareData # import as package
+import pandas as pd
 
 def call_args():
     Args = ExpoSeqArgs()
-    Args.save_csv()
-    Args.sequencing_report()
-    Args.samples()
-    Args.region_of_interest()
-    Args.pca_components()
-    Args.perplexity()
-    Args.iterations_tsne()
-    Args.batch_size()
-    Args.model_type()
-    Args.strands()
+    Args.add_save_csv()
+    Args.add_sequencing_report()
+    Args.add_samples()
+    Args.add_region_plots()
+    Args.add_pca_components()
+    Args.add_perplexity()
+    Args.add_iterations_tsne()
+    Args.add_batch_size()
+    Args.add_model_type()
+    Args.add_strands()
+    Args.add_binding_data()
+    Args.add_antigen_names()
     return Args
 
-Args = call_args()
-Args.parser.parse_args()
+
+args = call_args()
+parser = prep_args(args)
+# plot prepare
 PrepData = PrepareData()
-PrepData.tidy(Args.sequencing_report, Args.samples, Args.region_of_interest, batch_size = Args.batch_size, 
-              pca_components=Args.pca_components, perplexity=Args.perplexity, iterations_tsne=Args.iterations_tsne,
-              model_choice=Args.model_type)
-PrepData.make_csv(Args.save_csv)
+sequencing_report = pd.read_csv(parser.sequencing_report)
+PrepData.tidy(sequencing_report, parser.samples, parser.region_plots, batch_size = parser.batch_size, 
+              pca_components=parser.pca_components, perplexity=parser.perplexity, iterations_tsne=parser.iterations_tsne,
+              model_choice=parser.model_type, binding_data = parser.binding_data, antigens = parser.antigen_names)
+
+
+PrepData.tsne_results.to_csv(parser.save_csv)
