@@ -59,8 +59,8 @@ class PrepareData:
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
         unique_experiments_num = pd.factorize(experiments_batch)[0]
+        self.tsne_results["experiments_string"] = experiments_batch.to_list()
         #self.tsne_results["experiments_factorized"] = list(unique_experiments_num)
-        self.tsne_results["experiments_string"] = list(experiments_batch)
         self.tsne_results["sequences"] = list(aminoacids)
         self.tsne_results['sequence_id'] = pd.Series(range(self.tsne_results.shape[0]))
         return kds, ids
@@ -257,10 +257,9 @@ class PlotEmbedding:
         
 
 
-#sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
+#sequencing_report_path = r"C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv"
 #sequencing_report = pd.read_csv(sequencing_report_path)
-#sequencing_report["cloneFraction"] = sequencing_report["readFraction"]
-#peptides, selected_rows, tsne_results = PrepareData().tidy(sequencing_report, ["GeneMind_1"], region_of_interest = "aaSeqCDR3", batch_size = 50)
+#peptides, selected_rows, tsne_results = PrepareData().tidy(sequencing_report, ["GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001", "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001"], region_of_interest = "aaSeqCDR3", batch_size = 100)
 #print(peptides)
 #print(selected_rows)
 #print(tsne_results)
