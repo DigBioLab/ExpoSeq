@@ -133,8 +133,13 @@ class PrepareData:
         
         return peptides, selected_rows, kds, ids
     
-    def make_csv(self):
-        self.tsne_results.to_csv("tsne_results.csv")
+    def make_csv(self, path = None):
+        if path == None:
+            save_path = "tsne_results.csv"
+        else:
+            save_path = path
+        assert path.endswith(".csv")
+        self.tsne_results.to_csv(save_path)
         
 
 
