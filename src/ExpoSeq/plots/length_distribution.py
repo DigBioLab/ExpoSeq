@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ..plots.layout_finder import best_layout
+from ..settings.layout_finder import best_layout
 from textwrap import wrap
 
 

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import logomaker
 import numpy as np
-from ..plots.layout_finder import best_layout
+from ..settings.layout_finder import best_layout
 from textwrap import wrap
 import pandas as pd
 
@@ -107,7 +107,8 @@ class LogoPlot:
             self.ax.set_ylabel("Frequency", **self.font_settings)
             self.ax.set_xlabel("Position on sequence", **self.font_settings)
             self.font_settings["fontsize"] = 22
-            plt.title("Logo Plot of " + sample + " with sequence length " + str(self.chosen_seq_length), **self.font_settings)
+            title = "\n".join(wrap("Logo Plot of " + sample + " with sequence length " + str(self.chosen_seq_length), width = 40))
+            plt.title(title , **self.font_settings)
             self.font_settings["fontsize"] = original_fontsize
             labels_true = list(range(0, self.chosen_seq_length))
             numbers_true = list(range(1, self.chosen_seq_length + 1))

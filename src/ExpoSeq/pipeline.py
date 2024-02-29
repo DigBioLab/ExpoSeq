@@ -18,6 +18,7 @@ from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
 import warnings
+from .settings.subplots_manager import Subplotter
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
@@ -87,6 +88,7 @@ class PlotManager:
 
         self.ControlFigure = MyFigure(test_version)
         self.ControlFigure.set_backend() 
+        self.subplot_list = []
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.preferred_sample = self.experiments_list[0]
@@ -111,6 +113,28 @@ class PlotManager:
         print(f"You can find the html file to the report at: {self.plot_path}/{self.experiment}.qmd")
 
 
+    def add_to_subplot(self, figure_name = "No.1"):
+        """You can add the current plot to a certain figure with the given figure_name and quarto will generate an html document with all subplots which have been added until that point.\nYou need to install quarto to use this feature.
+        
+        Args:
+            figure_name (str, optional): The name of the figure. If you change it you will add your plots to another figure and a new class instance starting with subplot_{figure_name} is created. Defaults to "No.1".
+        """
+        if hasattr(self, f"subplot_{figure_name}"):
+            pass
+        else:
+            setattr(self, f"subplot_{figure_name}", Subplotter(figure_title=figure_name))
+            self.subplot_list.append(getattr(self, f"subplot_{figure_name}"))
+        subplot_instance = getattr(self, f"subplot_{figure_name}")
+        subplot_instance.add_as_subplot(self.ControlFigure.fig)
+
+        
+    def show_subplot(self, figure_name = "No.1"):
+        print("Test Quarto")
+        subprocess.run(["quarto", "check"])
+        subplot_instance = getattr(self, f"subplot_{figure_name}")
+        subplot_instance.make_figure()
+        
+        
 
     def change_java_heap_size(self, new_size):
         self.java_heap_size = new_size

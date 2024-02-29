@@ -2,31 +2,56 @@ import os
 import pandas as pd
 import glob
 import markdown
-
+from .layout_finder import best_layout
 
 class QuartoBuilder:
-    def __init__(self, title):
+    def __init__(self, title, figure = False):
         self.content = ""
         self.title = title
-        self.create_header()
+        self.create_header(figure)
 
     def write_quarto(self, save_dir):
         save_path = os.path.join(save_dir,f"{self.title}.qmd" )
         with open(save_path, "w") as f:
             f.write(self.content)
             
-    def create_header(self):
+
+    def create_header(self, figure):
         self.content += "---\n"
         self.content += f"title: {self.title}\n"
         self.content += f"format:"
         self.content += "\n     html:"
         self.content += "\n         self-contained: true"
-        self.content += "\n         toc: true"
-        self.content += "\n         toc-location: left"
-        self.content += "\n         toc-expand: 2"
+        if figure == False:
+            self.content += "\n         toc: true"
+            self.content += "\n         toc-location: left"
+            self.content += "\n         toc-expand: 2"
+        else:
+            self.content += "\n         page-layout: full"
+            
+
         self.content += "\n"
         self.content += "---"
 
+    def add_subplot_figures(self, files):
+        rows, cols = best_layout(len(files))
+        self.next_row()
+        inside_string = "{layout-ncol=" + str(cols) + "}"
+        self.content += f"::: {inside_string}"
+        self.next_row()
+        for picture in files:
+            self.content += f"![]"
+            self.content += f"({picture})"
+            self.next_row()
+        self.content += ":::"
+        
+    
+        
+    def end_python_code(self):
+        self.next_row()
+        self.content += "```"
+        
+    
     
     def create_headline(self, header, section = "#"):
         self.next_row()
@@ -130,6 +155,9 @@ class QuartoBuilder:
             
         heads_df = df.columns.tolist()
         self.content += f"{df.to_markdown()}"
+        
+        
+
       #  headers = df.columns.tolist()
 
         # Convert headers to markdown format
