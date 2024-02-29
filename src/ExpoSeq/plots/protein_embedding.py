@@ -130,7 +130,7 @@ class PrepareData:
         kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
         self.tsne_results["cloneFraction"] = self.clones
         for sample in list_experiments:
-            assert self.tsne_results[self.umap_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
+            assert self.tsne_results[self.tsne_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
         
         return peptides, selected_rows, kds, ids
     

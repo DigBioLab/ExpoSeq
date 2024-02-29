@@ -119,15 +119,15 @@ class ExpoSeqArgs:
                                  required = True)
         self.chosen_tests.append("check_sequencing_report")
     
-    def add_samples(self, shortcut = "-s", flag = "--samples"):
+    def add_samples(self, shortcut = "-s", flag = "--samples", required = True):
         self.parser.add_argument(shortcut,
                                  flag, 
                                  help = "Add a list of sample names here.",
-                                 required = True,
+                                 required = required,
                                  type = str,
                                  nargs = "+")
-        
-        self.chosen_tests.append("check_samples")
+        if required:
+            self.chosen_tests.append("check_samples")
         
     def add_region_of_interest(self, flag = "--region", default = "CDR3"):
         self.parser.add_argument(flag, 

@@ -1,4 +1,4 @@
-from src.ExpoSeq.settings.reports import SequencingReport # change later on
+from ..settings.reports import SequencingReport 
 from .collecting_all_arguments import ExpoSeqArgs, prep_args
 import pandas as pd
 

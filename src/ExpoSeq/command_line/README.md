@@ -3,7 +3,7 @@
 Before you can start anything you need to prepare the sequencing report as input for all plots and functionalities in ExpoSeq. The output of the corresponding command line script is a csv file which contains all the data from your samples in only one table. If you clone the repository you can call the script with:
 
 ```bash
-python -m src.ExpoSeq.plots.command_line.cl_sequencing_report --tsv_dir "DIR_TO_TSV_FILES" --save_csv "OUTPUT_FILENAME" --region "CDR3"
+python -m src.ExpoSeq.command_line.cl_sequencing_report --tsv_dir "DIR_TO_TSV_FILES" --save_csv "OUTPUT_FILENAME" --region "CDR3"
 
 ```
 
@@ -29,7 +29,7 @@ If you want to cluster your data without any binding data you can control the ou
 **WITHOUT BINDING DATA**
 
 ```bash
-python -m src.ExpoSeq.plots.command_line.cl_protein_embedding --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 
+python -m src.ExpoSeq.command_line.cl_protein_embedding --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 
 ```
 
 - --sequencing_report: Path to the report you generated in the highest layer
@@ -45,12 +45,20 @@ python -m src.ExpoSeq.plots.command_line.cl_protein_embedding --sequencing_repor
 **WITH BINDING DATA**
 
 ```bash
-python -m src.ExpoSeq.plots.command_line.cl_protein_embedding --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --binding_data "PATH_TO_CSV_FILE" --antigen_names "ANTIGEN1" "ANTIGEN2"
+python -m src.ExpoSeq.command_line.cl_protein_embedding --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --binding_data "PATH_TO_CSV_FILE" --antigen_names "ANTIGEN1" "ANTIGEN2"
 ```
 
 
 ### Diversity Plot
 
-```
+```bash
 python -m src.ExpoSeq.plots.command_line.cl_diversity_plot --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME"
 ```
+
+
+### Rarefraction curves
+
+```bash
+python -m src.ExpoSeq.command_line.cl_rarefraction_curves -r "PATH_TO_CSV_FILE" --region_plots "aaSeqCDR3" --save_csv "OUTPUT_FILENAME"
+```
+

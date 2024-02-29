@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import logomaker
 import numpy as np
-from ..plots.layout_finder import best_layout
+from ..settings.layout_finder import best_layout
 from textwrap import wrap
 import pandas as pd
 

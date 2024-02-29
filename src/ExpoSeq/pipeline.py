@@ -484,6 +484,10 @@ class PlotManager:
         else:
             self.preferred_antigen = None
 
+        
+        
+
+
     def change_preferred_sample(self, sample):
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         self.preferred_sample = sample

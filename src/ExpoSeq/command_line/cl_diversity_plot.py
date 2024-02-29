@@ -1,5 +1,5 @@
 from .collecting_all_arguments import ExpoSeqArgs, prep_args
-from src.ExpoSeq.plots.diversity_plot import PrepareData 
+from ..plots.diversity_plot import PrepareData 
 import pandas as pd
 
 def call_args():

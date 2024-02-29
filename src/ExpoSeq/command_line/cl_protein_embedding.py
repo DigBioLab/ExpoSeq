@@ -1,5 +1,5 @@
 from .collecting_all_arguments import ExpoSeqArgs,  prep_args
-from ExpoSeq.plots.protein_embedding import PrepareData # import as package
+from ..plots.protein_embedding import PrepareData # import as package
 import pandas as pd
 
 def call_args():
