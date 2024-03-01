@@ -125,7 +125,7 @@ class PlotManager:
             setattr(self, f"subplot_{figure_name}", Subplotter(figure_title=figure_name))
             self.subplot_list.append(getattr(self, f"subplot_{figure_name}"))
         subplot_instance = getattr(self, f"subplot_{figure_name}")
-        subplot_instance.add_as_subplot(self.ControlFigure.fig)
+        subplot_instance.add_as_subplot(self.ControlFigure.fig, capture)
 
         
     def show_subplot(self, figure_name = "No.1"):
