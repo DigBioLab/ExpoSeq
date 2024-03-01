@@ -8,15 +8,78 @@ try:
 except:
     pass
 import warnings
+import glob          
 
-                
+class ManageImportFiles:
+    def __init__(self):
+        """This class can be used to create the sequencing report from a directory containing tsv files. It was primarily designed for the implementation in Platforma.bio. 
+            Use the method merge_tsvs and input the directory
+        
+        """
+        self.columns_not_wanted = ['refPoints', 'allVHitsWithScore', 'allDHitsWithScore',
+                        'allJHitsWithScore', 'allCHitsWithScore', 'allVAlignments',
+                        'allDAlignments', 'allJAlignments', 'allCAlignments']
+        
+    @staticmethod    
+    def check_cols(single_table: pd.DataFrame, filename:str):
+        cols = single_table.columns.to_list()
+        nuc_regions = ["nSeqCDR1", "nSeqFR2", "nSeqCDR2", "nSeqFR3", "nSeqCDR3", "nSeqFR4"]
+        aa_regions = ["aaSeqFR1", "aaSeqCDR1", "aaSeqFR2", "aaSeqCDR2","aaSeqFR3", "aaSeqCDR3", "aaSeqFR4"]
+        mandatory_cols = ["readFraction", "readCount", "cloneId", "targetSequences"]
+        assert any(item in nuc_regions for item in cols), "No region starting with nSeq found."
+        assert any(item in aa_regions for item in cols), "No region starting with aaSeq found."
+        for col in mandatory_cols:
+            assert col in cols, f"{col} does not exist in {filename}"
+        
+
+    @staticmethod
+    def get_filename(tsv_filename:str):
+        whole_basename:str = os.path.basename(tsv_filename)
+        experiment_name = whole_basename.split(".tsv")[0]
+        return experiment_name
+    
+    def merge_tsvs(self, dir_tsvs:str):
+        assert os.path.isdir(dir_tsvs), f"{dir_tsvs} does not exist"
+        tsv_files = glob.glob(os.path.join(dir_tsvs, "*.tsv*"))
+        sequencing_report = pd.DataFrame([])
+        for tsv_table in tsv_files:
+            experiment_name = self.get_filename(tsv_table)
+            sample = pd.read_table(tsv_table)
+            self.check_cols(sample, tsv_table)
+            sample.drop(columns=self.columns_not_wanted, inplace=True)
+            sample["Experiment"] = experiment_name #you dont need to worry about the length of the name because in Platforma they will decide how the headers look like
+            sample["cloneFraction"] = sample["readFraction"] 
+            sequencing_report = pd.concat([sequencing_report, sample])
+        
+        return sequencing_report
+
+dir_tsv = r"src\ExpoSeq\software_tests\test_files\test_show\tables_mixcr"
+TSVManager = ManageImportFiles()
+seq_report = TSVManager.merge_tsvs(dir_tsv)
 
 
 class SequencingReport:
     def __init__(self,sequencing_report):
-        sequencing_report = sequencing_report.dropna(subset = ["Experiment"])
+        """This class can be used to tidy and prepare the sequencing report for the pipeline. Alternatively you can input a string as a path to a directory with tsv files to generate a merged object out of these table which can be prepared as sequencing report then.
+
+        Args:
+            sequencing_report: _description_
+
+        Returns:
+            pd.DataFrame: tidied sequencing report
+        """
+        if isinstance(sequencing_report, pd.DataFrame) == True: # for pipeline purposes: 
+            sequencing_report = sequencing_report.dropna(subset = ["Experiment"])
+        elif type(sequencing_report) == str: # fur Platforma purposes to input tsv files
+            TSVManager = ManageImportFiles()
+            sequencing_report = TSVManager.merge_tsvs(sequencing_report) # contains test for path checking
+        else:
+            return ValueError
+        
         self.origin_seq_report = sequencing_report.copy()
         self.sequencing_report = sequencing_report
+
+
 
     def get_exp_names(self, experiment_path):
         try:

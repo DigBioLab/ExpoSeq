@@ -36,7 +36,8 @@ class PrepareData:
             
             x_axis.append(total_list)
             y_axis.append([len(x) for x in unique_list])
-            sample_names.append(sample)
+            sample_names.append(samples[sample])
+
         results_plot = pd.DataFrame({"samples": sample_names,
                       "x_axis": x_axis,
                       "y_axis": y_axis})
