@@ -7,7 +7,10 @@ from src.ExpoSeq.pipeline import PlotManager
 class IterativeAnalysis:
     def __init__():
         self.plot = PlotManager(experiment = experiment)
-
+        {"cluster_binding_data_umap": plot.cluster_binding_data_umap,
+         "umap_clustering_characteristic": plot.umap_clustering_characteristic,
+         "umap_sample_cluster": plot.umap_sample_cluster,
+         }
 
 plot = PlotManager()
 neighbors = [10, 20, 30, 40, 50]
