@@ -39,23 +39,42 @@ class TransformerBased:
             self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
             self.model = EsmModel.from_pretrained(self.choice)
         
-        
-        
+    
+    @staticmethod
+    def drop_by_highest_clone_fraction(selected_rows, region_of_interest):
+        max_clone_fraction = selected_rows.groupby(['Experiment', region_of_interest])['cloneFraction'].max()
+        max_clone_fraction = max_clone_fraction.reset_index()
+        # Merge back to original DataFrame to filter rows
+        result_df = selected_rows.merge(max_clone_fraction, on=[region_of_interest, 'Experiment'], suffixes=('', '_max'))
 
+        result_df = result_df[result_df['cloneFraction'] == result_df['cloneFraction_max']]
+
+        # Drop the additional column used for comparison
+        result_df.drop(columns=['cloneFraction_max'], inplace=True)
+        return result_df
+                
     
     def filter_sequences(self, sequencing_report, batch_size, experiments,binding_data,
                          region_of_interest = "aaSeqCDR3", cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+        
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
+
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
-        selected_rows = selected_rows.drop_duplicates(subset = [region_of_interest])
+        
+        assert selected_rows.shape[0] <= len(experiments) * batch_size
+        
+        selected_rows = self.drop_by_highest_clone_fraction(selected_rows, region_of_interest)
+        
+        assert selected_rows.shape[0] <= len(experiments) * batch_size
         if binding_data is not None:
             mix = selected_rows.merge(binding_data, on = region_of_interest, how = "outer")
             selected_rows = mix.fillna(0)
         max_fraction = max(selected_rows[cf_column_name])
         selected_rows.loc[selected_rows[cf_column_name] == 0.0, cf_column_name] = max_fraction
-        selected_rows = selected_rows.sort_values(by=cf_column_name, ascending=False)
+        selected_rows = selected_rows.sort_values(by=[cf_column_name, sample_column_name], ascending=False)
         sequences_filtered = selected_rows[region_of_interest]
-        sequences = [" ".join(list(re.sub(r"[UZOB*]", "X", sequence))) for sequence in sequences_filtered]
+        sequences = [" ".join(list(re.sub(r"[UZOB*_]", "X", sequence))) for sequence in sequences_filtered]
+         
         return sequences,sequences_filtered, selected_rows
         
     def prepare_sequences(self,sequences, device = "cpu"):
@@ -131,7 +150,7 @@ class TransformerBased:
                                     columns = [["tsne1", "tsne2"]])
         return tsne_results
     @staticmethod
-    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None):
+    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian"):
         """_summary_
 
         Args:
@@ -143,11 +162,13 @@ class TransformerBased:
         Returns:
             pd.DataFrame: return a pandas dataframe with the two umap_dimensions
         """
-        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist)
+        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist, metric= metric)
         if y == None:
             reduced_dim = reducer.fit_transform(X)
         else:
             reduced_dim = reducer.fit_transform(X, y = y)
         assert reduced_dim.shape[1] == 2
-        results = pd.DataFrame(reduced_dim, columns = [["UMAP_1", "UMAP_2"]])
+        results = pd.DataFrame(reduced_dim, columns = ["UMAP_1", "UMAP_2"])
         return results
+    
+    

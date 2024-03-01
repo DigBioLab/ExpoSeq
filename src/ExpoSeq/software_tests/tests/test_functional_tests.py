@@ -40,6 +40,8 @@ def test_pipeline():
     plot.relative()
     plot.levenshtein_dendrogram()
     plot.alignment_quality()
+    plot.umap_sample_cluster(batch_size = 51)
+    plot.umap_clustering_characteristic(batch_size = 51)
     
     plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", test_version=True, allow_binding_data=False)
     sequencing_report = plot.sequencing_report
@@ -78,6 +80,7 @@ def test_pipeline():
     plot.logoPlot_single(color_scheme = "skylign_protein")
     plot.sorensen(specific_experiments = samples_multi)
     plot.rel_seq_abundance(sample = sample_names[0], alpha_val = 0.5, top_clone_fraction = 0.5)
+    plot.cluster_binding_data_umap(batch_size = 51)
        
 
     

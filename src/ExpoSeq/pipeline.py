@@ -1,7 +1,7 @@
 from .plots.deprecated import cluster_embedding, embedding_with_binding
 from .plots import barplot, hist_lvst_dist, length_distribution, \
     logo_plot, protein_embedding, protein_network_embedding, rarefraction_curves, stacked_aa_distribution, levenshtein_clustering, sample_cluster, \
-        clone_fraction, diversity_plot, hist_lvst_dist_bind, multiple_length_plot
+        clone_fraction, diversity_plot, hist_lvst_dist_bind, multiple_length_plot, protein_embedding_umap
 from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
 from .augment_data.binding_data import collect_binding_data
@@ -18,6 +18,7 @@ from .settings.aumotative_report import AumotativeReport
 from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
 import warnings
+from .settings.subplots_manager import Subplotter
 
 class PlotManager:
     def __init__(self,experiment = None, test_version=False,  length_threshold=6,
@@ -87,6 +88,7 @@ class PlotManager:
 
         self.ControlFigure = MyFigure(test_version)
         self.ControlFigure.set_backend() 
+        self.subplot_list = []
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax, self.ControlFigure.plot_type)
         # self.settings_saver = change_save_settings.Change_save_settings()
         self.preferred_sample = self.experiments_list[0]
@@ -111,6 +113,28 @@ class PlotManager:
         print(f"You can find the html file to the report at: {self.plot_path}/{self.experiment}.qmd")
 
 
+    def add_to_subplot(self, figure_name = "No.1", capture = ""):
+        """You can add the current plot to a certain figure with the given figure_name and quarto will generate an html document with all subplots which have been added until that point.\nYou need to install quarto to use this feature.
+        
+        Args:
+            figure_name (str, optional): The name of the figure. If you change it you will add your plots to another figure and a new class instance starting with subplot_{figure_name} is created. Defaults to "No.1".
+        """
+        if hasattr(self, f"subplot_{figure_name}"):
+            pass
+        else:
+            setattr(self, f"subplot_{figure_name}", Subplotter(figure_title=figure_name))
+            self.subplot_list.append(getattr(self, f"subplot_{figure_name}"))
+        subplot_instance = getattr(self, f"subplot_{figure_name}")
+        subplot_instance.add_as_subplot(self.ControlFigure.fig, capture)
+
+        
+    def show_subplot(self, figure_name = "No.1"):
+        print("Test Quarto")
+        subprocess.run(["quarto", "check"])
+        subplot_instance = getattr(self, f"subplot_{figure_name}")
+        subplot_instance.make_figure()
+        
+        
 
     def change_java_heap_size(self, new_size):
         self.java_heap_size = new_size
@@ -483,6 +507,10 @@ class PlotManager:
             self.preferred_antigen = antigen
         else:
             self.preferred_antigen = None
+
+        
+        
+
 
     def change_preferred_sample(self, sample):
         assert sample in self.experiments_list, "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
@@ -912,10 +940,10 @@ class PlotManager:
             if cluster_report_save.lower() in ["Y", "y"]:
                 while True:
                     filename_matrix = input(f"Enter a name for the file. The file will be saved in {self.report_path} in your IDE.")
-                    if filename_matrix.endswith(".csv"):
+                    if filename_matrix.endswith(".xlsx"):
                         pass
                     else:
-                        filename_matrix = filename_matrix + ".csv"
+                        filename_matrix = filename_matrix + ".xlsx"
                     if not os.path.isfile(filename_matrix):
                         path = os.path.join(self.report_path, filename_matrix)
                         cluster_report.to_excel(path)
@@ -926,7 +954,171 @@ class PlotManager:
             cluster_report.to_excel(path)
 
 
+    def umap_sample_cluster(self, samples = None, n_neighbors = 20, min_dist = 0.01, random_seed = 42, densmap = True,
+                            metric = "euclidean", model_choice = 'Rostlab/prot_t5_xl_half_uniref50-enc', show_strands = False,
+                            clone_size_factor = 300, batch_size = 1000, pca_components = 50, prefered_cmap = "viridis", save_report_path = None):
+        """You can use this plot to solely compare samples to each other with UMAP as the main dimension reduction technique.
 
+        Args:
+            samples (str, optional): Here you can insert a list of samples you would like to compare and cluster. Defaults to None.
+            n_neighbors (int, optional): Here you can choose the numbers of neighbors a point has.Larger values will result in more global structure being preserved at the loss of detailed local structure. In general this parameter should be between 5 to 50. Defaults to 20.
+            min_dist (float, optional): controls how tightly the points will be set to each other. It should be the minimum distance points are allowed to be apart from each other in the low dimensional representation. Defaults to 0.01.
+            random_seed (int, optional): Set a certain seed for reprodubility. Defaults to 42.
+            densmap (bool, optional): This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other.. Defaults to True.
+            metric (str, optional): You need to insert a string as input which is the distance metric for the UMAP algorithm. Defaults to "euclidian".
+            model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to 'Rostlab/prot_t5_xl_half_uniref50-enc'.
+            show_strands (bool, optional): It means that you will plot a batch of the strands in your plot. Defaults to False.
+            clone_size_factor (int, optional):  This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size. Defaults to 300.
+            batch_size (int, optional): The number of sequences per samples which should be taken. The higher it is, the more computational intense.. Defaults to 1000.
+            pca_components (int, optional): Number of principal components you reduce the 1024 dimensional output of the embedders to. Defaults to 50.
+            prefered_cmap (str, optional): colormap for your points. Defaults to "viridis".
+        """
+        if samples == None:
+            samples = [self.preferred_sample]
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        UmapEmbed = protein_embedding_umap.PlotEmbedding(self.sequencing_report,
+                                             samples,
+                                             self.region_of_interest,
+                                             show_strands,
+                                             clone_size_factor,
+                                             batch_size,
+                                             pca_components,
+                                             n_neighbors,
+                                             min_dist,
+                                             random_seed,
+                                             densmap,
+                                             metric,
+                                             model_choice,
+                                             ax = self.ControlFigure.ax,
+                                             font_settings=self.font_settings,
+                                             legend_settings=self.legend_settings,
+                                             prefered_cmap=prefered_cmap)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        if self.is_test != True:
+            self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
+                                    path = save_report_path)
+            
+    def umap_clustering_characteristic(self, samples = None, characteristic = "length", n_neighbors = 20, min_dist = 0.01, random_seed = 42, densmap = True,
+                            metric = "euclidean", model_choice = 'Rostlab/prot_t5_xl_half_uniref50-enc', show_strands = False,
+                            clone_size_factor = 300, batch_size = 1000, pca_components = 50, prefered_cmap = "viridis", save_report_path = None, antigens = None ):
+        """You can use this plot to cluster multiple samples based on certain characteristics such as sequence length hydrophobicity etc. 
+
+        Args:
+            samples (str, optional): Here you can insert a list of samples you would like to compare and cluster. Defaults to None.
+            characteristic (str, optional): Here you can define the characteristic you want to apply the supervised functionality from UMAP to (https://umap-learn.readthedocs.io/en/latest/supervised.html). If you take a look at the link y is the characteristic. You can insert aliphatic_index, isoelectric_point, hydrophobicity, weight, mass_charge_ratio, length or binding (will align the global data structure to binding values)
+            n_neighbors (int, optional): Here you can choose the numbers of neighbors a point has.Larger values will result in more global structure being preserved at the loss of detailed local structure. In general this parameter should be between 5 to 50. Defaults to 20.
+            min_dist (float, optional): controls how tightly the points will be set to each other. It should be the minimum distance points are allowed to be apart from each other in the low dimensional representation. Defaults to 0.01.
+            random_seed (int, optional): Set a certain seed for reprodubility. Defaults to 42.
+            densmap (bool, optional): This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other.. Defaults to True.
+            metric (str, optional): You need to insert a string as input which is the distance metric for the UMAP algorithm. Defaults to "euclidian".
+            model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to 'Rostlab/prot_t5_xl_half_uniref50-enc'.
+            show_strands (bool, optional): It means that you will plot a batch of the strands in your plot. Defaults to False.
+            clone_size_factor (int, optional):  This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size. Defaults to 300.
+            batch_size (int, optional): The number of sequences per samples which should be taken. The higher it is, the more computational intense.. Defaults to 1000.
+            pca_components (int, optional): Number of principal components you reduce the 1024 dimensional output of the embedders to. Defaults to 50.
+            prefered_cmap (str, optional): colormap for your points. Defaults to "viridis".
+        """ 
+        
+        if samples == None:
+            samples = [self.preferred_sample]
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        UmapEmbed = protein_embedding_umap.PlotEmbedding(self.sequencing_report,
+                                             samples,
+                                             self.region_of_interest,
+                                             show_strands,
+                                             clone_size_factor,
+                                             batch_size,
+                                             pca_components,
+                                             n_neighbors,
+                                             min_dist,
+                                             random_seed,
+                                             densmap,
+                                             metric,
+                                             model_choice,
+                                             characteristic,
+                                             ax = self.ControlFigure.ax,
+                                             font_settings=self.font_settings,
+                                             legend_settings=self.legend_settings,
+                                             colorbar_settings=self.colorbar_settings,
+                                             prefered_cmap=prefered_cmap,
+                                             binding_data=self.binding_data,
+                                             antigens = antigens)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        if self.is_test != True:
+            self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
+                                    path = save_report_path)
+            
+
+    def cluster_binding_data_umap(self, samples = None, antigens = None, antigen_names = False, extra_figure = False, n_neighbors = 20, min_dist = 0.01, random_seed = 42, densmap = True,
+                            metric = "euclidean", model_choice = 'Rostlab/prot_t5_xl_half_uniref50-enc', show_strands = False,
+                            clone_size_factor = 300, batch_size = 1000, pca_components = 50, prefered_cmap = "viridis", save_report_path = None ):
+        """You can use this plot to cluster your sequences with functional assay data based on UMAP
+
+        Args:
+            samples (str, optional): Here you can insert a list of samples you would like to compare and cluster. Defaults to None.
+            antigens (str, optional): Names of the antigens with the corresponidng sequences you want to cluster with your ngs data. Input type is a list
+            antigen_names (str, optional): Names of the antigens with the corresponidng sequences you want to cluster with your ngs data. Input type is a list
+            characteristic (str, optional): Here you can define the characteristic you want to apply the supervised functionality from UMAP to (https://umap-learn.readthedocs.io/en/latest/supervised.html). If you take a look at the link y is the characteristic. You can insert aliphatic_index, isoelectric_point, hydrophobicity, weight, mass_charge_ratio, length or binding (will align the global data structure to binding values)
+            n_neighbors (int, optional): Here you can choose the numbers of neighbors a point has.Larger values will result in more global structure being preserved at the loss of detailed local structure. In general this parameter should be between 5 to 50. Defaults to 20.
+            min_dist (float, optional): controls how tightly the points will be set to each other. It should be the minimum distance points are allowed to be apart from each other in the low dimensional representation. Defaults to 0.01.
+            random_seed (int, optional): Set a certain seed for reprodubility. Defaults to 42.
+            densmap (bool, optional): This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other.. Defaults to True.
+            metric (str, optional): You need to insert a string as input which is the distance metric for the UMAP algorithm. Defaults to "euclidian".
+            model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to 'Rostlab/prot_t5_xl_half_uniref50-enc'.
+            show_strands (bool, optional): It means that you will plot a batch of the strands in your plot. Defaults to False.
+            clone_size_factor (int, optional):  This value will be multiplied with the clone fractions of the sequences. If you set it to None, all nodes will have the same size. Defaults to 300.
+            batch_size (int, optional): The number of sequences per samples which should be taken. The higher it is, the more computational intense.. Defaults to 1000.
+            pca_components (int, optional): Number of principal components you reduce the 1024 dimensional output of the embedders to. Defaults to 50.
+            prefered_cmap (str, optional): colormap for your points. Defaults to "viridis".
+        """ 
+        
+        if samples == None:
+            samples = [self.preferred_sample]
+        if self.binding_data is None:
+            print("Please upload binding data to use this functionality")
+            return 
+        if antigens == None:
+            antigens = [self.preferred_antigen]
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        UmapEmbed = protein_embedding_umap.PlotEmbedding(self.sequencing_report,
+                                             samples,
+                                             self.region_of_interest,
+                                             show_strands,
+                                             clone_size_factor,
+                                             batch_size,
+                                             pca_components,
+                                             n_neighbors,
+                                             min_dist,
+                                             random_seed,
+                                             densmap,
+                                             metric,
+                                             model_choice,
+                                             antigens = antigens,
+                                             binding_data=self.binding_data,
+                                             extra_figure=extra_figure,
+                                             ax = self.ControlFigure.ax,
+                                             font_settings=self.font_settings,
+                                             legend_settings=self.legend_settings,
+                                             prefered_cmap=prefered_cmap,
+                                             colorbar_settings=self.colorbar_settings,
+                                             toxin_names=antigen_names)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
+                                           self.ControlFigure.plot_type)
+        if self.is_test != True:
+            self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
+                                    path = save_report_path)
+        
 
     def basic_cluster(self, samples = None, batch_size = 1000, max_ld = 1, min_ld = 0, label_type = "numbers", save_report_path = None):
         """
