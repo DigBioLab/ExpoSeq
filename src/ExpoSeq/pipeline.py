@@ -940,10 +940,10 @@ class PlotManager:
             if cluster_report_save.lower() in ["Y", "y"]:
                 while True:
                     filename_matrix = input(f"Enter a name for the file. The file will be saved in {self.report_path} in your IDE.")
-                    if filename_matrix.endswith(".csv"):
+                    if filename_matrix.endswith(".xlsx"):
                         pass
                     else:
-                        filename_matrix = filename_matrix + ".csv"
+                        filename_matrix = filename_matrix + ".xlsx"
                     if not os.path.isfile(filename_matrix):
                         path = os.path.join(self.report_path, filename_matrix)
                         cluster_report.to_excel(path)
@@ -998,13 +998,13 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        if self.is_test == True:
+        if self.is_test != True:
             self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
                                     path = save_report_path)
             
     def umap_clustering_characteristic(self, samples = None, characteristic = "length", n_neighbors = 20, min_dist = 0.01, random_seed = 42, densmap = True,
                             metric = "euclidean", model_choice = 'Rostlab/prot_t5_xl_half_uniref50-enc', show_strands = False,
-                            clone_size_factor = 300, batch_size = 1000, pca_components = 50, prefered_cmap = "viridis", save_report_path = None ):
+                            clone_size_factor = 300, batch_size = 1000, pca_components = 50, prefered_cmap = "viridis", save_report_path = None, antigens = None ):
         """You can use this plot to cluster multiple samples based on certain characteristics such as sequence length hydrophobicity etc. 
 
         Args:
@@ -1046,11 +1046,13 @@ class PlotManager:
                                              font_settings=self.font_settings,
                                              legend_settings=self.legend_settings,
                                              colorbar_settings=self.colorbar_settings,
-                                             prefered_cmap=prefered_cmap)
+                                             prefered_cmap=prefered_cmap,
+                                             binding_data=self.binding_data,
+                                             antigens = antigens)
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        if self.is_test == True:
+        if self.is_test != True:
             self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
                                     path = save_report_path)
             
@@ -1113,7 +1115,7 @@ class PlotManager:
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(self.ControlFigure.ax,
                                            self.ControlFigure.plot_type)
-        if self.is_test == True:
+        if self.is_test != True:
             self.save_cluster_report(cluster_report = UmapEmbed.umap_results,
                                     path = save_report_path)
         

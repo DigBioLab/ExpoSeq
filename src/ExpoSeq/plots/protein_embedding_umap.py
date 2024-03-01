@@ -72,14 +72,17 @@ class PrepareData:
         """
         if antigens is not None:
             kds = selected_rows[antigens].max(axis = 1) # if there are multiple values for the same sequence this will find the highest one 
+            
             self.umap_results["binding"] = list(kds)
             ids = selected_rows[antigens].idxmax(axis = 1)
             self.umap_results["highest_binder"] = list(ids)
+            
         else:
             kds = None
             ids = None
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
+        experiments_batch = experiments_batch.replace(0, "non-merged binding data") # this happens because of the merge in TransformerBased and you need to change the label
         unique_experiments_num = list(pd.factorize(experiments_batch)[0])
         self.umap_results["experiments_string"] = experiments_batch.to_list()
         self.umap_results["experiments_factorized"] = unique_experiments_num
@@ -219,7 +222,7 @@ class PlotEmbedding:
                                                             add_clone_size = add_clone_size,
                                                             model_choice=model_choice,
                                                             binding_data=binding_data,
-                                                            metric= metric)
+                                                            )
         self.umap_results = self.data_prep.umap_results
         
         if self.ax != None:
@@ -330,7 +333,7 @@ class PlotEmbedding:
     
     def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings, prefered_cmap = "magma"):
         markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
-        self.umap_results["color"] = self.umap_results["experiments_factorized"]
+        self.umap_results["color"] = self.umap_results["binding"]
         sm, norm = self.get_sm(self.umap_results["binding"], prefered_cmap)
         
         unique_experiments = self.umap_results["experiments_string"].unique()
@@ -352,7 +355,7 @@ class PlotEmbedding:
             x_cor = local_results["UMAP_1"].tolist()
             y_cor = local_results["UMAP_2"].tolist()
             if toxin_names == True:
-                for i, txt in enumerate(list(local_results["binding"])):
+                for i, txt in enumerate(list(local_results["highest_binder"])):
                     if list(local_results["kds"])[i] > 0:
                         self.ax.annotate(txt, (x_cor[i], y_cor[i]))
             else:
