@@ -40,6 +40,7 @@ def test_pipeline():
     plot.relative()
     plot.levenshtein_dendrogram()
     plot.alignment_quality()
+    plot.umap_sample_cluster()
     
     plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", test_version=True, allow_binding_data=False)
     sequencing_report = plot.sequencing_report
