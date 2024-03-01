@@ -66,7 +66,7 @@ def test_PlotEmbedding():
     sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
     fig = plt.figure(1, figsize = (12, 10))
     ax = fig.gca()
-    list_experiments = ["GeneMind_1", ""]
+    list_experiments = ["GeneMind_1"]
     
     PrepData = PrepareData()
     peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80)
@@ -120,4 +120,3 @@ def test_PlotEmbedding():
                 ax = ax,
                 font_settings = font_settings, 
 )
-    plt.show()
