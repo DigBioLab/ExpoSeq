@@ -9,6 +9,7 @@ class Subplotter:
         self.check_base_dir()
         self.files = []
         self.figure_title = figure_title
+        self.captures = []
         
     @staticmethod
     def check_base_dir():
@@ -18,7 +19,8 @@ class Subplotter:
             os.mkdir("tmp_quarto")
             
         
-    def add_as_subplot(self, fig ):
+    def add_as_subplot(self, fig, fig_capture = "" ):
+        self.captures.append(fig_capture)
         figure_dir = os.path.join("tmp_quarto", self.figure_title)
         if os.path.isdir(figure_dir):
             pass
@@ -37,7 +39,7 @@ class Subplotter:
         
     def make_figure(self):
         Builder = QuartoBuilder(self.figure_title, figure=True)  
-        Builder.add_subplot_figures(self.files)
+        Builder.add_subplot_figures(self.files, self.captures)
         Builder.write_quarto(save_dir=os.path.join("tmp_quarto", self.figure_title, ))
         subprocess.run(["quarto", "render", os.path.join("tmp_quarto", self.figure_title, f"{self.figure_title}.qmd")])
         for png in self.files:

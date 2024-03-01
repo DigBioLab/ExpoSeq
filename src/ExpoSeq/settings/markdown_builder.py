@@ -33,14 +33,15 @@ class QuartoBuilder:
         self.content += "\n"
         self.content += "---"
 
-    def add_subplot_figures(self, files):
+    def add_subplot_figures(self, files, captures):
         rows, cols = best_layout(len(files))
         self.next_row()
         inside_string = "{layout-ncol=" + str(cols) + "}"
         self.content += f"::: {inside_string}"
         self.next_row()
-        for picture in files:
-            self.content += f"![]"
+
+        for picture , capture in zip(files, captures) :
+            self.content += f"![{capture}]"
             self.content += f"({picture})"
             self.next_row()
         self.content += ":::"

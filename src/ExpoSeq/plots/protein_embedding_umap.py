@@ -20,7 +20,10 @@ class PrepareData:
         models_all = ["Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_electra_generator_bfd", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
         assert model in models_all, f"Please enter a valid model name which are\n{models_all}. You can find the models at: https://huggingface.co/Rostlab"
         assert n_neighbors > 1
-        if characteristic != None:
+        if characteristic == "binding":
+            assert binding_data is not None, f"You must provide binding data for the characteristic option binding"
+            
+        if characteristic != None and characteristic != "binding":
             assert binding_data == None, "You cannot combine a binding data analysis and a sequence attribute analysis"
 
     @staticmethod
@@ -38,9 +41,9 @@ class PrepareData:
             assert type(add_clone_size) == int, "add_clone_size must be an integer if it is not None"
         else:
             assert add_clone_size == None
-        avail_metrics = ["euclidian", "manhatten", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine", "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"]
+        avail_metrics = ["euclidean", "manhatten", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine", "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"]
         assert metric in avail_metrics, f"Please choose one of the metrics from this list: {avail_metrics}"
-        possible_characteristics = ["isoelecrtric_point", "aliphatic_index", "hydrophobicity", "weight", "mass_charge_ratio", "length", None]
+        possible_characteristics = ["isoelecrtric_point", "aliphatic_index", "hydrophobicity", "weight", "mass_charge_ratio", "length", None, "binding"]
         assert characteristic in possible_characteristics, f"Please choose one of the values from: {possible_characteristics}"    
         
     @staticmethod
@@ -86,13 +89,16 @@ class PrepareData:
             binding_data = binding_data[merged_columns]
         return binding_data
     
-    def label_sequence_characteristic(self, characteristic, sequences):
+    def label_sequence_characteristic(self, characteristic, sequences, selected_rows, antigens):
         if characteristic != None:
-            Property = GetProteinProperty(sequences)
-            Property.calc_attribute(attribute=characteristic)
-            self.umap_results = Property.add_attributes_to_table(self.umap_results, attribute = characteristic)
-            property_result = list(Property.sequence_property_interest.values())
-            
+            if characteristic != "binding":
+                Property = GetProteinProperty(sequences)
+                Property.calc_attribute(attribute=characteristic)
+                self.umap_results = Property.add_attributes_to_table(self.umap_results, attribute = characteristic)
+                property_result = list(Property.sequence_property_interest.values())
+            else:
+                kds = selected_rows[antigens].max(axis = 1) 
+                property_result = kds.fillna(0)
         else:
             property_result = None
             pass
@@ -161,7 +167,7 @@ class PrepareData:
                                                                                cf_column_name=cf_column_name,
                                                                                sample_column_name=sample_column_name)
 
-        property_result = self.label_sequence_characteristic(characteristic, sequences)
+        property_result = self.label_sequence_characteristic(characteristic, sequences, selected_rows, antigens)
     #    pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
         X = Transformer.do_pca(sequences, batch_size, pca_components)
         peptides = selected_rows[region_of_interest].to_list()
@@ -196,6 +202,7 @@ class PlotEmbedding:
                                                             batch_size = batch_size,
                                                             pca_components=pca_components,
                                                             n_neighbors = n_neighbors,
+                                                            metric = metric,
                                                             min_dist = min_dist,
                                                             random_seed = random_seed,
                                                             densmap=densmap,
@@ -207,11 +214,14 @@ class PlotEmbedding:
         
         if self.ax != None:
             if self.binding_data is not None:
-                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings)
+                sm = self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, prefered_cmap)
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"UMAP embedding for {antigens}", 40))
                     self.ax.set_title(title, pad= 12, **font_settings)
+                    self.add_colorbar(colorbar_settings,
+                                      "Binding", 
+                                      sm)
             else:
                 sm = self.create_plot(characteristic, prefered_cmap)
                 if legend_settings != {}:
@@ -244,10 +254,10 @@ class PlotEmbedding:
 
             norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
             
-        unique_experiments = list(np.unique(self.umap_results["experiments_string"].to_numpy()))
+        unique_experiments = self.umap_results["experiments_string"].to_list()
 
         for index, experiment in enumerate(unique_experiments):
-            local_results = self.umap_results[self.umap_results[("experiments_string",)] == experiment]
+            local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
             umap_1_values = local_results["UMAP_1"]
             umap_2_values = local_results["UMAP_2"]
             if characteristic != None:
@@ -299,13 +309,22 @@ class PlotEmbedding:
                     self.ax2.text(row['UMAP_1'], row['UMAP_2'], row['sequence_id'], fontsize=8)
             n += 1
     
-    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings):
-        self.umap_plot = self.ax.scatter(self.umap_results["UMAP_1"],
-                            self.umap_results["UMAP_2"],
-                            c = self.umap_results.binding,
-                            alpha = 1,
-                            cmap = "magma"
-                            )
+    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings, prefered_cmap):
+        self.umap_results["color"]  = self.umap_results["binding"]
+        global_min_color = self.umap_results["color"].min()
+        global_max_color = self.umap_results["color"].max()
+        sm = plt.cm.ScalarMappable(cmap=prefered_cmap, norm=plt.Normalize(vmin=global_min_color, vmax=global_max_color))
+
+        norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
+        unique_experiments = list(np.unique(self.umap_results["experiments_string"].to_numpy()))
+        markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
+        for index, experiment in enumerate(unique_experiments):
+            local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
+            umap_1_values = local_results["UMAP_1"]
+            umap_2_values = local_results["UMAP_2"]
+           
+            self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],s = local_results["size"], c=local_results["binding"], alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
+
         x_cor = list(self.umap_results.UMAP_1.iloc[:, 0])
         y_cor = list(self.umap_results.UMAP_2.iloc[:, 0])
         if toxin_names == True:
@@ -314,22 +333,22 @@ class PlotEmbedding:
                     self.ax.annotate(txt, (x_cor[i], y_cor[i]))
         else:
             pass
-        plt.colorbar(self.umap_plot, **colorbar_settings)
+        return sm
         
 
-sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
-sequencing_report = pd.read_csv(sequencing_report_path)
-sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
-fig = plt.figure(1, figsize = (12, 10))
-ax = fig.gca()
-list_experiments = ["GeneMind_1"]
-font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
-legend_settings = {'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
-colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
+#sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
+#sequencing_report = pd.read_csv(sequencing_report_path)
+#sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
+#fig = plt.figure(1, figsize = (12, 10))
+#ax = fig.gca()
+#list_experiments = ["GeneMind_1"]
+#font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
+#legend_settings = {'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
+##colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
 #PrepData = PrepareData()
 #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
 
-Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 1000, pca_components=50, 
-                     n_neighbors=25,
-                     ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
-plt.show()
+#Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 1000, pca_components=50, 
+   #                  n_neighbors=25,
+   #                  ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
+#plt.show()
