@@ -316,7 +316,7 @@ class PlotEmbedding:
         sm = plt.cm.ScalarMappable(cmap=prefered_cmap, norm=plt.Normalize(vmin=global_min_color, vmax=global_max_color))
 
         norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
-        unique_experiments = list(np.unique(self.umap_results["experiments_string"].to_numpy()))
+        unique_experiments = self.umap_results["experiments_string"].to_list()
         markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
         for index, experiment in enumerate(unique_experiments):
             local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
