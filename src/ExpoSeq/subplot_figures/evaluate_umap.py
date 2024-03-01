@@ -1,6 +1,5 @@
-from typing import Any
 from src.ExpoSeq.pipeline import PlotManager
-
+from time import time
 
 
 
@@ -16,6 +15,16 @@ class IterativeAnalysis:
         getattr(func)()
         self.plot.add_as_subplot()
     
+    
+    def performance(self, func, name:str, attribute_value:list):
+        times = []
+        for attribute in attribute_value:
+            start_time = time.time()
+            method = getattr(func)
+            method(name = attribute)
+            end_time = time.time()
+            times.append((end_time - start_time))
+        return times
 
 plot = PlotManager()
 neighbors = [10, 20, 30, 40, 50]

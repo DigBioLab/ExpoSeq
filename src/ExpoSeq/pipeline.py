@@ -547,10 +547,10 @@ class PlotManager:
         if region_string in possible_regions:
             if not region_string == "targetSequences":
                 self.region_string = region_string.replace("nSeq", "")
-                self.Report.prepare_seq_report(region_string,length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors)
+                self.Report.prepare_seq_report(self.region_string,length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors)
             else:
                 self.region_string = "targetSequences"
-                self.Report.prepare_seq_report(region_string,  length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors )
+                self.Report.prepare_seq_report(self.region_string,  length_threshold=length_threshold_aa, min_read_count=min_read_count, remove_gaps = self.remove_gaps, remove_errors = remove_errors )
             self.sequencing_report = self.Report.sequencing_report
             self.region_of_interest = "aaSeq" + self.region_string
         else:

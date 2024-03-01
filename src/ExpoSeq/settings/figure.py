@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from . import plot_styler
 import os
 import matplotlib
+import PyQt5
 
 class MyFigure:
     def __init__(self, test, figure_style = "seaborn-v0_8-colorblind"):
@@ -37,9 +38,9 @@ class MyFigure:
     def tighten(self):
         plt.tight_layout()
     
-    @staticmethod
-    def set_backend(backend = "Qt5Agg"):
-        plt.switch_backend(backend)
+    def set_backend(self, backend = "Qt5Agg"):
+        if self.test != True:
+            plt.switch_backend(backend)
         #return
         
     @staticmethod
