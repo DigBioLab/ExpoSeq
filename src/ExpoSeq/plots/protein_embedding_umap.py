@@ -8,7 +8,7 @@ import numpy as np
 class PrepareData:
     def __init__(self):
         
-        self.umap_results = pd.DataFrame()
+        self.umap_results = pd.DataFrame([])
         self.clones = None
     
     @staticmethod
@@ -62,24 +62,32 @@ class PrepareData:
     
     
     def return_binding_results(self,  selected_rows, antigens, region_of_interest, add_clone_size):
+        """Creates the tsne results objects based on the information in selected rows.
+
+        Args:
+            selected_rows (_type_): _description_
+            antigens (_type_): _description_
+            region_of_interest (_type_): _description_
+            add_clone_size (_type_): _description_
+        """
         if antigens is not None:
             kds = selected_rows[antigens].max(axis = 1) # if there are multiple values for the same sequence this will find the highest one 
             self.umap_results["binding"] = list(kds)
             ids = selected_rows[antigens].idxmax(axis = 1)
+            self.umap_results["highest_binder"] = list(ids)
         else:
             kds = None
             ids = None
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
-        unique_experiments_num = pd.factorize(experiments_batch)[0]
+        unique_experiments_num = list(pd.factorize(experiments_batch)[0])
         self.umap_results["experiments_string"] = experiments_batch.to_list()
         self.umap_results["experiments_factorized"] = unique_experiments_num
         self.umap_results["sequences"] = list(aminoacids)
-        self.umap_results['sequence_id'] = pd.Series(range(self.umap_results.shape[0]))
+        self.umap_results['sequence_id'] = list(range(self.umap_results.shape[0]))
         if add_clone_size != None:
-            self.umap_results["size"] = self.clones * add_clone_size
+            self.umap_results["size"] = np.array(self.clones) * add_clone_size
        # self.umap_results.reset_index(inplace = True, drop = True)
-
         return kds, ids
     
     @staticmethod
@@ -171,14 +179,15 @@ class PrepareData:
     #    pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
         X = Transformer.do_pca(sequences, batch_size, pca_components)
         peptides = selected_rows[region_of_interest].to_list()
-        self.clones = selected_rows[cf_column_name]
+        self.clones = selected_rows[cf_column_name].to_list()
         self.umap_results = Transformer.do_umap(X, n_neighbors, min_dist, random_seed, densmap, y = property_result, metric= metric)
         if property_result != None:
             self.umap_results[characteristic] = property_result
-        kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest, add_clone_size)
         self.umap_results["cloneFraction"] = self.clones
+        kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest, add_clone_size)
         for sample in list_experiments:
             assert self.umap_results[self.umap_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
+        assert type(self.umap_results["experiments_string"].tolist()) == list
         return peptides, selected_rows, kds, ids
     
     def make_csv(self):
@@ -209,12 +218,13 @@ class PlotEmbedding:
                                                             characteristic = characteristic,
                                                             add_clone_size = add_clone_size,
                                                             model_choice=model_choice,
-                                                            binding_data=binding_data)
+                                                            binding_data=binding_data,
+                                                            metric= metric)
         self.umap_results = self.data_prep.umap_results
         
         if self.ax != None:
             if self.binding_data is not None:
-                sm = self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, prefered_cmap)
+                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, )
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"UMAP embedding for {antigens}", 40))
@@ -224,8 +234,6 @@ class PlotEmbedding:
                                       sm)
             else:
                 sm = self.create_plot(characteristic, prefered_cmap)
-                if legend_settings != {}:
-                    self.add_legend(legend_settings)
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
                 if font_settings != {}:
                     self.ax.set_title(title, pad= 12, **font_settings)
@@ -239,8 +247,9 @@ class PlotEmbedding:
             if strands == True:
                 self.add_seq_anotation(peptides)
 
+            if legend_settings != {}:
+                self.add_legend(legend_settings)
     
-        
     def create_plot(self, characteristic, prefered_cmap):
         markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
         if characteristic == None:
@@ -254,7 +263,7 @@ class PlotEmbedding:
 
             norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
             
-        unique_experiments = self.umap_results["experiments_string"].to_list()
+        unique_experiments = self.umap_results["experiments_string"].unique()
 
         for index, experiment in enumerate(unique_experiments):
             local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
@@ -309,46 +318,46 @@ class PlotEmbedding:
                     self.ax2.text(row['UMAP_1'], row['UMAP_2'], row['sequence_id'], fontsize=8)
             n += 1
     
-    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings, prefered_cmap):
-        self.umap_results["color"]  = self.umap_results["binding"]
+    
+    def get_sm(self, column_char, prefered_cmap):
+        self.umap_results["color"]  = column_char
         global_min_color = self.umap_results["color"].min()
         global_max_color = self.umap_results["color"].max()
         sm = plt.cm.ScalarMappable(cmap=prefered_cmap, norm=plt.Normalize(vmin=global_min_color, vmax=global_max_color))
 
         norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
-        unique_experiments = self.umap_results["experiments_string"].to_list()
+        return sm, norm
+    
+    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings, prefered_cmap = "magma"):
         markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
+        self.umap_results["color"] = self.umap_results["experiments_factorized"]
+        sm, norm = self.get_sm(self.umap_results["binding"], prefered_cmap)
+        
+        unique_experiments = self.umap_results["experiments_string"].unique()
+
         for index, experiment in enumerate(unique_experiments):
             local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
             umap_1_values = local_results["UMAP_1"]
             umap_2_values = local_results["UMAP_2"]
-           
-            self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],s = local_results["size"], c=local_results["binding"], alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
 
-        x_cor = list(self.umap_results.UMAP_1.iloc[:, 0])
-        y_cor = list(self.umap_results.UMAP_2.iloc[:, 0])
-        if toxin_names == True:
-            for i, txt in enumerate(list(ids)):
-                if list(kds)[i] > 0:
-                    self.ax.annotate(txt, (x_cor[i], y_cor[i]))
-        else:
-            pass
-        return sm
+            self.ax.scatter(umap_1_values,
+                            umap_2_values,
+                            c= local_results["binding"],
+                            marker=markers[index],
+                            s = local_results["size"],
+                            alpha=0.5,
+                            cmap=prefered_cmap,
+                            label = experiment)
         
+            x_cor = local_results["UMAP_1"].tolist()
+            y_cor = local_results["UMAP_2"].tolist()
+            if toxin_names == True:
+                for i, txt in enumerate(list(local_results["binding"])):
+                    if list(local_results["kds"])[i] > 0:
+                        self.ax.annotate(txt, (x_cor[i], y_cor[i]))
+            else:
+                pass
 
-#sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
-#sequencing_report = pd.read_csv(sequencing_report_path)
-#sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
-#fig = plt.figure(1, figsize = (12, 10))
-#ax = fig.gca()
-#list_experiments = ["GeneMind_1"]
-#font_settings = {'fontfamily': 'serif', 'fontsize': '18', 'fontstyle': 'normal', 'fontweight': 'bold'}
-#legend_settings = {'loc': 'center left', 'bbox_to_anchor': (1, 0.5), 'fontsize': 9, 'frameon': True, 'framealpha': 1, 'facecolor': 'white', 'mode': None, 'title_fontsize': 'small'}
-##colorbar_settings = {'cmap': 'inferno', 'orientation': 'vertical', 'spacing': 'proportional', 'extend': 'neither'}
-#PrepData = PrepareData()
-#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
-
-#Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 1000, pca_components=50, 
-   #                  n_neighbors=25,
-   #                  ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
-#plt.show()
+        self.add_colorbar(colorbar_settings, "Binding", sm)
+   
+   
