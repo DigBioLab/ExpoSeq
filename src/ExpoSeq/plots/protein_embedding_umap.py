@@ -104,12 +104,13 @@ class PrepareData:
             binding_data = binding_data[merged_columns]
         return binding_data
     
-    def label_sequence_characteristic(self, characteristic, sequences, selected_rows, antigens):
+    @staticmethod
+    def label_sequence_characteristic(characteristic, sequences, selected_rows, antigens, umap_results):
         if characteristic != None:
             if characteristic != "binding":
                 Property = GetProteinProperty(sequences)
                 Property.calc_attribute(attribute=characteristic)
-                self.umap_results = Property.add_attributes_to_table(self.umap_results, attribute = characteristic)
+                umap_results = Property.add_attributes_to_table(umap_results, attribute = characteristic)
                 property_result = list(Property.sequence_property_interest.values())
             else:
                 kds = selected_rows[antigens].max(axis = 1) 
@@ -117,12 +118,12 @@ class PrepareData:
         else:
             property_result = None
             pass
-        return property_result
+        return property_result, umap_results
 
 
         
     @staticmethod
-    def save_current_embedding(X_path:str, sequences_list:np.array, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame):
+    def save_current_embedding(X_path:str, sequences_list:np.array, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame, characteristic:str):
         """This method saves the sequences_list from which contains the array with the high dimensions as npz file. 
         Further, it creates in the same directory a pkl file which contains the parameters for that specific embedding.
 
@@ -141,14 +142,15 @@ class PrepareData:
          "antigens": antigens,
          "region_of_interest": region_of_interest,
          "model_choice": model_choice, 
-         "binding_data": binding_data
+         "binding_data": binding_data,
+        "characteristic": characteristic
         }
         dir_X = os.path.dirname(X_path)
         np.save(os.path.join(dir_X, "current_run.npy"), current_run)
 
             
     @staticmethod
-    def load_and_compare_past_run(X_path, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame):
+    def load_and_compare_past_run(X_path, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame, characteristic:str):
         """Loads the np array where the embedding is saved and compares the settings of the past run to the settings of the current run and if any is different res will be False and the embedding will be repeated.
 
         Args:
@@ -175,15 +177,16 @@ class PrepareData:
                         "antigens": antigens,
                         "region_of_interest": region_of_interest,
                         "model_choice": model_choice,
-                        "binding_data": binding_data
+                        "binding_data": binding_data,
+                        "characteristic": characteristic
                         }
         res = all((new_settings.get(k) == v for k, v in old_settings.items()))
         return res, sequences_list
         
     
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 2000, pca_components = 50,
-             n_neighbors = 50, min_dist = 0.2, random_seed = 42, densmap = True, metric = "cosine", characteristic = None, add_clone_size = 500,
-             model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment", existing_report = None, X_path = "temp/current_array.npz"):
+             n_neighbors = 50, min_dist = 0.2, random_seed = 42, densmap = True, metric = "cosine", characteristic = None, eps_dbscan = 0.5, min_pts_dbscan  = 2, add_clone_size = 500,
+             model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment", X_path = "temp/current_array.npz"):
         """creates umap_results as class object which is a table containing all necessary data for the final plot
 
         Args:
@@ -198,6 +201,8 @@ class PrepareData:
             random_seed (int, optional): Set a certain seed for reprodubility
             densmap (bool, optional): This parameter allows you to visualize points more densily which are also more dense in all dimensions to each other. You can have an idea about this here: https://umap-learn.readthedocs.io/en/latest/densmap_demo.html
             metric (str, optional): You need to insert a string as input which is the distance metric for the UMAP algorithm.
+            eps (float, optional): Parameter for DBSCAN. Maximum distance between two points to still form one cluster. Defaults to 3.
+            min_pts (int, optional): Parameter for DBSCAN. Fewest number of points required to form a cluster. Defaults to 4.
             model_choice (str, optional): Is the final model you choose to embed your sequences. Defaults to "Rostlab/prot_bert".
             binding_data (pd.DataFrame, optional): Dataframe which contains the sequences and the binding values to the antigens. Defaults to None.
             cf_column_name (str, optional): Name of the column which contains the clone fraction in the sequencing report. Defaults to "cloneFraction".
@@ -233,8 +238,8 @@ class PrepareData:
         binding_data = self.filter_binding_data(binding_data,
                                                 region_of_interest, 
                                                 antigens)
-        Transformer = TransformerBased(choice = model_choice)
-        sequences,sequences_filtered, selected_rows = Transformer.filter_sequences(sequencing_report,
+        
+        sequences,sequences_filtered, selected_rows = TransformerBased.filter_sequences(sequencing_report,
                                                                             batch_size / len(list_experiments),
                                                                             list_experiments,
                                                                             binding_data,
@@ -244,27 +249,28 @@ class PrepareData:
         peptides = selected_rows[region_of_interest].to_list()
         self.clones = selected_rows[cf_column_name].to_list()
 
-            
-        property_result = self.label_sequence_characteristic(characteristic, sequences, selected_rows, antigens)
-    #    pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
+
 
         if os.path.exists(X_path):
             res, sequences_list = self.load_and_compare_past_run(X_path, batch_size, antigens, 
-                                           region_of_interest, model_choice, binding_data)
+                                           region_of_interest, model_choice, binding_data, characteristic
+                                           )
         else:
             res = False
             
         if res == False:     
+            Transformer = TransformerBased(choice = model_choice)
             sequences_list = Transformer.embedding_per_seq(sequences)
             self.save_current_embedding(X_path, sequences_list, batch_size,
                                         antigens, region_of_interest, model_choice,
-                                        binding_data)
+                                        binding_data, characteristic)
 
             
-        X = Transformer.do_pca(sequences_list, pca_components)
+        X = TransformerBased.do_pca(sequences_list, pca_components)
+        property_result, umap_results = self.label_sequence_characteristic(characteristic, sequences, selected_rows, antigens, self.umap_results)
 
-        umap_results, reduced_dim = Transformer.do_umap(X, n_neighbors, min_dist, random_seed, densmap, y = property_result, metric= metric)
-        get_clusters = Transformer.cluster_with_hdbscan(umap_results).tolist()
+        umap_results, reduced_dim = TransformerBased.do_umap(X, n_neighbors, min_dist, random_seed, densmap, y = property_result, metric= metric)
+        get_clusters = TransformerBased.cluster_with_hdbscan(umap_results, eps = eps_dbscan, min_pts = min_pts_dbscan).tolist()
         if property_result != None:
             umap_results[characteristic] = property_result
         umap_results["cluster_id"] = get_clusters
@@ -284,7 +290,7 @@ class PrepareData:
 
 class PlotEmbedding:
     def __init__(self,sequencing_report,  list_experiments, region_of_interest, strands = True,add_clone_size = 300, batch_size = 500, pca_components = 50, 
-                 n_neighbors = 45, min_dist = 0.01, random_seed = 42, densmap = True, metric = "cosine", model_choice = "Rostlab/prot_bert", characteristic = None, antigens = None, 
+                 n_neighbors = 45, min_dist = 0.01, random_seed = 42, densmap = True, metric = "cosine", model_choice = "Rostlab/prot_bert", eps_dbscan = 0.5, min_pts_dbscan  = 2, characteristic = None, antigens = None, 
                  font_settings = {}, legend_settings = {}, ax = None, binding_data = None, # antigens mutual attribute 
                  colorbar_settings = None,  toxin_names = None, extra_figure = False, prefered_cmap = "viridis"):
         self.ax = ax
@@ -310,14 +316,11 @@ class PlotEmbedding:
         
         if self.ax != None:
             if self.binding_data is not None:
-                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, )
+                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, prefered_cmap)
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"UMAP embedding for {antigens}", 40))
                     self.ax.set_title(title, pad= 12, **font_settings)
-                    self.add_colorbar(colorbar_settings,
-                                      "Binding", 
-                                      sm)
             else:
                 sm = self.create_plot(characteristic, prefered_cmap)
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
@@ -327,8 +330,8 @@ class PlotEmbedding:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
                     
             if font_settings != {}:
-                    self.ax.set_xlabel("UMAP_1", **font_settings) # add font_settings
-            self.ax.set_ylabel("UMAP_2", **font_settings)
+                self.ax.set_xlabel("UMAP_1", **font_settings) # add font_settings
+                self.ax.set_ylabel("UMAP_2", **font_settings)
 
             if strands == True:
                 self.add_seq_anotation(peptides)
@@ -355,11 +358,11 @@ class PlotEmbedding:
             local_results = self.umap_results[self.umap_results["experiments_string"] == experiment]
             umap_1_values = local_results["UMAP_1"]
             umap_2_values = local_results["UMAP_2"]
-            if characteristic != None:
-                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],s = local_results["size"],  alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
+            if characteristic is not None:
+                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],s = local_results["size"],c=self.umap_results["color"],  alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
                 
             else:
-                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index], s = local_results["size"], alpha=0.5, cmap=prefered_cmap, label = experiment)
+                self.ax.scatter(umap_1_values, umap_2_values, marker=markers[index],c=self.umap_results["color"],  s = local_results["size"], alpha=0.5, cmap="tab20c", label = experiment)
         
         return sm
 
@@ -446,14 +449,6 @@ class PlotEmbedding:
 
         self.add_colorbar(colorbar_settings, "Binding", sm)
    
-   
-
-sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
-sequencing_report = pd.read_csv(sequencing_report_path)
-sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
-fig = plt.figure(1, figsize = (12, 10))
-ax = fig.gca()
-list_experiments = ["GeneMind_1"]
-
-PrepData = PrepareData()
-peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80)
+\
+#PrepData = PrepareData()
+#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "length")

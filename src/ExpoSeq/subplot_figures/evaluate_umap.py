@@ -68,12 +68,13 @@ class IterativeAnalysis:
         return times
 
 Iteration = IterativeAnalysis("max_both")
-Iteration.iterate_and_visualize("test1",
+Iteration.iterate_and_visualize("test_characteristic",
                                 "umap_sample_cluster", 
                                 attribute_name1="n_neighbors",
                                 attribute_name2="min_dist",
                                 attributes1=[10,20,30],
                                 attributes2 = [0.01,0.1, 0.4],
                                 batch_size = 100,
-                                show_strands = True
+                                show_strands = True,
+                                characteristic = "length"
                                 )

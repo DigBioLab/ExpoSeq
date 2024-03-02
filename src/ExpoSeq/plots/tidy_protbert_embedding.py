@@ -40,22 +40,9 @@ class TransformerBased:
             self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
             self.model = EsmModel.from_pretrained(self.choice)
         
-    
+
     @staticmethod
-    def drop_by_highest_clone_fraction(selected_rows, region_of_interest):
-        max_clone_fraction = selected_rows.groupby(['Experiment', region_of_interest])['cloneFraction'].max()
-        max_clone_fraction = max_clone_fraction.reset_index()
-        # Merge back to original DataFrame to filter rows
-        result_df = selected_rows.merge(max_clone_fraction, on=[region_of_interest, 'Experiment'], suffixes=('', '_max'))
-
-        result_df = result_df[result_df['cloneFraction'] == result_df['cloneFraction_max']]
-
-        # Drop the additional column used for comparison
-        result_df.drop(columns=['cloneFraction_max'], inplace=True)
-        return result_df
-                
-    
-    def filter_sequences(self, sequencing_report, batch_size, experiments,binding_data,
+    def filter_sequences(sequencing_report, batch_size, experiments,binding_data,
                          region_of_interest = "aaSeqCDR3", cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
         
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
@@ -64,7 +51,16 @@ class TransformerBased:
         
         assert selected_rows.shape[0] <= len(experiments) * batch_size
         
-        selected_rows = self.drop_by_highest_clone_fraction(selected_rows, region_of_interest)
+        max_clone_fraction = selected_rows.groupby(['Experiment', region_of_interest])['cloneFraction'].max()
+        max_clone_fraction = max_clone_fraction.reset_index()
+        # Merge back to original DataFrame to filter rows
+        result_df = selected_rows.merge(max_clone_fraction, on=[region_of_interest, 'Experiment'], suffixes=('', '_max'))
+
+        selected_rows = result_df[result_df['cloneFraction'] == result_df['cloneFraction_max']]
+
+        # Drop the additional column used for comparison
+        selected_rows.drop(columns=['cloneFraction_max'], inplace=True)
+
         
         assert selected_rows.shape[0] <= len(experiments) * batch_size
         if binding_data is not None:
@@ -118,8 +114,8 @@ class TransformerBased:
         
         sequences_list = np.array(sequences_list)
         return sequences_list
-    
-    def do_pca(self, sequences, pca_components):
+    @staticmethod
+    def do_pca(sequences_list, pca_components):
         """
         output: X: principal components of the embedding which has the shape: x = batch_size, y = principal component
         """
@@ -172,13 +168,13 @@ class TransformerBased:
         results = pd.DataFrame(reduced_dim, columns = ["UMAP_1", "UMAP_2"])
         return results, reduced_dim
     
-    
-    def cluster_with_hdbscan(results, eps = 0.3, min_pts = 4):
+    @staticmethod
+    def cluster_with_hdbscan(results, eps = 0.5, min_pts = 2):
         """_summary_
 
         Args:
-            results (_type_): _description_
-            eps (float, optional): Maximum distance between two points to still form one cluster. Defaults to 0.3.
+            results (pd.DataFrame): is the output from do_umap
+            eps (float, optional): Maximum distance between two points to still form one cluster. Defaults to 3.
             min_pts (int, optional): fewest number of points required to form a cluster. Defaults to 4.
 
         Returns:

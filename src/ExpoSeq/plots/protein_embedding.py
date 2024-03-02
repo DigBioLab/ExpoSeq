@@ -3,7 +3,9 @@ from .tidy_protbert_embedding import TransformerBased
 import pandas as pd
 import matplotlib.pyplot as plt
 import warnings
-
+import numpy as np
+import os
+from .contents.simple_protein_property import GetProteinProperty
 
 class PrepareData:
     def __init__(self):
@@ -48,22 +50,25 @@ class PrepareData:
         return pca_components, perplexity
     
     
-    def return_binding_results(self,  selected_rows, antigens, region_of_interest):
+    def return_binding_results(selected_rows, antigens, region_of_interest, add_clone_size, tsne_results):
         if antigens is not None:
             kds = selected_rows[antigens].max(axis = 1) # if there are multiple values for the same sequence this will find the highest one 
-            self.tsne_results["binding"] = list(kds)
+            tsne_results["binding"] = list(kds)
             ids = selected_rows[antigens].idxmax(axis = 1)
         else:
             kds = None
             ids = None
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
+        experiments_batch = experiments_batch.replace(0, "non-merged binding data")
         unique_experiments_num = pd.factorize(experiments_batch)[0]
-        self.tsne_results["experiments_string"] = experiments_batch.to_list()
-        #self.tsne_results["experiments_factorized"] = list(unique_experiments_num)
-        self.tsne_results["sequences"] = list(aminoacids)
-        self.tsne_results['sequence_id'] = pd.Series(range(self.tsne_results.shape[0]))
-        return kds, ids
+        tsne_results["experiments_string"] = experiments_batch.to_list()
+        tsne_results["experiments_factorized"] = unique_experiments_num
+        tsne_results["sequences"] = list(aminoacids)
+        tsne_results['sequence_id'] = list(range(tsne_results.shape[0]))
+        if add_clone_size != None:
+            tsne_results["size"] = np.array(selected_rows["cloneFraction"].to_list()) * add_clone_size
+        return kds, ids, tsne_results
     
     @staticmethod
     def filter_binding_data(binding_data, region_of_interest, antigens):
@@ -72,8 +77,86 @@ class PrepareData:
             binding_data = binding_data[merged_columns]
         return binding_data
     
+    
+        
+    def label_sequence_characteristic(self, characteristic, sequences, selected_rows, antigens):
+        if characteristic != None:
+            if characteristic != "binding":
+                Property = GetProteinProperty(sequences)
+                Property.calc_attribute(attribute=characteristic)
+                self.tsne_results = Property.add_attributes_to_table(self.tsne_results, attribute = characteristic)
+                property_result = list(Property.sequence_property_interest.values())
+            else:
+                kds = selected_rows[antigens].max(axis = 1) 
+                property_result = kds.fillna(0)
+        else:
+            property_result = None
+            pass
+        return property_result
+
+
+        
+    @staticmethod
+    def save_current_embedding(X_path:str, sequences_list:np.array, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame):
+        """This method saves the sequences_list from which contains the array with the high dimensions as npz file. 
+        Further, it creates in the same directory a pkl file which contains the parameters for that specific embedding.
+
+
+        Args:
+            X_path (str): Path where yhe array should be saved
+            sequences_list (np.array): array with the data from the embedding.
+            batch_size (int): Number of sequences per sample
+            antigens (list): Value for antigens which should be incorporated. either none or list of strings
+            region_of_interest (str): Region of interest
+            model_choice (str): Model which was chosen for the embedding
+            binding_data (pd.DataFrame): pandas dataframe with the embedding
+        """
+        np.savez_compressed(X_path, a = sequences_list)
+        current_run = {"batch_size": batch_size,
+         "antigens": antigens,
+         "region_of_interest": region_of_interest,
+         "model_choice": model_choice, 
+         "binding_data": binding_data
+        }
+        dir_X = os.path.dirname(X_path)
+        np.save(os.path.join(dir_X, "current_run.npy"), current_run)
+    
+    @staticmethod
+    def load_and_compare_past_run(X_path, batch_size:int, antigens, region_of_interest:str, model_choice:str, binding_data:pd.DataFrame):
+        """Loads the np array where the embedding is saved and compares the settings of the past run to the settings of the current run and if any is different res will be False and the embedding will be repeated.
+
+        Args:
+            X_path (_type_): _description_
+            batch_size (int): _description_
+            antigens (_type_): _description_
+            region_of_interest (str): _description_
+            model_choice (str): _description_
+            binding_data (pd.DataFrame): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        saved_array = np.load(X_path)
+        sequences_list = saved_array["a"]
+        dir_X = os.path.dirname(X_path)
+        try:
+            old_settings = np.load(os.path.join(dir_X, "current_run.npy"), allow_pickle=True).item()
+            
+        except:
+            res = False
+            return res, sequences_list
+        new_settings = {"batch_size": batch_size,
+                        "antigens": antigens,
+                        "region_of_interest": region_of_interest,
+                        "model_choice": model_choice,
+                        "binding_data": binding_data
+                        }
+        res = all((new_settings.get(k) == v for k, v in old_settings.items()))
+        return res, sequences_list
+    
+    
     def tidy(self, sequencing_report, list_experiments, region_of_interest, antigens = None, batch_size = 300, pca_components = 70,
-             perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
+             perplexity = 25, iterations_tsne = 1000, model_choice = "Rostlab/prot_bert",characteristic = None, binding_data = None,cf_column_name = "cloneFraction", sample_column_name = "Experiment", X_path = "temp/current_array.npz"):
         """creates tsne_results as class object which is a table containing all necessary data for the final plot
 
         Args:
@@ -114,24 +197,44 @@ class PrepareData:
         binding_data = self.filter_binding_data(binding_data,
                                                 region_of_interest, 
                                                 antigens)
-        Transformer = TransformerBased(choice = model_choice)
-        sequences,sequences_filtered, selected_rows = Transformer.filter_sequences(sequencing_report,
-                                                                               batch_size,
-                                                                               list_experiments,
-                                                                               binding_data,
-                                                                               region_of_interest=region_of_interest, 
-                                                                               cf_column_name=cf_column_name,
-                                                                               sample_column_name=sample_column_name)
-        pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
-        X = Transformer.do_pca(sequences, batch_size, pca_components)
-        peptides = selected_rows[region_of_interest].to_list()
-        self.clones = selected_rows[cf_column_name]
-        self.tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
-        kds, ids = self.return_binding_results(selected_rows, antigens, region_of_interest)
-        self.tsne_results["cloneFraction"] = self.clones
-        for sample in list_experiments:
-            assert self.tsne_results[self.tsne_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
         
+        sequences,sequences_filtered, selected_rows = Transformer.filter_sequences(sequencing_report,
+                                                                            batch_size / len(list_experiments),
+                                                                            list_experiments,
+                                                                            binding_data,
+                                                                            region_of_interest=region_of_interest, 
+                                                                            cf_column_name=cf_column_name,
+                                                                            sample_column_name=sample_column_name)
+        peptides = selected_rows[region_of_interest].to_list()
+        self.clones = selected_rows[cf_column_name].to_list()
+
+        
+    #    pca_components, perplexity = self.check_warnings(sequences, pca_components, perplexity)
+
+        if os.path.exists(X_path):
+            res, sequences_list = self.load_and_compare_past_run(X_path, batch_size, antigens, 
+                                           region_of_interest, model_choice, binding_data)
+        else:
+            res = False
+            
+        if res == False:     
+            Transformer = TransformerBased(choice = model_choice)
+            sequences_list = Transformer.embedding_per_seq(sequences)
+            self.save_current_embedding(X_path, sequences_list, batch_size,
+                                        antigens, region_of_interest, model_choice,
+                                        binding_data)
+        X = Transformer.do_pca(sequences_list, pca_components)
+        tsne_results = Transformer.do_tsne(X, perplexity, iterations_tsne)
+        property_result = self.label_sequence_characteristic(characteristic, sequences, selected_rows, antigens)
+        if property_result != None:
+            tsne_results[characteristic] = property_result
+
+        tsne_results["cloneFraction"] = self.clones
+        kds, ids, tsne_results = self.return_binding_results(selected_rows, antigens, region_of_interest, add_clone_size, tsne_results) # add columns to report
+        for sample in list_experiments: #tests
+            assert tsne_results[tsne_results["experiments_string"] == sample].shape[0] >= 1, f"After processing your data for your parameters no sequences are left for {sample}"
+        assert type(tsne_results["experiments_string"].tolist()) == list
+        self.tsne_results = tsne_results
         return peptides, selected_rows, kds, ids
     
     def make_csv(self, path = None):
@@ -147,8 +250,8 @@ class PrepareData:
 
 class PlotEmbedding:
     def __init__(self,sequencing_report, model_choice, list_experiments, region_of_interest, strands,add_clone_size, batch_size, pca_components, 
-                 perplexity, iterations_tsne, antigens = None, font_settings = {}, legend_settings = {}, ax = None, binding_data = None, # antigens mutual attribute 
-                 colorbar_settings = None,  toxin_names = None, extra_figure = False):
+                 perplexity, iterations_tsne,characteristic, antigens = None, font_settings = {}, legend_settings = {}, ax = None, binding_data = None, # antigens mutual attribute 
+                 colorbar_settings = None,  toxin_names = None, extra_figure = False, prefered_cmap = "viridis"):
         self.ax = ax
         self.binding_data = binding_data
         self.data_prep  = PrepareData()
@@ -158,46 +261,71 @@ class PlotEmbedding:
                                                             antigens = antigens,
                                                             batch_size = batch_size,
                                                             pca_components=pca_components,
+                                                            characteristic=characteristic,
                                                             perplexity=perplexity,
                                                             iterations_tsne=iterations_tsne,
                                                             model_choice=model_choice,
-                                                            binding_data=binding_data)
+                                                            binding_data=binding_data,
+                                                            add_clone_size = add_clone_size)
         self.tsne_results = self.data_prep.tsne_results
         if self.ax != None:
             if self.binding_data is not None:
-                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings)
+                self.create_binding_plot(kds, ids, toxin_names, colorbar_settings, prefered_cmap)
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"t-SNE embedding for {antigens}", 40))
                     self.ax.set_title(title, pad= 12, **font_settings)
             else:
-                self.create_plot(selected_rows)
-                if legend_settings != {}:
-                    self.add_legend(list_experiments, legend_settings)
-                title = "\n".join(wrap("t-SNE embedding for given samples", 40))
+                sm = self.create_plot(characteristic, prefered_cmap)
+                if colorbar_settings != {} and characteristic != None:
+                    self.add_colorbar(colorbar_settings, characteristic, sm)
                 if font_settings != {}:
                     self.ax.set_title(title, pad= 12, **font_settings)
+                    
             if font_settings != {}:
-                    self.ax.set_xlabel("t-SNE1", **font_settings) # add font_settings
-            self.ax.set_ylabel("t-SNE2", **font_settings)
+                self.ax.set_xlabel("t-SNE1", **font_settings) # add font_settings
+                self.ax.set_ylabel("t-SNE2", **font_settings)
 
             if strands == True:
                 self.add_seq_anotation(peptides)
-            if add_clone_size != None:
-                self.add_size(add_clone_size)
+            if legend_settings != {}:
+                self.add_legend(legend_settings)
             
     
         
-    def create_plot(self, selected_rows):
+    def create_plot(self, characteristic, prefered_cmap):
+        markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
+        if characteristic == None:
+            self.tsne_results["color"] = self.tsne_results["cluster_id"]
+            sm = None
+        else:
+            self.tsne_results["color"]  = self.tsne_results[characteristic]
+            global_min_color = self.tsne_results["color"].min()
+            global_max_color = self.tsne_results["color"].max()
+            sm = plt.cm.ScalarMappable(cmap=prefered_cmap, norm=plt.Normalize(vmin=global_min_color, vmax=global_max_color))
 
-        experiments_batch = selected_rows["Experiment"]
-        self.tsne_plot = self.ax.scatter(self.tsne_results.tsne1,
-                                    self.tsne_results.tsne2,
-                                    c = pd.factorize(experiments_batch)[0],
-                                    alpha = 0.5,
-                                    )
+            norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
+            
+        unique_experiments = self.tsne_results["experiments_string"].unique()
 
-
+        for index, experiment in enumerate(unique_experiments):
+            local_results = self.tsne_results[self.tsne_results["experiments_string"] == experiment]
+            tsne_1_values = local_results["tsne1"]
+            tsne_2_values = local_results["tsne2"]
+            if characteristic != None:
+                self.ax.scatter(tsne_1_values, tsne_2_values, marker=markers[index],c=self.tsne_results["color"], s = local_results["size"],  alpha=0.5,norm=norm,cmap=prefered_cmap, label = experiment)
+                
+            else:
+                self.ax.scatter(tsne_1_values, tsne_2_values, marker=markers[index],c=self.tsne_results["color"],  s = local_results["size"], alpha=0.5, cmap=prefered_cmap, label = experiment)
+        
+        return sm
+    
+    def add_colorbar(self, colorbar_settings, label, sm):
+        colorbar_settings["orientation"] = "horizontal"
+        del colorbar_settings["spacing"]
+        fig = self.ax.get_figure()
+        fig.colorbar(sm, ax= self.ax,label = label, **colorbar_settings, )
+        
             
     def add_size(self, add_clone_size):
         size_points = self.data_prep.clones * add_clone_size
@@ -237,23 +365,48 @@ class PlotEmbedding:
                     n = 0
                     self.ax2.text(row['tsne1'], row['tsne2'], row['sequence_id'], fontsize=8)
             n += 1
+            
+    def get_sm(self, column_char, prefered_cmap):
+        self.tsne_results["color"]  = column_char
+        global_min_color = self.tsne_results["color"].min()
+        global_max_color = self.tsne_results["color"].max()
+        sm = plt.cm.ScalarMappable(cmap=prefered_cmap, norm=plt.Normalize(vmin=global_min_color, vmax=global_max_color))
+
+        norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
+        return sm, norm
     
-    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings):
-        self.tsne_plot = self.ax.scatter(self.tsne_results.tsne1,
-                            self.tsne_results.tsne2,
-                            c = self.tsne_results.binding,
-                            alpha = 1,
-                            cmap = "magma"
-                            )
-        x_cor = list(self.tsne_results.tsne1.iloc[:, 0])
-        y_cor = list(self.tsne_results.tsne2.iloc[:, 0])
-        if toxin_names == True:
-            for i, txt in enumerate(list(ids)):
-                if list(kds)[i] > 0:
-                    self.ax.annotate(txt, (x_cor[i], y_cor[i]))
-        else:
-            pass
-        plt.colorbar(self.tsne_plot, **colorbar_settings)
+    def create_binding_plot(self, kds, ids, toxin_names, colorbar_settings, prefered_cmap = "magma"):
+        markers = ['o',  "+", "x", 's', 'p', 'x', 'D'] 
+        self.tsne_results["color"] = self.tsne_results["binding"]
+        sm, norm = self.get_sm(self.tsne_results["binding"], prefered_cmap)
+        
+        unique_experiments = self.tsne_results["experiments_string"].unique()
+
+        for index, experiment in enumerate(unique_experiments):
+            local_results = self.tsne_results[self.tsne_results["experiments_string"] == experiment]
+            umap_1_values = local_results["tsne1"]
+            umap_2_values = local_results["tsne2"]
+
+            self.ax.scatter(umap_1_values,
+                            umap_2_values,
+                            c= local_results["binding"],
+                            marker=markers[index],
+                            s = local_results["size"],
+                            alpha=0.5,
+                            cmap=prefered_cmap,
+                            label = experiment)
+        
+            x_cor = local_results["tsne1"].tolist()
+            y_cor = local_results["tsne1"].tolist()
+            if toxin_names == True:
+                for i, txt in enumerate(list(local_results["highest_binder"])):
+                    if list(local_results["kds"])[i] > 0:
+                        self.ax.annotate(txt, (x_cor[i], y_cor[i]))
+            else:
+                pass
+
+        self.add_colorbar(colorbar_settings, "Binding", sm)
+   
         
 
 
