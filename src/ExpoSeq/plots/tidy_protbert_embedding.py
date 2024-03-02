@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import numpy as np 
 import umap 
+from sklearn.cluster import DBSCAN
 
 class TransformerBased:
 
@@ -118,7 +119,7 @@ class TransformerBased:
         sequences_list = np.array(sequences_list)
         return sequences_list
     
-    def do_pca(self, sequences, batch_size, pca_components):
+    def do_pca(self, sequences, pca_components):
         """
         output: X: principal components of the embedding which has the shape: x = batch_size, y = principal component
         """
@@ -126,7 +127,7 @@ class TransformerBased:
         # batch size, sequence length, features
 
         # loop over each sequence and make two dimensional and take average for all amino acids: output size: (batch_size, 1024)
-        sequences_list = self.embedding_per_seq(sequences)
+       # sequences_list = self.embedding_per_seq(sequences)
          # shape y = 1024, x = batch_size (No. sequences)
         pca = PCA(n_components=pca_components)
         pca.fit(sequences_list)
@@ -169,6 +170,21 @@ class TransformerBased:
             reduced_dim = reducer.fit_transform(X, y = y)
         assert reduced_dim.shape[1] == 2
         results = pd.DataFrame(reduced_dim, columns = ["UMAP_1", "UMAP_2"])
-        return results
+        return results, reduced_dim
     
     
+    def cluster_with_hdbscan(results, eps = 0.3, min_pts = 4):
+        """_summary_
+
+        Args:
+            results (_type_): _description_
+            eps (float, optional): Maximum distance between two points to still form one cluster. Defaults to 0.3.
+            min_pts (int, optional): fewest number of points required to form a cluster. Defaults to 4.
+
+        Returns:
+            _type_: _description_
+        """
+        arr = results.values
+        assert arr.shape[1]==2
+        get_clusters = DBSCAN(eps = eps, min_samples = min_pts).fit_predict(arr)
+        return get_clusters

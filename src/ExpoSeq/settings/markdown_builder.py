@@ -39,7 +39,8 @@ class QuartoBuilder:
         inside_string = "{layout-ncol=" + str(cols) + "}"
         self.content += f"::: {inside_string}"
         self.next_row()
-
+        if len(captures) != len(files):
+            raise SystemError
         for picture , capture in zip(files, captures) :
             self.content += f"![{capture}]"
             self.content += f"({picture})"

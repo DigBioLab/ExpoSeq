@@ -97,8 +97,8 @@ class PlotManager:
         self.Automation = None
         if self.Settings.automation == True and no_automation == False:
             self.full_analysis()
-            
-        print_instructions()
+        if self.is_test != True:
+            print_instructions()
 
     def create_report(self):
         self.Settings.move_markdown_files()
@@ -113,7 +113,7 @@ class PlotManager:
         print(f"You can find the html file to the report at: {self.plot_path}/{self.experiment}.qmd")
 
 
-    def add_to_subplot(self, figure_name = "No.1", capture = ""):
+    def add_to_subplot(self, figure_name = "No.1", capture = "", dir = "tmp_quarto"):
         """You can add the current plot to a certain figure with the given figure_name and quarto will generate an html document with all subplots which have been added until that point.\nYou need to install quarto to use this feature.
         
         Args:
@@ -125,14 +125,23 @@ class PlotManager:
             setattr(self, f"subplot_{figure_name}", Subplotter(figure_title=figure_name))
             self.subplot_list.append(getattr(self, f"subplot_{figure_name}"))
         subplot_instance = getattr(self, f"subplot_{figure_name}")
-        subplot_instance.add_as_subplot(self.ControlFigure.fig, capture)
+        subplot_instance.add_as_subplot(self.ControlFigure.fig, capture, dir )
 
         
-    def show_subplot(self, figure_name = "No.1"):
+    def show_subplot(self, figure_name = "No.1", dir = "tmp_quarto", captures = None):
         print("Test Quarto")
         subprocess.run(["quarto", "check"])
-        subplot_instance = getattr(self, f"subplot_{figure_name}")
-        subplot_instance.make_figure()
+        if hasattr(self, f"subplot_{figure_name}"):
+            subplot_instance = getattr(self, f"subplot_{figure_name}")
+        else:
+            setattr(self, f"subplot_{figure_name}", Subplotter(figure_title=figure_name))
+            subplot_instance = getattr(self, f"subplot_{figure_name}")
+            subplot_instance.update_files(dir)
+        if captures != None:
+            subplot_instance.captures = []
+            for capture in captures:
+                subplot_instance.update_capture(capture)
+        subplot_instance.make_figure(dir = dir)
         
         
 
