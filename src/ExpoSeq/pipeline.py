@@ -448,7 +448,7 @@ class PlotManager:
                 if not os.path.isfile(
                     os.path.join(self.plot_path, "logo_plots", experiment + ".png")
                 ):
-                    self.logoPlot_single(sample=experiment)
+                    self.logoPlot(sample=experiment)
                     self.save_in_plots(os.path.join("logo_plots", experiment))
             except:
                 print(f"Logo Plot for {experiment} failed")
@@ -1029,7 +1029,7 @@ class PlotManager:
                 self.ControlFigure.ax, self.ControlFigure.plot_type
             )
 
-    def logoPlot_single(
+    def logoPlot(
         self,
         sample=None,
         highlight_specific_pos=None,
@@ -1039,7 +1039,7 @@ class PlotManager:
         **kwargs,
     ):
         """
-        :param sample: insert the sample name
+        :param sample: Insert the sample names as list. You can analyse multiple or only one.
         :param highlight_specific_pos: optional. you can highlight a specific position. For instance if you want to highlight the 3rd position, you insert 3.
         :param method: You can specify whether you want to have on your y axis the frequency of the amino acids or the information content in bits. The default is proportion. If you want to have the information content, insert "bits"
         :param chosen_seq_length: Max per default. If you plot the length distribution it will take the sequences with the highest bar there. You always analyze only one sequence length! You can enter an integer to analyze other lengths.
@@ -1062,18 +1062,11 @@ class PlotManager:
             sample = self.preferred_sample
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
-        assert (
-            sample in self.experiments_list
-        ), "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
-        assert type(sample) == str, "You have to give a string as input for the sample"
         if highlight_specific_pos != None:
             assert (
                 type(highlight_specific_pos) == int
             ), "You have to give an integer as input for the specific position you want to highlight"
-        if chosen_seq_length != None:
-            assert (
-                type(chosen_seq_length) == int
-            ), "You have to give an integer as input for the sequence length you want to analyze"
+
         self.ControlFigure.clear_fig()
 
         logo_plot.LogoPlot(

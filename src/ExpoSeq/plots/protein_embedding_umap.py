@@ -314,6 +314,9 @@ class PrepareData:
         binding_data_new = new_settings.get("binding_data")
         new_settings.pop("binding_data")
         old_settings.pop("binding_data")
+        if binding_data is None:
+            res = False
+            return res, sequences_list
         res = all(
             (new_settings.get(k) == v for k, v in old_settings.items())
         ) and binding_data_old.equals(binding_data_new)
@@ -531,6 +534,8 @@ class PlotEmbedding:
             model_choice=model_choice,
             binding_data=binding_data,
             number_jobs=number_jobs,
+            eps_dbscan = eps_dbscan,
+            min_pts_dbscan = min_pts_dbscan
         )
         self.umap_results = self.data_prep.umap_results
 

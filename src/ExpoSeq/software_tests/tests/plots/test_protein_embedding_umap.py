@@ -56,7 +56,7 @@ def test_plots():
     #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
 
     Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 50, pca_components=10, 
-                        n_neighbors=25,
+                        n_neighbors=25, characteristic= "length",
                         ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
 
         

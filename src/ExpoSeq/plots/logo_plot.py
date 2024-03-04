@@ -4,9 +4,24 @@ import numpy as np
 from ..settings.layout_finder import best_layout
 from textwrap import wrap
 import pandas as pd
+import warnings
 
 
 class PrepareData:
+    @staticmethod
+    def check_args(samples, report, chosen_seq_length,):
+        assert type(samples) == list, "You have to give a string as input for the sample"
+
+        if chosen_seq_length != None:
+            assert (
+                type(chosen_seq_length) == int
+            ), "You have to give an integer as input for the sequence length you want to analyze"
+        for sample in samples:
+            assert (
+                sample in report["Experiment"].unique().tolist()
+            ), "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+
+        
     @staticmethod
     def calculate_entropy(probs):
         """Calculate Shannon entropy."""
@@ -14,16 +29,28 @@ class PrepareData:
             [p * np.log2(p) if p > 0 else 0 for p in probs]
         )  # https://biology.stackexchange.com/questions/64368/how-to-determine-the-height-bits-in-a-sequence-logo
 
-    def cleaning(self, sample_name, report, chosen_seq_length, region_string, method):
-        sample = report[report["Experiment"] == sample_name]
-        local_report = sample[["Experiment", "cloneFraction", region_string]]
+    def cleaning(self, samples, report, chosen_seq_length, region_string, method):
+        self.check_args(samples, report, chosen_seq_length)
+        local_report = report.loc[report["Experiment"].isin(samples)]
+       # sample = report[report["Experiment"] == sample_name]
+        local_report = local_report[["Experiment", "cloneFraction", region_string]]
         sequences = local_report[region_string]
+        if chosen_seq_length != None:
+            assert sequences.str.len().max() >= chosen_seq_length, "Your chosen seq length must exist in your sequence repertoire"
         aminoacids = "ACDEFGHIKLMNPQRSTVWY"
 
+        
+        if chosen_seq_length != None:
+            sequences = local_report[
+                local_report[region_string].astype(str).str.len() == chosen_seq_length
+            ][region_string]
+        else:
+            warnings.warn(
+                "You will no have all sequence length included but the problem of that is that you assume that sequences with different lengths have the same properties on relative amino acid positions, which is not necessarily true."
+            )
+            sequences = local_report[region_string]
+            chosen_seq_length = sequences.str.len().max()
         compDict = {aa: chosen_seq_length * [0] for aa in aminoacids}
-        sequences = local_report[
-            local_report[region_string].astype(str).str.len() == chosen_seq_length
-        ][region_string]
         length_filtered_seqs = sequences.shape[0]
         for seq in sequences:
             for aa_position in range(len(seq)):
