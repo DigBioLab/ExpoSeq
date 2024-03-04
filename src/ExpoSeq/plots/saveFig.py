@@ -1,17 +1,17 @@
 import os.path
 from matplotlib.pyplot import savefig
 from ast import literal_eval
+
 try:
     import tkinter as tk
     from tkinter import filedialog
 except:
     pass
 
+
 def saveFig(name):
     module_dir = os.getcwd()
-    save_settings_file = os.path.join(module_dir,
-                                      "settings",
-                                      "save_settings.txt")
+    save_settings_file = os.path.join(module_dir, "settings", "save_settings.txt")
     with open(save_settings_file, "r") as f:
         save_settings = f.read()
     save_settings = literal_eval(save_settings)
@@ -20,13 +20,17 @@ def saveFig(name):
     else:
         filename = name
     if save_settings["fname"] == "":
-    #    print("Please choose a directory where you want to store your files")
+        #    print("Please choose a directory where you want to store your files")
         try:
-            print("Choose the directory where you want to save the file with the filechooser")
+            print(
+                "Choose the directory where you want to save the file with the filechooser"
+            )
             save_dir = filedialog.askdirectory()
         except:
             while True:
-                save_dir = input("copy and paste the path to the directory where you want to save the files here.")
+                save_dir = input(
+                    "copy and paste the path to the directory where you want to save the files here."
+                )
                 if os.path.isdir(os.path.abspath(save_dir)):
                     break
                 else:
@@ -37,9 +41,8 @@ def saveFig(name):
             f.write(str(save_settings))
     else:
         pass
-    filepath = save_settings['fname']
-    form = save_settings['format']
+    filepath = save_settings["fname"]
+    form = save_settings["format"]
     path = os.path.join(filepath, filename + "." + form)
-    del save_settings['fname']
-    savefig(path,
-            **save_settings)
+    del save_settings["fname"]
+    savefig(path, **save_settings)

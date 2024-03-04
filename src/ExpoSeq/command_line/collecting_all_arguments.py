@@ -97,8 +97,38 @@ class TestArgs:
     def check_method_diversity(self):
         assert self.args.method in ["Shannon", "InverseSimpson"], "please enter a one of the following values: [Shanon, InverseSimpson] "
                 
+    def check_n_neighbors(self):
+        assert self.args.n_neighbr
+        assert self.args.n_neighbors >= 1, "Please enter a value larger than 1"
+        assert self.args.n_neighbors < self.args.batch_size * len(self.args.samples), "Your number of neighbors must be smaller than your batch size"
+        
+    def check_min_dist(self):
+        assert self.args.min_dist > 0, "Please enter a value larger than 0"
+        
+    def check_metric(self):
+        avail_metrics = ["euclidean", "manhatten", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine", "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"]
+        assert self.args.metric in avail_metrics, f"Please enter a metric in {avail_metric}"
+        
+    def check_characteristic(self):
+        avail_characteristic = ["isoelecrtric_point", "aliphatic_index", "hydrophobicity", "weight", "mass_charge_ratio", "length", None, "binding"]
+        assert self.args.characteristic in avail_characteristic, f"Please enter a valid characteristic in {avail_characteristic}"
     
+    def check_eps_dbscan(self):
+        assert self.args.eps > 0, "Please enter a value larger than 0"
+        assert type(self.args.eps) == float, "Please enter a float value"
+        
+    def check_min_pts_dbscan(self):
+        assert self.args.min_pts >= 2, "Please enter a value larger than 2"
+        assert type(self.args.min_pts) == int, "Please enter an integer value"
+        
+    def check_point_size(self):
+        assert self.args.point_size > 5, "Please enter a value larger than 5"
+        assert type(self.args.point_size) == int, "Please enter an integer value"
     
+    def check_n_jobs(self):
+        assert type(self.args.n_jobs) == int, "Please enter an integer value"
+        assert self.args.n_jobs >= -1, "Please enter a value larger than -1"
+        
         
 class ExpoSeqArgs:
     def __init__(self, **kwargs) -> None:
@@ -244,6 +274,64 @@ class ExpoSeqArgs:
                     )
         self.chosen_tests.append("check_method_diversity")
         
+    def add_n_neighbors(self, flag = "--n_neighbors", default_value = 15):
+        self.parser.add_argument(flag, 
+                                 help = "Larger values will result in more global structure being preserved at the loss of detailed local structure. In general this parameter should be between 5 to 50.",
+                                 type = int,
+                                 default = default_value)
+        self.chosen_tests.append("check_n_neighbors")
+        
+    def add_min_dist(self, flag = "--min_dist", default_value = 0.05):
+        self.parser.add_argument(flag, 
+                                 help = "This parameter controls how tightly you want to compress the clusters together. Larger values will result in more compact clusters.",
+                                 type = float,
+                                 default = default_value)
+        self.chosen_tests.append("check_min_dist")
+    
+    def add_metric(self, flag = "--metric", default_value = "euclidean"):
+        self.parser.add_argument(flag, 
+                                 help = "The metric to use to compute distances in the high dimensional space. Default is euclidean",
+                                 type = str,
+                                 default = default_value)
+        self.chosen_tests.append("check_metric")
+        
+        
+    def add_characteristic(self, flag = "--characteristic", default_value = "length"):
+        self.parser.add_argument(flag, 
+                                 help = "The characteristic you want to analyse. Default is length",
+                                 type = str,
+                                 default = default_value)
+        self.chosen_tests.append("check_characteristic")
+        
+    def add_eps_dbscan(self, flag = "--eps", default_value = 0.5):
+        self.parser.add_argument(flag, 
+                                 help = "Maximum distance between two points to still form one cluster",
+                                 type = float,
+                                 default = default_value)
+        self.chosen_tests.append("check_eps_dbscan")
+        
+    def add_min_pts_dbscan(self, flag = "--min_pts", default_value = 2):
+        self.parser.add_argument(flag, 
+                                 help = "fewest number of points required to form a cluster. 2 is seems to be quiet good.",
+                                 type = int,
+                                 default = default_value)
+        self.chosen_tests.append("check_min_pts_dbscan")
+        
+    def add_point_size(self, flag = "--point_size", default_value = 300):
+        self.parser.add_argument(flag, 
+                                 help = "The moralized size of the points in the plot.",
+                                 type = int,
+                                 default = default_value)
+        self.chosen_tests.append("check_point_size")
+        
+    def add_n_jobs(self, flag = "--n_jobs", default_value = -1):
+        self.parser.add_argument(flag, 
+                                 help = "The number of jobs to run in parallel. -1 means all processors.",
+                                 type = int,
+                                 default = default_value)
+        self.chosen_tests.append("check_n_jobs")
+    
+    
 def prep_args(args):
     parser = args.parser.parse_args()
     tests = args.chosen_tests

@@ -17,7 +17,7 @@ def test_plots():
     #PrepData = PrepareData()
     #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
 
-    Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 15, pca_components=10, ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings)
+    Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 30,n_neighbors=15, pca_components=10, ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings)
        
     sequencing_report_path = r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv"
     sequencing_report = pd.read_csv(sequencing_report_path)
@@ -55,7 +55,7 @@ def test_plots():
     #PrepData = PrepareData()
     #peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "hydrophobicity")
 
-    Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 251, pca_components=10, 
+    Plot = PlotEmbedding(sequencing_report, ["GeneMind_1", "GeneMind_2"], "aaSeqCDR3", batch_size = 50, pca_components=10, 
                         n_neighbors=25,
                         ax = ax, strands = False, legend_settings=legend_settings, font_settings=font_settings, colorbar_settings=colorbar_settings, metric = "cosine")
 
@@ -110,8 +110,8 @@ def test_PlotEmbedding():
                 list_experiments=["GeneMind_1", "GeneMind_2"],
                 region_of_interest="aaSeqCDR3",
                 strands = False, 
-                add_clone_size=True,
-                batch_size = 1000, 
+                add_clone_size=300,
+                batch_size = 200, 
                 pca_components=70,
                 n_neighbors=15,
                 min_dist=0.3,

@@ -144,10 +144,10 @@ class TransformerBased:
             n_iter=iterations_tsne)
         tsne_results = tsne.fit_transform(X)
         tsne_results = pd.DataFrame(tsne_results,
-                                    columns = [["tsne1", "tsne2"]])
+                                    columns = ["tsne1", "tsne2"])
         return tsne_results
     @staticmethod
-    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian"):
+    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian", number_jobs = -1):
         """_summary_
 
         Args:
@@ -159,7 +159,8 @@ class TransformerBased:
         Returns:
             pd.DataFrame: return a pandas dataframe with the two umap_dimensions
         """
-        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, densmap = densmap, n_components = n_components, min_dist = min_dist, metric= metric)
+        reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, 
+                            densmap = densmap, n_components = n_components, min_dist = min_dist, metric= metric, n_jobs = number_jobs)
         if y == None:
             reduced_dim = reducer.fit_transform(X)
         else:
