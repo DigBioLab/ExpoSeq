@@ -244,6 +244,9 @@ class TestArgs:
     def check_embedding_vector_path(self):
         dir = os.path.dirname(self.args.embedding_vector_path)
         assert os.path.isdir(dir), "The directory for the embedding vector path does not exist"
+        
+    def check_matrix_type(self):
+        assert self.args.matrix_type in ['morosita_horn', 'sorensen', 'jaccard'], "Please enter a valid matrix type"
 
 class ExpoSeqArgs:
     def __init__(self, **kwargs) -> None:
@@ -269,7 +272,7 @@ class ExpoSeqArgs:
         )
         self.chosen_tests.append("check_sequencing_report")
 
-    def add_samples(self, shortcut="-s", flag="--samples", required=True):
+    def add_samples(self, shortcut="-s", flag="--samples", required=True, default = None):
         self.parser.add_argument(
             shortcut,
             flag,
@@ -277,6 +280,7 @@ class ExpoSeqArgs:
             required=required,
             type=str,
             nargs="+",
+            default = default
         )
         if required:
             self.chosen_tests.append("check_samples")
@@ -535,6 +539,16 @@ class ExpoSeqArgs:
         )
         self.chosen_tests.append("check_embedding_vector_path")
             
+    def add_matrix_type(self, flag="--matrix_type", default_value="morosita_horn"):
+        self.parser.add_argument(
+            flag,
+            help="The type of matrix you want to calculate. Default is morosita_horn",
+            type=str,
+            required = True,
+            default=default_value,
+        )
+        self.chosen_tests.append("check_matrix_type")
+    
 
 def prep_args(args):
     parser = args.parser.parse_args()

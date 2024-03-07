@@ -27,6 +27,9 @@ dependencies = [
     "tabulate==0.9.0",
     "torch==2.1.0",
     "transformers==4.34.1",
+    "matplotlib-venn",
+    "umap-learn==0.5.5",
+
 ]
 requires-python = ">=3.9"
 readme = "README.md"

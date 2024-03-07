@@ -1,22 +1,28 @@
-
 import os
 import sys
+
 
 def get_basename(files):
     basename = os.path.basename(files[0]).split(".")[0]
     if len(basename) > 22:
-        basename = print("Please change the name of your files so that they are shorter than 22 characters.\nThese names will later appear on the plots and they should be meaningful but also short enough.\nTherefore, the analysis has to be restarted.")
+        basename = print(
+            "Please change the name of your files so that they are shorter than 22 characters.\nThese names will later appear on the plots and they should be meaningful but also short enough.\nTherefore, the analysis has to be restarted."
+        )
         sys.exit()
     return basename
 
 
-    
-
-
-
-
 class CreateCommand:
-    def __init__(self, module_dir, path_to_mixcr, paired_end_sequencing, experiment, files, java_heap_size, threads = None):
+    def __init__(
+        self,
+        module_dir,
+        path_to_mixcr,
+        paired_end_sequencing,
+        experiment,
+        files,
+        java_heap_size,
+        threads=None,
+    ):
         self.java_heap_size = java_heap_size
         self.module_dir = module_dir
         self.path_to_mixcr = path_to_mixcr
@@ -25,34 +31,43 @@ class CreateCommand:
         self.files = files
         basename = get_basename(self.files)
         self.basename = basename
-        self.result = os.path.join(self.module_dir,
-                                   "temp",
-                                   self.basename + ".vdjca")
-        self.alignment_path = os.path.normpath(os.path.join(self.module_dir,
-                                                            "my_experiments",
-                                                            experiment,
-                                                            "alignment_reports",
-                                                            self.basename + "_AlignmentReport.txt"))
-        self.assembly_path = os.path.normpath(os.path.join(self.module_dir,
-                                                           "my_experiments",
-                                                           experiment,
-                                                           "assembly_reports",
-                                                           self.basename + "_AssemblyReport.txt"))
-        self.clones = os.path.join(self.module_dir,
-                                   "my_experiments",
-                                   experiment,
-                                   "clones_result",
-                                   self.basename + "_clones.clns")
+        self.result = os.path.join(self.module_dir, "temp", self.basename + ".vdjca")
+        self.alignment_path = os.path.normpath(
+            os.path.join(
+                self.module_dir,
+                "my_experiments",
+                experiment,
+                "alignment_reports",
+                self.basename + "_AlignmentReport.txt",
+            )
+        )
+        self.assembly_path = os.path.normpath(
+            os.path.join(
+                self.module_dir,
+                "my_experiments",
+                experiment,
+                "assembly_reports",
+                self.basename + "_AssemblyReport.txt",
+            )
+        )
+        self.clones = os.path.join(
+            self.module_dir,
+            "my_experiments",
+            experiment,
+            "clones_result",
+            self.basename + "_clones.clns",
+        )
         self.clones_base = os.path.dirname(self.clones)
-        self.table_tsv = os.path.join(module_dir,
-                                     "my_experiments",
-                                     experiment,
-                                     "tables_mixcr",
-                                     self.basename + ".tsv")
-        self.mixcr_plots_path = os.path.normpath(os.path.join(self.module_dir,
-                                                              "my_experiments",
-                                                              experiment,
-                                                              "mixcr_plots"))
+        self.table_tsv = os.path.join(
+            module_dir,
+            "my_experiments",
+            experiment,
+            "tables_mixcr",
+            self.basename + ".tsv",
+        )
+        self.mixcr_plots_path = os.path.normpath(
+            os.path.join(self.module_dir, "my_experiments", experiment, "mixcr_plots")
+        )
 
     def read_aligned_reads(self):
         with open(self.alignment_path, "r") as f:
@@ -86,32 +101,33 @@ class CreateCommand:
     def get_free_memory_windows(self):
         try:
             import psutil
-            return psutil.virtual_memory().available // (1024 ** 2)  # Convert from Bytes to MB
+
+            return psutil.virtual_memory().available // (
+                1024**2
+            )  # Convert from Bytes to MB
         except ImportError:
             print("Please install psutil library: pip install psutil")
-
 
     def get_free_memory_mac(self):
         cmd = "vm_stat | grep 'Pages free' | awk '{print $3}'"
         pages_free = int(os.popen(cmd).read().replace(".", ""))
         # Typically, a page in macOS is 4096 bytes
-        return (pages_free * 4096) // (1024 ** 2)  # Convert from Bytes to MB
-
-
+        return (pages_free * 4096) // (1024**2)  # Convert from Bytes to MB
 
     def create_parser(self):
-     #   try:
-      #      free_memory = self.get_free_memory()
-      #      java_heap_size = int(free_memory / 4)  # Using half of the available RAM as an example
-       #     print(f"25 % of currently available memory: {java_heap_size}\n")
-        #except:
-         #   print("automatic detection of memory failed. Processing continues with 1000MB RAM.")
-          #  java_heap_size = 1000
+        #   try:
+        #      free_memory = self.get_free_memory()
+        #      java_heap_size = int(free_memory / 4)  # Using half of the available RAM as an example
+        #     print(f"25 % of currently available memory: {java_heap_size}\n")
+        # except:
+        #   print("automatic detection of memory failed. Processing continues with 1000MB RAM.")
+        #  java_heap_size = 1000
         commands = []
-        commands.extend(["java", f"-Xms{self.java_heap_size}M", "-jar"]) # enable change of para
+        commands.extend(
+            ["java", f"-Xms{self.java_heap_size}M", "-jar"]
+        )  # enable change of para
         commands.extend([self.path_to_mixcr])
         return commands
-
 
     def prepare_align(self, method, add_args):
         align_commands = self.create_parser()
@@ -135,14 +151,13 @@ class CreateCommand:
 
         assembly_commands = self.create_parser()
         assembly_commands.extend(["assemble"])
-       # assembly_commands.extend(["-OseparateByC=true", "-OseparateByV=true","-OseparateByJ=true"])
+        # assembly_commands.extend(["-OseparateByC=true", "-OseparateByV=true","-OseparateByJ=true"])
         assembly_commands.extend([self.result])
         assembly_commands.extend([self.clones])
         assembly_commands.extend(["--force-overwrite"])
         assembly_commands.extend(["--report", self.assembly_path])
 
         return assembly_commands
-
 
     def prepare_clones(self, mixcr_chain):
         clones_commands = self.create_parser()
@@ -152,4 +167,3 @@ class CreateCommand:
         clones_commands.extend([f"--chains {mixcr_chain}"])
         clones_commands.extend([self.table_tsv])
         return clones_commands
-

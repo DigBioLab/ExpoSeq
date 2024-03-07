@@ -8,7 +8,7 @@
             "name": "Python Debugger: Module",
             "type": "debugpy",
             "request": "launch",
-            "module": "src.ExpoSeq.plots.protein_embedding_umap"
+            "module": "src.ExpoSeq.settings.merge_fasta"
         }
     ]
 }

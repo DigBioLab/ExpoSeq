@@ -5,10 +5,10 @@ import pandas as pd
 
 class FullSequence:
     def __init__(self, avail_regions):
-        for i in avail_regions:
-            assert i in self.region_order
-        self.avail_regions = avail_regions
         self.region_order = ["FR1", "CDR1", "FR2", "CDR2", "FR3", "CDR3", "FR4"]
+
+        self.avail_regions = avail_regions
+        
         
     
     @staticmethod
