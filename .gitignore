@@ -49,3 +49,7 @@ binder_prediction.py
 tmp_quarto
 tmp_test
 GeneratedSubplots
+results_thesis
+temp.vdjca
+*.fasta
+.vscode

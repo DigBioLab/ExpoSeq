@@ -47,7 +47,6 @@ src/ExpoSeq/plots/clone_fraction.py
 src/ExpoSeq/plots/diversity_plot.py
 src/ExpoSeq/plots/hist_lvst_dist.py
 src/ExpoSeq/plots/hist_lvst_dist_bind.py
-src/ExpoSeq/plots/layout_finder.py
 src/ExpoSeq/plots/length_distribution.py
 src/ExpoSeq/plots/levenshtein_clustering.py
 src/ExpoSeq/plots/logo_plot.py
@@ -60,9 +59,11 @@ src/ExpoSeq/plots/sample_cluster.py
 src/ExpoSeq/plots/saveFig.py
 src/ExpoSeq/plots/stacked_aa_distribution.py
 src/ExpoSeq/plots/tidy_protbert_embedding.py
+src/ExpoSeq/plots/venn_diagramm.py
 src/ExpoSeq/plots/contents/__init__.py
 src/ExpoSeq/plots/contents/hytdrophobicity_metrics.py
 src/ExpoSeq/plots/contents/isoelectric_point_scales.py
+src/ExpoSeq/plots/contents/simple_protein_property.py
 src/ExpoSeq/plots/deprecated/__init__.py
 src/ExpoSeq/plots/deprecated/bert_network_embedding.py
 src/ExpoSeq/plots/deprecated/cluster_embedding.py
@@ -84,6 +85,7 @@ src/ExpoSeq/settings/blosum_62.txt
 src/ExpoSeq/settings/change_save_settings.py
 src/ExpoSeq/settings/change_settings.py
 src/ExpoSeq/settings/check_dirs.py
+src/ExpoSeq/settings/collecting_all_arguments.py
 src/ExpoSeq/settings/colorbar.txt
 src/ExpoSeq/settings/dendrogram_cluster.md
 src/ExpoSeq/settings/directory_manager.py
@@ -91,11 +93,14 @@ src/ExpoSeq/settings/figure.py
 src/ExpoSeq/settings/font_settings.txt
 src/ExpoSeq/settings/full_sequence_finder.py
 src/ExpoSeq/settings/general_instructions.py
+src/ExpoSeq/settings/generate_binding_data.py
 src/ExpoSeq/settings/global_vars.txt
+src/ExpoSeq/settings/layout_finder.py
 src/ExpoSeq/settings/legend_settings.txt
 src/ExpoSeq/settings/levenshtein_cluster.md
 src/ExpoSeq/settings/logo_plot.md
 src/ExpoSeq/settings/markdown_builder.py
+src/ExpoSeq/settings/merge_fasta.py
 src/ExpoSeq/settings/morosita_horn.md
 src/ExpoSeq/settings/plot_styler.py
 src/ExpoSeq/settings/preset_list.csv
@@ -106,6 +111,8 @@ src/ExpoSeq/settings/reset.py
 src/ExpoSeq/settings/save_settings.txt
 src/ExpoSeq/settings/sequence_embedding.md
 src/ExpoSeq/settings/signature.md
+src/ExpoSeq/settings/subplot_figure.py
+src/ExpoSeq/settings/subplots_manager.py
 src/ExpoSeq/software_tests/__init__.py
 src/ExpoSeq/software_tests/test_files/__init__.py
 src/ExpoSeq/software_tests/tests/__init__.py
