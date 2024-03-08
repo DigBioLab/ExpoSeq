@@ -93,7 +93,6 @@ src/ExpoSeq/settings/figure.py
 src/ExpoSeq/settings/font_settings.txt
 src/ExpoSeq/settings/full_sequence_finder.py
 src/ExpoSeq/settings/general_instructions.py
-src/ExpoSeq/settings/generate_binding_data.py
 src/ExpoSeq/settings/global_vars.txt
 src/ExpoSeq/settings/layout_finder.py
 src/ExpoSeq/settings/legend_settings.txt
