@@ -19,7 +19,7 @@ However, the following guides will be all executed from the root dir of the repo
 Before you can start anything you need to prepare the sequencing report as input for all plots and functionalities in ExpoSeq. The output of the corresponding command line script is a csv file which contains all the data from your samples in only one table. If you clone the repository you can call the script with:
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_sequencing_report --tsv_dir "DIR_TO_TSV_FILES" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --region "CDR3"
+python command_line/cl_sequencing_report.py --tsv_dir "DIR_TO_TSV_FILES" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --region "CDR3"
 
 ```
 
@@ -37,7 +37,7 @@ python -m src.ExpoSeq.command_line.cl_sequencing_report --tsv_dir "DIR_TO_TSV_FI
 For testing purposes: You can generate binding data for your sequences with the following command line script:
 
 ```bash
-python -m src.ExpoSeq.command_line.generate_binding_data --sequencing_report "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001"
+python command_line/generate_binding_data.py --sequencing_report "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001"
 ```
 
 
@@ -50,7 +50,7 @@ If you want to cluster your data without any binding data you can control the ou
 **WITHOUT BINDING DATA**
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_protein_embedding -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --eps 0.1 --min_pts 2    
+python command_line/cl_protein_embedding.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --eps 0.1 --min_pts 2    
 ```
 
 - --sequencing_report: Path to the report you generated in the highest layer
@@ -66,7 +66,7 @@ python -m src.ExpoSeq.command_line.cl_protein_embedding -r "C:\Users\nilsh\my_pr
 **WITH BINDING DATA**
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_protein_embedding -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --eps 0.1 --min_pts 2 --binding_data "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --antigen_names "Antigen 1"   
+python command_line/cl_protein_embedding.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --perplexity 25 --iterations_tsne 252 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --eps 0.1 --min_pts 2 --binding_data "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --antigen_names "Antigen 1"   
 ```
 
 ### Embedding with UMAP: Scatterplot
@@ -75,7 +75,7 @@ python -m src.ExpoSeq.command_line.cl_protein_embedding -r "C:\Users\nilsh\my_pr
 
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_protein_embedding_umap -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1
+python command_line/cl_protein_embedding_umap.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1
 ```
 
 - --save_csv: directory + filename ending with .csv for the output table
@@ -95,7 +95,7 @@ python -m src.ExpoSeq.command_line.cl_protein_embedding_umap -r "C:\Users\nilsh\
 **WITHOUT BINDING DATA: Clustering multiple samples and supervise clustering based on certain sequence attribute**
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_protein_embedding_umap -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1 --characteristic "length"
+python command_line/cl_protein_embedding_umap.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1 --characteristic "length"
 ```
 Additional to the plot above you can add this parameter:
 
@@ -104,7 +104,7 @@ Additional to the plot above you can add this parameter:
 **WITH BINDING DATA: Clustering mutliple samples with functional assay data**
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_protein_embedding_umap -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type
+python -m command_line/cl_protein_embedding_umap.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type
  "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1 --binding_data "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --antigen_names "Antigen 1"
 ```
 
@@ -115,14 +115,14 @@ python -m src.ExpoSeq.command_line.cl_protein_embedding_umap -r "C:\Users\nilsh\
 ### Diversity Plot: Barplot
 
 ```bash
-python -m src.ExpoSeq.plots.command_line.cl_diversity_plot --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME"
+python command_line/cl_diversity_plot.py --sequencing_report "PATH_TO_CSV_FILE" --region "aaSeqCDR3" --save_csv "OUTPUT_FILENAME"
 ```
 
 
 ### Rarefraction curves: line Plot
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_rarefraction_curves -r "PATH_TO_CSV_FILE" --region_plots "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2"
+python command_line/cl_rarefraction_curves.py -r "PATH_TO_CSV_FILE" --region_plots "aaSeqCDR3" --save_csv "OUTPUT_FILENAME" --samples "SAMPLE_NAME1" "SAMPLE_NAME2"
 ```
 
 - --samples: Is not reuqired, so if you do not enter the flag it will take all available samples.
@@ -130,7 +130,7 @@ python -m src.ExpoSeq.command_line.cl_rarefraction_curves -r "PATH_TO_CSV_FILE" 
 ### Data for logo plots: LOGOPLOT or stacked bar plot
 
 ```bash
-python -m src.ExpoSeq.command_line.cd_logoplot -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\logoplot_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" --method "proportional"
+python command_line/cd_logoplot.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\logoplot_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" --method "proportional"
 ```
 
 - --save_csv: directory + filename ending with .csv for the output table
@@ -138,11 +138,12 @@ python -m src.ExpoSeq.command_line.cd_logoplot -r "C:\Users\nilsh\my_projects\Ex
 - --samples: Is required. You can enter as many samples as you want. The samples have to be in the report you are using.
 - --method: Default is "proportional". You can also choose "bits" which will calculate the output based on bits.
 
+--> YOU can plot this also as stacked barplot
 
 ### Length Distribution data : Barplot
 
 ```bash
-python -m src.ExpoSeq.command_line.cl_length_distribution -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\length_distribution_test.csv" --region_plots "aaSeqCDR3" --single_sample "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001"
+python command_line/cl_length_distribution.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\length_distribution_test.csv" --region_plots "aaSeqCDR3" --single_sample "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001"
 ```
 
 - --save_csv: directory + filename ending with .csv for the output table
