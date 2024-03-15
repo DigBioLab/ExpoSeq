@@ -146,6 +146,7 @@ class LevenshteinClustering:
             binding_data,
             antigens,
         )
+        self.report = report
         nodesize, label_numbers, label_sequences = self.calculate_nodesize(
             report, region_string, self.G
         )
@@ -168,7 +169,9 @@ class LevenshteinClustering:
                 self.add_header(font_settings, samples)
 
         self.cluster_report = self.generate_report(partition)
-
+        self.nodesize = nodesize
+        self.label_sequences = label_sequences
+        self.partition = partition
     @staticmethod
     def calculate_nodesize(
         sample_report, region_string, G, cf_column_name="cloneFraction"
@@ -182,9 +185,9 @@ class LevenshteinClustering:
             cf_column_name (str, optional):  Name of the column which contains the clone fraction in the sequencing report. Defaults to "cloneFraction".
 
         Returns:
-            nodesize: size of the nodes in order
-            label_numbers: dictionary containing the ids for the corresponding sequences
-            label_sequencse: dicitinoary containing the sequences as label for the corresponding sequences
+            nodesize (list): size of the nodes in order
+            label_numbers (dict): dictionary containing the ids for the corresponding sequences
+            label_sequencse (dict): dicitinoary containing the sequences as label for the corresponding sequences
         """
         nodesize = []
         label_numbers = {}

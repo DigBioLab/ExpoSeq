@@ -149,3 +149,20 @@ python command_line/cl_length_distribution.py -r "C:\Users\nilsh\my_projects\Exp
 - --save_csv: directory + filename ending with .csv for the output table
 - --region_plots: string of the region you would like to analyse. It has to start with aaSeq. You cannot analyse other regions unless you change it in the highest layer under region
 - --single_sample: Is required. You can enter only one sample. The sample has to be in the report you are using.
+
+
+## Levenshtein Clustering 2D
+
+### Levenshtein Network
+
+```bash
+python -m command_line.cl_levenshtein_clustering --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\levenshtein_2d.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --batch_size 100 --binding_data "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --antigen_names "Antigen 1
+```
+Note: You can also run that without binding data by leaving out the corresponding flags (antigen_names, binding_data)
+
+### Levenshtein Histogram
+
+```bash
+python -m command_line.cl_lvst_histogram --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\levenshtein_dendro.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --batch_size 200
+```
+

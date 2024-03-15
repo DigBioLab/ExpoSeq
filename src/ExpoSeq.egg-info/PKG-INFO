@@ -33,6 +33,7 @@ Requires-Dist: torch==2.1.0
 Requires-Dist: transformers==4.34.1
 Requires-Dist: matplotlib-venn
 Requires-Dist: umap-learn==0.5.5
+Requires-Dist: iglabel==0.0.7
 
 # Welcome to ExpoSeq
 

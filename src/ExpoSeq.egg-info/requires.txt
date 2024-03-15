@@ -21,3 +21,4 @@ torch==2.1.0
 transformers==4.34.1
 matplotlib-venn
 umap-learn==0.5.5
+iglabel==0.0.7

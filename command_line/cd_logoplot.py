@@ -1,7 +1,7 @@
 from ExpoSeq.settings.collecting_all_arguments import ExpoSeqArgs, prep_args
 from ExpoSeq.plots.logo_plot import PrepareData
 import pandas as pd
-
+from iglabel import IMGT
 
 def call_args():
     Args = ExpoSeqArgs()
@@ -27,6 +27,9 @@ if __name__ == "__main__":
         parser.region_plots,
         parser.method_logo,
     )
+    
+    IMGT(["A" * parser.chosen_seq_length], parser.region_plots) # does not work for target sequence yet
+    
     aa_distribution.to_csv(
         parser.save_csv
     )

@@ -7,7 +7,7 @@ import pandas as pd
 # Otherwise, the user can decide in the highest layer and the region for the plots will always be chosen automatically based on that input
 def call_args():
     Args = ExpoSeqArgs()
-    Args.add_tsv_dir()
+    Args.add_tsv_dir() # cannot choose specific file yet
     Args.add_region_of_interest()
     Args.add_length_threshold()
     Args.add_min_read_count_threshold()

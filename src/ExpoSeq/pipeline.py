@@ -1059,7 +1059,7 @@ class PlotManager:
             color_scheme in logo_schemes
         ), f"You have to give a valid color scheme. The options are: {logo_schemes}"
         if sample == None:
-            sample = self.preferred_sample
+            sample = [self.preferred_sample]
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         if highlight_specific_pos != None:
@@ -1079,6 +1079,7 @@ class PlotManager:
             chosen_seq_length,
             method,
             color_scheme,
+            self.avail_regions,
             **kwargs,
         )
 

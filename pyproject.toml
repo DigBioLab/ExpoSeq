@@ -29,6 +29,7 @@ dependencies = [
     "transformers==4.34.1",
     "matplotlib-venn",
     "umap-learn==0.5.5",
+    "iglabel==0.0.7"
 
 ]
 requires-python = ">=3.9"

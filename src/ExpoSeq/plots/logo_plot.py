@@ -5,12 +5,13 @@ from ..settings.layout_finder import best_layout
 from textwrap import wrap
 import pandas as pd
 import warnings
-
+from iglabel import IMGT
+from ..settings.full_sequence_finder import FullSequence
 
 class PrepareData:
     @staticmethod
     def check_args(samples, report, chosen_seq_length,):
-        assert type(samples) == list, "You have to give a string as input for the sample"
+        assert type(samples) == list, "You have to give a list as input for the sample"
 
         if chosen_seq_length != None:
             assert (
@@ -39,7 +40,6 @@ class PrepareData:
             assert sequences.str.len().max() >= chosen_seq_length, "Your chosen seq length must exist in your sequence repertoire"
         aminoacids = "ACDEFGHIKLMNPQRSTVWY"
 
-        
         if chosen_seq_length != None:
             sequences = local_report[
                 local_report[region_string].astype(str).str.len() == chosen_seq_length
@@ -49,7 +49,8 @@ class PrepareData:
                 "You will no have all sequence length included but the problem of that is that you assume that sequences with different lengths have the same properties on relative amino acid positions, which is not necessarily true."
             )
             sequences = local_report[region_string]
-            chosen_seq_length = sequences.str.len().max()
+            chosen_seq_length = int(sequences.str.len().max())
+            
         compDict = {aa: chosen_seq_length * [0] for aa in aminoacids}
         length_filtered_seqs = sequences.shape[0]
         for seq in sequences:
@@ -102,8 +103,11 @@ class LogoPlot:
         chosen_seq_length,
         method,
         color_scheme,
+        avail_regions,
         **kwargs,
     ):
+        self.avail_regions = avail_regions
+        self.region_string = region_string
         self.ax = ax
         self.chosen_seq_length = self.find_seq_length(
             sequencing_report, sample, chosen_seq_length, region_string
@@ -130,7 +134,7 @@ class LogoPlot:
     def find_seq_length(
         sequencing_report, sample, chosen_seq_length, region_of_interest
     ):
-        filtered_data = sequencing_report[sequencing_report["Experiment"] == sample]
+        filtered_data = sequencing_report.loc[sequencing_report["Experiment"].isin(sample)]
         length_counts = filtered_data[region_of_interest].str.len().value_counts()
 
         if chosen_seq_length == None:
@@ -145,7 +149,8 @@ class LogoPlot:
                 )
                 max_length = length_counts.idxmax()
                 chosen_seq_length = max_length
-        return chosen_seq_length
+            
+        return int(chosen_seq_length)
 
     def createPlot(
         self,
@@ -167,6 +172,15 @@ class LogoPlot:
         )
         self.logo_plot.style_xticks(anchor=1, spacing=1, rotation=0)
 
+    def find_longest_seq(self):
+        if self.region_string != "targetSequences":
+            region = [self.region_string.replace("aaSeq", "")]
+        else:
+            Finder = FullSequence(self.avail_regions)
+            region = Finder.find_connecting_seq()
+        assert isinstance(region, list)
+        return region
+            
     def add_style(self, highlight_specific_pos, sample):
         if "fontsize" in self.font_settings.keys():
             original_fontsize = self.font_settings["fontsize"]
@@ -176,7 +190,7 @@ class LogoPlot:
             title = "\n".join(
                 wrap(
                     "Logo Plot of "
-                    + sample
+                    + " ".join(sample)
                     + " with sequence length "
                     + str(self.chosen_seq_length),
                     width=40,
@@ -185,7 +199,10 @@ class LogoPlot:
             plt.title(title, **self.font_settings)
             self.font_settings["fontsize"] = original_fontsize
             labels_true = list(range(0, self.chosen_seq_length))
-            numbers_true = list(range(1, self.chosen_seq_length + 1))
+            region = self.find_longest_seq()
+            label_dict, _ = IMGT([self.chosen_seq_length * "A"], region, save = False)
+            numbers_true = list(label_dict.values())[0]
+            assert len(numbers_true) == len(labels_true), f" you have {len(numbers_true)} labels and {len(labels_true)} and xticsk"
             plt.xticks(labels_true, numbers_true)
             if highlight_specific_pos != None:
                 self.logo_plot.highlight_position(p=5, color="gold", alpha=0.5)
@@ -217,7 +234,7 @@ def plot_logo_multi(
     #  fig = plt.figure(1, constrained_layout=True)
     for i in unique_experiments:
         aa_distribution = PrepareData().cleaning(
-            i, sequencing_report, chosen_seq_length, region_string, method
+            [i], sequencing_report, chosen_seq_length, region_string, method
         )
         if aa_distribution.isna().any().any():
             continue
@@ -225,7 +242,6 @@ def plot_logo_multi(
         ax = fig.add_subplot(
             Rows, Cols, Position[n], xticks=(np.arange(0, chosen_seq_length, step=1))
         )
-        print(aa_distribution)
         logo_plot = logomaker.Logo(
             aa_distribution,
             shade_below=0.5,

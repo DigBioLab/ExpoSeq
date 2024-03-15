@@ -247,6 +247,15 @@ class TestArgs:
         
     def check_matrix_type(self):
         assert self.args.matrix_type in ['morosita_horn', 'sorensen', 'jaccard'], "Please enter a valid matrix type"
+        
+    def check_levenshtein_distance(self):
+        assert self.args.levenshtein_distance >= 1, "Please enter a value larger than 1. Otherwise the plot does not make sense"
+        assert type(self.args.levenshtein_distance) == int, "Please enter an integer value"
+        
+    def check_dimension(self):
+        assert self.args.dimension in [2, 3], "Please enter a valid dimension"
+        assert type(self.args.dimension) == int, "Please enter an integer value"
+        
 
 class ExpoSeqArgs:
     def __init__(self, **kwargs) -> None:
@@ -549,6 +558,23 @@ class ExpoSeqArgs:
         )
         self.chosen_tests.append("check_matrix_type")
     
+    def add_levenshtein_distance(self, flag = "--levenshtein_distance", default_value=2):
+        self.parser.add_argument(
+            flag,
+            help="The levenshtein distance you want to base the Analysis on.",
+            type=int,
+            default=default_value,
+        )
+        self.chosen_tests.append("check_levenshtein_distance")
+    
+    def add_dimension(self, flag = "--dimension", default_value=2):
+        self.parser.add_argument(
+            flag,
+            help="The dimension you want to base the Analysis on.",
+            type=int,
+            default=default_value,
+        )
+        self.chosen_tests.append("check_dimension")
 
 def prep_args(args):
     parser = args.parser.parse_args()
