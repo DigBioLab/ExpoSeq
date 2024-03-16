@@ -1,1 +1,1 @@
-{'mixcr_path': '', 'last_experiment': 'chain_test', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}
+{'mixcr_path': '', 'last_experiment': 'test_all_samples', 'api': '', 'region_of_interest': '', 'RAM': '', 'clustalw_path': ''}

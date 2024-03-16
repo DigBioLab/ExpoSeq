@@ -256,7 +256,15 @@ class TestArgs:
         assert self.args.dimension in [2, 3], "Please enter a valid dimension"
         assert type(self.args.dimension) == int, "Please enter an integer value"
         
-
+    def check_fraction(self):
+        assert self.args.fraction > 0.0, "Please enter a value larger than 0"
+        assert self.args.fraction <= 1.0, "Please enter a value smaller than 1"
+        assert type(self.args.fraction) == float, "Please enter a float value"
+        
+    def check_limit_seq(self):
+        assert self.args.limit_seq > 0, "Please enter a value larger than 0"
+        assert type(self.args.limit_seq) == int, "Please enter an integer value"
+        
 class ExpoSeqArgs:
     def __init__(self, **kwargs) -> None:
         self.parser = ArgumentParser(
@@ -575,6 +583,24 @@ class ExpoSeqArgs:
             default=default_value,
         )
         self.chosen_tests.append("check_dimension")
+        
+    def add_limit_seq(self, flag="--limit_seq", default_value=10000):
+        self.parser.add_argument(
+            flag,
+            help="The number of sequences you want to include for this calculation.",
+            type=float,
+            default=default_value,
+        )
+        self.chosen_tests.append("check_limit_seq")
+        
+    def add_fraction(self, flag="--fraction", default_value=0.95):
+        self.parser.add_argument(
+            flag,
+            help="The fraction of sequences you want to include for this calculation.",
+            type=float,
+            default=default_value,
+        )
+        self.chosen_tests.append("check_fraction")
 
 def prep_args(args):
     parser = args.parser.parse_args()
