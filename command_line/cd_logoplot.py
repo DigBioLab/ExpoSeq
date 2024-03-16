@@ -1,7 +1,6 @@
 from ExpoSeq.settings.collecting_all_arguments import ExpoSeqArgs, prep_args
 from ExpoSeq.plots.logo_plot import PrepareData
 import pandas as pd
-from iglabel import IMGT
 
 def call_args():
     Args = ExpoSeqArgs()
