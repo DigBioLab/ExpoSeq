@@ -354,9 +354,9 @@ class PrepareData:
             )
         X = TransformerBased.do_pca(sequences_list, pca_components)
         tsne_results = TransformerBased.do_tsne(X, perplexity, iterations_tsne)
-        get_clusters = TransformerBased.cluster_with_hdbscan(
-            tsne_results, eps=eps_dbscan, min_pts=min_pts_dbscan
-        ).tolist()    
+  #      get_clusters = TransformerBased.cluster_with_hdbscan( # not recommended for tsne
+  #          tsne_results, eps=eps_dbscan, min_pts=min_pts_dbscan
+   #     ).tolist()    
         
         property_result = self.label_sequence_characteristic(
             characteristic, sequences, selected_rows, antigens
@@ -364,7 +364,7 @@ class PrepareData:
         if property_result != None:
             tsne_results[characteristic] = property_result
 
-        tsne_results["cluster_id"] = get_clusters
+    #    tsne_results["cluster_id"] = get_clusters
         tsne_results["cloneFraction"] = self.clones
         kds, ids, tsne_results = self.return_binding_results(
             selected_rows, antigens, region_of_interest, add_clone_size, tsne_results
@@ -444,7 +444,7 @@ class PlotEmbedding:
             else:
                 title = "\n".join(wrap("TSNE embedding for given samples", 40))
                 sm = self.create_plot(characteristic, prefered_cmap)
-                if colorbar_settings != {} and characteristic != None:
+                if colorbar_settings != {} and sm != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
                 if font_settings != {}:
                     self.ax.set_title(title, pad=12, **font_settings)
@@ -461,7 +461,7 @@ class PlotEmbedding:
     def create_plot(self, characteristic, prefered_cmap):
         markers = ["o", "+", "x", "s", "p", "x", "D"]
         if characteristic == None:
-            self.tsne_results["color"] = self.tsne_results["cluster_id"]
+            self.tsne_results["color"] = self.tsne_results["experiments_factorized"]
             sm = None
         else:
             self.tsne_results["color"] = self.tsne_results[characteristic]
@@ -525,10 +525,8 @@ class PlotEmbedding:
         size_points = self.data_prep.clones * add_clone_size
         self.tsne_plot.set_sizes(size_points)
 
-    def add_legend(self, list_experiments, legend_settings):
+    def add_legend(self, legend_settings):
         self.ax.legend(
-            handles=self.tsne_plot.legend_elements()[0],
-            labels=list_experiments,
             **legend_settings,
         )
 
@@ -538,7 +536,7 @@ class PlotEmbedding:
         for i in range(0, len(x), 10):
             self.ax.annotate(
                 peptides[i],
-                (x[i][0], y[i][0]),
+                (x[i], y[i]),
                 fontsize=5,
             )
 

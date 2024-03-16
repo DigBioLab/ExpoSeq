@@ -6,7 +6,6 @@ from textwrap import wrap
 import pandas as pd
 import warnings
 from iglabel import IMGT
-from ..settings.full_sequence_finder import FullSequence
 
 class PrepareData:
     @staticmethod
@@ -29,6 +28,25 @@ class PrepareData:
         return -np.sum(
             [p * np.log2(p) if p > 0 else 0 for p in probs]
         )  # https://biology.stackexchange.com/questions/64368/how-to-determine-the-height-bits-in-a-sequence-logo
+
+    @staticmethod
+    def get_labels(region_string:str, chosen_seq_length:int):
+        """Creates the IMGT labels for the chosen sequence length
+
+        Args:
+            region_string (str): _description_
+            chosen_seq_length (int): _description_
+
+        Returns:
+            list: A list with strings of either the IMGT labels or the position numbers
+        """
+        if region_string != "targetSequences":
+            region = [region_string.replace("aaSeq", "")]
+            label_dict, _ = IMGT([chosen_seq_length * "A"], region, save = False)
+            numbers_true = list(label_dict.values())[0]
+        else:
+            numbers_true = [str(i) for i in list(range(1, chosen_seq_length + 1))]
+        return numbers_true
 
     def cleaning(self, samples, report, chosen_seq_length, region_string, method):
         self.check_args(samples, report, chosen_seq_length)
@@ -172,14 +190,6 @@ class LogoPlot:
         )
         self.logo_plot.style_xticks(anchor=1, spacing=1, rotation=0)
 
-    def find_longest_seq(self):
-        if self.region_string != "targetSequences":
-            region = [self.region_string.replace("aaSeq", "")]
-        else:
-            Finder = FullSequence(self.avail_regions)
-            region = Finder.find_connecting_seq()
-        assert isinstance(region, list)
-        return region
             
     def add_style(self, highlight_specific_pos, sample):
         if "fontsize" in self.font_settings.keys():
@@ -199,9 +209,12 @@ class LogoPlot:
             plt.title(title, **self.font_settings)
             self.font_settings["fontsize"] = original_fontsize
             labels_true = list(range(0, self.chosen_seq_length))
-            region = self.find_longest_seq()
-            label_dict, _ = IMGT([self.chosen_seq_length * "A"], region, save = False)
-            numbers_true = list(label_dict.values())[0]
+            if self.region_string != "targetSequences":
+                region = [self.region_string.replace("aaSeq", "")]
+                label_dict, _ = IMGT([self.chosen_seq_length * "A"], region, save = False)
+                numbers_true = list(label_dict.values())[0]
+            else:
+                numbers_true = list(range(1, self.chosen_seq_length + 1))
             assert len(numbers_true) == len(labels_true), f" you have {len(numbers_true)} labels and {len(labels_true)} and xticsk"
             plt.xticks(labels_true, numbers_true)
             if highlight_specific_pos != None:

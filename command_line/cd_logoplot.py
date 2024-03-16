@@ -28,8 +28,9 @@ if __name__ == "__main__":
         parser.method_logo,
     )
     
-    IMGT(["A" * parser.chosen_seq_length], parser.region_plots) # does not work for target sequence yet
-    
+    numbers_true = PrepData.get_labels(parser.region_plots, 
+                                       parser.chosen_seq_length) # does not work for target sequence yet
+    aa_distribution["labels"] = numbers_true
     aa_distribution.to_csv(
         parser.save_csv
     )

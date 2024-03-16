@@ -47,6 +47,7 @@ class PlotManager:
         allow_binding_data=True,
         remove_gaps=True,
         remove_errors=True,
+        show_df = True,
     ):
         """
         :param experiment: the name of the experiment you want to analyse
@@ -58,6 +59,7 @@ class PlotManager:
         :param allow_binding_data: Default is True. If set to False, the pipeline will not ask for binding data
         :param remove_gaps: Default is True. If set to False, the pipeline will not remove sequences with gaps
         :param remove_errors: Default is True. If set to Flse, the pipeline will not remove sequences with errors (*).
+        :param show_df: Default is True. If set to False, the pipeline will not show the dataframe in an interactive window. 
         """
         self.is_test = test_version
         self.Settings = change_settings.Settings()
@@ -139,6 +141,25 @@ class PlotManager:
             self.full_analysis()
         if self.is_test != True:
             print_instructions()
+        if show_df == True:
+            self.show_dataframe()
+
+            
+    def show_dataframe(self):
+        """Shows you the main dataframe in an interactive window where you can also create your own plots and filter your data.
+        """
+        import importlib.util
+        if importlib.util.find_spec("pandasgui"):
+            if self.binding_data is not None:
+                report = self.merge_bind_seq_report()
+            else:
+                report = self.sequencing_report
+            from pandasgui import show
+            show(report)
+        else:
+            print("Please install pandasgui to use this functionality. You can use pip install pandasgui.")
+            return
+        
 
     def create_report(self):
         self.Settings.move_markdown_files()
@@ -1328,6 +1349,7 @@ class PlotManager:
         pca_components=50,
         prefered_cmap="viridis",
         save_report_path=None,
+        iterations_umap = 1000,
     ):
         """You can use this plot to solely compare samples to each other with UMAP as the main dimension reduction technique.
 
@@ -1368,6 +1390,7 @@ class PlotManager:
             font_settings=self.font_settings,
             legend_settings=self.legend_settings,
             prefered_cmap=prefered_cmap,
+            iterations_umap = iterations_umap
         )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(
@@ -1395,6 +1418,7 @@ class PlotManager:
         prefered_cmap="viridis",
         save_report_path=None,
         antigens=None,
+        iterations_umap = 1000,
     ):
         """You can use this plot to cluster multiple samples based on certain characteristics such as sequence length hydrophobicity etc.
 
@@ -1425,15 +1449,15 @@ class PlotManager:
             self.region_of_interest,
             show_strands,
             clone_size_factor,
-            batch_size,
-            pca_components,
-            n_neighbors,
-            min_dist,
-            random_seed,
-            densmap,
-            metric,
-            model_choice,
-            characteristic,
+            batch_size=batch_size,
+            pca_components=pca_components,
+            n_neighbors=n_neighbors,
+            min_dist=min_dist,
+            random_seed=random_seed,
+            densmap = densmap,
+            metric = metric,
+            model_choice = model_choice,
+            characteristic=characteristic,
             ax=self.ControlFigure.ax,
             font_settings=self.font_settings,
             legend_settings=self.legend_settings,
@@ -1441,6 +1465,7 @@ class PlotManager:
             prefered_cmap=prefered_cmap,
             binding_data=self.binding_data,
             antigens=antigens,
+            iterations_umap = iterations_umap
         )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(
@@ -1469,6 +1494,7 @@ class PlotManager:
         pca_components=50,
         prefered_cmap="viridis",
         save_report_path=None,
+        iterations_umap = 1000,
     ):
         """You can use this plot to cluster your sequences with functional assay data based on UMAP
 
@@ -1523,6 +1549,7 @@ class PlotManager:
             prefered_cmap=prefered_cmap,
             colorbar_settings=self.colorbar_settings,
             toxin_names=antigen_names,
+            iterations_umap = iterations_umap
         )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(
@@ -2204,20 +2231,22 @@ class PlotManager:
             self.ControlFigure.ax, self.ControlFigure.plot_type
         )
         save_matrix(Matrix.matrix)
+        
 
-    def levenshtein_dendrogram(self, sample=None, max_cluster_dist=2, batch_size=1000):
+    def levenshtein_dendrogram(self, samples=None, max_cluster_dist=2, batch_size=1000):
         """
-        :params sample: the sample you would like to analyze
+        :params sample: the sample you would like to analyze in 
         :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
         :params batch_size: Default is 1000. The size of the sample which is chosen.
         :return: Returns a dendrogram of the sequences based on the Levenshtein distance
         """
-        if sample == None:
-            sample = self.preferred_sample
-        assert type(sample) == str, "You have to give a string as input for the sample"
-        assert (
-            sample in self.experiments_list
-        ), "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+        if samples == None:
+            samples = [self.preferred_sample]
+        assert type(samples) == list, "You have to give a string as input for the sample"
+        for sample in samples:
+            assert (
+                sample in self.experiments_list
+            ), "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
         assert (
             type(max_cluster_dist) == int
         ), "You have to give an integer as input for the maximum levenshtein distance"
@@ -2230,7 +2259,7 @@ class PlotManager:
         hist_lvst_dist.LevenshteinDend(
             self.sequencing_report,
             self.region_of_interest,
-            sample,
+            samples,
             self.font_settings,
             batch_size,
             max_cluster_dist,
@@ -2258,16 +2287,14 @@ class PlotManager:
         :return: Creates a dendrogram which shows the realtionship between your sequences in the sample and your sequences with binding data based on levenshtein distance. Additionally a barplot with the binding data of the found sequences is given.
         """
         if sample == None:
-            sample = self.preferred_sample
+            sample = [self.preferred_sample]
         assert (
             self.binding_data is not None
         ), "You have not given binding data. You can add it with the add_binding_data function"
         if antigens == None:
             antigens = [self.preferred_antigen]
 
-        assert (
-            sample in self.experiments_list
-        ), "The provided sample name is not in your sequencing report. Please check the spelling or use the print_samples function to see the names of your samples"
+
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "multi"
         self.ControlFigure.clear_fig()

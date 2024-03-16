@@ -51,6 +51,7 @@ class PrepareData:
             sequencing_report["Experiment"].isin(samples)
         ]  ## insert test if sample not found
         report = sample_report.groupby("Experiment").head(batch_size)
+        report = report.drop_duplicates(subset=[region_string])
         aa = list(report[region_string])
         aa_clustered = self.get_clustered_sequences(aa, max_cluster_dist)
         # Create the distance matrix using the filtered list of sequences

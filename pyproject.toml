@@ -1,6 +1,6 @@
 [project]
 name = "ExpoSeq"
-version = "4.4.5"
+version = "4.5.0"
 description = "A pacakge which provides various ways to analyze NGS data from phage display campaigns"
 authors = [
     {name = "Nils Hofmann", email = "nilhof01@gmail.com"},
@@ -29,8 +29,7 @@ dependencies = [
     "transformers==4.34.1",
     "matplotlib-venn",
     "umap-learn==0.5.5",
-    "iglabel==0.0.7"
-
+    "iglabel==0.0.7",
 ]
 requires-python = ">=3.9"
 readme = "README.md"

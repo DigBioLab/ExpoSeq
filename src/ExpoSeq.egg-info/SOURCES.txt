@@ -5,6 +5,7 @@ pyproject.toml
 setup.py
 src/ExpoSeq/__init__.py
 src/ExpoSeq/modelling.py
+src/ExpoSeq/msa.py
 src/ExpoSeq/pipeline.py
 src/ExpoSeq.egg-info/PKG-INFO
 src/ExpoSeq.egg-info/SOURCES.txt

@@ -471,7 +471,7 @@ class PrepareData:
             n_components=number_components,
             n_epochs = n_epochs
         )
-        if number_components == 2:
+        if number_components == 2 and characteristic == None:
             get_clusters = TransformerBased.cluster_with_hdbscan(
                 umap_results, eps=eps_dbscan, min_pts=min_pts_dbscan
             ).tolist()
@@ -524,6 +524,7 @@ class PlotEmbedding:
         extra_figure=False,
         prefered_cmap="inferno",
         number_jobs=-1,
+        iterations_umap = 1000
     ):
         self.ax = ax
         self.binding_data = binding_data
@@ -546,7 +547,8 @@ class PlotEmbedding:
             binding_data=binding_data,
             number_jobs=number_jobs,
             eps_dbscan = eps_dbscan,
-            min_pts_dbscan = min_pts_dbscan
+            min_pts_dbscan = min_pts_dbscan,
+            n_epochs = iterations_umap
         )
         self.umap_results = self.data_prep.umap_results
 
@@ -564,7 +566,7 @@ class PlotEmbedding:
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
                 if font_settings != {}:
                     self.ax.set_title(title, pad=12, **font_settings)
-                if colorbar_settings != {} and characteristic != None:
+                if colorbar_settings != {} and sm != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
 
             if font_settings != {}:

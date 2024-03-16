@@ -4,12 +4,11 @@ import random
 
 def test_pipeline():
     
-    plot = PlotManager(experiment = "multi_region", module_dir=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\software_tests\test_files", allow_binding_data=False, test_version=True)
+    plot = PlotManager(experiment = "multi_region", module_dir=r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\software_tests\test_files", allow_binding_data=False, test_version=True, show_df = False)
     assert "targetSequences" in plot.avail_regions
     plot.change_region(region = "aaSeqCDR2")
     plot.change_region(region = "targetSequences")
     plot.change_filter(length_threshold_aa=2, min_read_count=2, remove_gaps = False, remove_errors = True)
-    print(plot.region_string)
     seq_report = plot.sequencing_report
     assert "aaSeqtargetSequences" in seq_report.columns.to_list()
     assert "nSeqtargetSequences" in seq_report.columns.to_list()
@@ -21,7 +20,7 @@ def test_pipeline():
     seq_report = plot.sequencing_report
     assert plot.sequencing_report.shape[0] == 0
     
-    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data=False, test_version=True,)
+    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data=False, test_version=True, show_df = False)
 
     plot.lengthDistribution_single()
     plot.lengthDistribution_multi()
@@ -32,7 +31,7 @@ def test_pipeline():
     plot.logoPlot()
     plot.logoPlot_multi()
     plot.rel_seq_abundance()
-    plot.basic_cluster()
+    plot.basic_cluster(batch_size = 100)
     plot.embedding_tsne(batch_size = 100)
     plot.morosita_horn()
     plot.jaccard()
@@ -43,7 +42,7 @@ def test_pipeline():
     plot.umap_sample_cluster(batch_size = 51)
     plot.umap_clustering_characteristic(batch_size = 51)
     
-    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", test_version=True, allow_binding_data=False)
+    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", test_version=True, allow_binding_data=False, show_df = False)
     sequencing_report = plot.sequencing_report
     sample_0 = sequencing_report[sequencing_report["Experiment"] == "GeneMind_1"]
     aa = sample_0["aaSeqCDR3"]
@@ -60,7 +59,7 @@ def test_pipeline():
     plot.connect_samples()
     plot.embedding_network(batch_size = 100)
     
-    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data="src/ExpoSeq/software_tests/test_files/binding_data.csv", test_version=True)
+    plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", allow_binding_data="src/ExpoSeq/software_tests/test_files/binding_data.csv", test_version=True, show_df = False)
     plot.cluster_binding_data(batch_size = 100, iterations_tsne = 251)
     plot.ls_distance_binding()
     plot.tsne_cluster_AG(iterations_tsne = 251)
@@ -68,10 +67,10 @@ def test_pipeline():
     plot.lengthDistribution_single(sample = sample_names[0])
     samples_multi = [sample_names[0], sample_names[1]]
     plot.lengthDistribution_multi(samples = samples_multi)
-    plot.aa_distribution(sample = sample_names[0], region = [3,7])
-    plot.aa_distribution(sample = sample_names[0], region = [3,7], protein = False)
+    plot.aa_distribution(sample = [sample_names[0]], region = [3,7])
+    plot.aa_distribution(sample = [sample_names[0]], region = [3,7], protein = False)
     plot.rarefraction_curves(samples = samples_multi)
-    plot.logoPlot(sample = sample_names[0], highlight_specific_pos=4, chosen_seq_length = 10)
+    plot.logoPlot(sample = [sample_names[0]], highlight_specific_pos=4, chosen_seq_length = 10)
     plot.logoPlot(color_scheme = "hydrophobicity")
     plot.logoPlot(color_scheme = "charge")
     plot.logoPlot(color_scheme = "chemistry")
