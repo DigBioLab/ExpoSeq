@@ -20,7 +20,7 @@ class StackedAADistribution:
         self.plot(aa_distribution, ax, sample, region, protein, font_settings)
 
     @staticmethod
-    def prepare_data(sequencing_report, sample, region, region_string):
+    def prepare_data(sequencing_report, sample, region, region_string, chosen_seq_length= None):
         sample = sequencing_report[sequencing_report["Experiment"] == sample]
         local_report = sample[["Experiment", "cloneFraction", region_string]]
         aminoacids = "ACDEFGHIKLMNPQRSTVWY"
@@ -37,7 +37,7 @@ class StackedAADistribution:
         for seq in sequences:
             for aa_position in range(len(seq)):
                 aminoacid = seq[aa_position]
-                if aminoacid == "*":
+                if aminoacid == "*"  or aminoacid == "_":
                     pass
                 else:
                     compDict[aminoacid][aa_position] += 1

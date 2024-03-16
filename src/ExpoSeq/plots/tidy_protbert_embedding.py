@@ -42,12 +42,14 @@ class TransformerBased:
         
 
     @staticmethod
-    def filter_sequences(sequencing_report, batch_size, experiments,binding_data,
+    def filter_sequences(sequencing_report:pd.DataFrame, batch_size:int, experiments:list,binding_data,
                          region_of_interest = "aaSeqCDR3", cf_column_name = "cloneFraction", sample_column_name = "Experiment"):
         
         report_batch = sequencing_report.groupby(sample_column_name).head(batch_size)
 
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
+        
+        selected_rows = selected_rows.drop_duplicates(subset=[region_of_interest], keep='first')
         
         assert selected_rows.shape[0] <= len(experiments) * batch_size
         
@@ -114,6 +116,7 @@ class TransformerBased:
         
         sequences_list = np.array(sequences_list)
         return sequences_list
+    
     @staticmethod
     def do_pca(sequences_list, pca_components):
         """
@@ -147,7 +150,7 @@ class TransformerBased:
                                     columns = ["tsne1", "tsne2"])
         return tsne_results
     @staticmethod
-    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian", number_jobs = -1):
+    def do_umap(X, n_neighbors = 15,min_dist = 0.2, random_seed = 42, densmap = True, n_components = 2, y = None, metric = "euclidian", number_jobs = -1, n_epochs = 1000):
         """_summary_
 
         Args:
@@ -160,13 +163,19 @@ class TransformerBased:
             pd.DataFrame: return a pandas dataframe with the two umap_dimensions
         """
         reducer = umap.UMAP(random_state = random_seed, n_neighbors = n_neighbors, 
-                            densmap = densmap, n_components = n_components, min_dist = min_dist, metric= metric, n_jobs = number_jobs)
+                            densmap = densmap, n_components = n_components,
+                            min_dist = min_dist, metric= metric, n_jobs = number_jobs,
+                            n_epochs=n_epochs)
         if y == None:
             reduced_dim = reducer.fit_transform(X)
         else:
             reduced_dim = reducer.fit_transform(X, y = y)
-        assert reduced_dim.shape[1] == 2
-        results = pd.DataFrame(reduced_dim, columns = ["UMAP_1", "UMAP_2"])
+        if reduced_dim.shape[1] == 2:
+            results = pd.DataFrame(reduced_dim, columns = ["UMAP_1", "UMAP_2"])
+        else: # for multidimensional UMAP
+            results = pd.DataFrame([])
+            for i in range(reduced_dim.shape[1]):
+                results["UMAP_" + str(i+1)] = reduced_dim[:,i]
         return results, reduced_dim
     
     @staticmethod

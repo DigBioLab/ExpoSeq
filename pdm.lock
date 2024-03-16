@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:227fca705ac1060640ac0e9346688772eefcaf6a6d5180b0c26a394940e0bb63"
+content_hash = "sha256:1eaa6bafe890ec475de1a7ebca6cc3370d6244aa62ea89674d67bf90bc357bf5"
 
 [[package]]
 name = "aiohttp"
@@ -691,6 +691,17 @@ files = [
 ]
 
 [[package]]
+name = "iglabel"
+version = "0.0.7"
+requires_python = ">=3.7"
+summary = "This package will give you an easy way to label your sequences according to common standards in immunology."
+groups = ["default"]
+files = [
+    {file = "iglabel-0.0.7-py3-none-any.whl", hash = "sha256:9ea9f180a0e2ff80e53f730b2ffdc291ff2e97fa8586b4111ce4429b44e9913e"},
+    {file = "iglabel-0.0.7.tar.gz", hash = "sha256:447bfbb7630186457ec14fbb1e653d07e43fa9d643f07c04ef8127f0c9f6710d"},
+]
+
+[[package]]
 name = "importlib-metadata"
 version = "7.0.1"
 requires_python = ">=3.8"
@@ -915,7 +926,7 @@ files = [
 
 [[package]]
 name = "markdown"
-version = "3.5.2"
+version = "3.6"
 requires_python = ">=3.8"
 summary = "Python implementation of John Gruber's Markdown."
 groups = ["default"]
@@ -923,8 +934,8 @@ dependencies = [
     "importlib-metadata>=4.4; python_version < \"3.10\"",
 ]
 files = [
-    {file = "Markdown-3.5.2-py3-none-any.whl", hash = "sha256:d43323865d89fc0cb9b20c75fc8ad313af307cc087e84b657d9eec768eddeadd"},
-    {file = "Markdown-3.5.2.tar.gz", hash = "sha256:e1ac7b3dc550ee80e602e71c1d168002f062e49f1b11e26a36264dafd4df2ef8"},
+    {file = "Markdown-3.6-py3-none-any.whl", hash = "sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f"},
+    {file = "Markdown-3.6.tar.gz", hash = "sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224"},
 ]
 
 [[package]]

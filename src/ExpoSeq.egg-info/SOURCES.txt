@@ -5,6 +5,7 @@ pyproject.toml
 setup.py
 src/ExpoSeq/__init__.py
 src/ExpoSeq/modelling.py
+src/ExpoSeq/msa.py
 src/ExpoSeq/pipeline.py
 src/ExpoSeq.egg-info/PKG-INFO
 src/ExpoSeq.egg-info/SOURCES.txt
@@ -102,7 +103,6 @@ src/ExpoSeq/settings/markdown_builder.py
 src/ExpoSeq/settings/merge_fasta.py
 src/ExpoSeq/settings/morosita_horn.md
 src/ExpoSeq/settings/plot_styler.py
-src/ExpoSeq/settings/preset_list.csv
 src/ExpoSeq/settings/rarefraction_curves_desc.md
 src/ExpoSeq/settings/reports.py
 src/ExpoSeq/settings/reports_binding.md

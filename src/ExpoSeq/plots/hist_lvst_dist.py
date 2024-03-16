@@ -9,6 +9,7 @@ import numpy as np
 
 
 class PrepareData:
+    
     @staticmethod
     def create_distance_matrix(aa, max_dist=20):  # max_dist is a large finite value
         num_sequences = len(aa)
@@ -19,11 +20,10 @@ class PrepareData:
         for i in range(num_sequences):
             for j in range(i + 1, num_sequences):
                 lev_distance = editdistance.distance(aa[i], aa[j])
-                if lev_distance < 2:
-                    distance_matrix[i, j] = lev_distance
-                    distance_matrix[j, i] = (
-                        lev_distance  # The distance matrix is symmetric
-                    )
+                distance_matrix[i, j] = lev_distance
+                distance_matrix[j, i] = (
+                    lev_distance  # The distance matrix is symmetric
+                )
 
         return distance_matrix
 
@@ -40,30 +40,28 @@ class PrepareData:
         return list(clustered_sequences)
 
     def tidy(
-        self, sequencing_report, sample, batch_size, region_string, max_cluster_dist
+        self, sequencing_report:pd.DataFrame, samples:list, batch_size:int, region_string:str, max_cluster_dist:int
     ):
         """
         linked: linkage matrix which contains per sequence 4 values.
         aa_clustered: List of sequences which length is the same as the number of arrays in the linkage matrix.
         """
+        
         sample_report = sequencing_report[
-            sequencing_report["Experiment"] == sample
+            sequencing_report["Experiment"].isin(samples)
         ]  ## insert test if sample not found
-        report = sample_report.head(batch_size)
+        report = sample_report.groupby("Experiment").head(batch_size)
+        report = report.drop_duplicates(subset=[region_string])
         aa = list(report[region_string])
         aa_clustered = self.get_clustered_sequences(aa, max_cluster_dist)
         # Create the distance matrix using the filtered list of sequences
         levenshtein_distance_matrix = self.create_distance_matrix(aa_clustered)
-        if levenshtein_distance_matrix.shape[0] == 0:  # user input test
-            raise ValueError(
-                "0 matches were found please increase the batch size or the levenshtein distance"
-            )
-        else:
+
             # Convert to condensed form and create the dendrogram
-            condensed_matrix = squareform(levenshtein_distance_matrix, checks=False)
-            linked = linkage(
-                condensed_matrix, "single"
-            )  # nearest point algorithm, n-1 matrix returned
+        condensed_matrix = squareform(levenshtein_distance_matrix, checks=False)
+        linked = linkage(
+            condensed_matrix, "single"
+        )  # nearest point algorithm, n-1 matrix returned
 
         return linked, aa_clustered
 
@@ -73,19 +71,19 @@ class LevenshteinDend:
         self,
         sequencing_report,
         region_of_interest,
-        sample,
+        samples: list,
         font_settings={},
         batch_size=300,
         max_cluster_dist=2,
         ax=None,
     ) -> None:
         linked, aa_clustered = PrepareData().tidy(
-            sequencing_report, sample, batch_size, region_of_interest, max_cluster_dist
+            sequencing_report, samples, batch_size, region_of_interest, max_cluster_dist
         )
         if ax != None:
-            self.plot(linked, ax, aa_clustered, font_settings, sample)
+            self.plot(linked, ax, aa_clustered, font_settings, samples)
 
-    def plot(self, linked, ax, aa_clustered, font_settings, sample):
+    def plot(self, linked, ax, aa_clustered, font_settings, samples):
         dendrogram(
             linked,
             orientation="right",
@@ -97,7 +95,7 @@ class LevenshteinDend:
         ax.set_xlabel("Levenshtein Distance", **font_settings)
         ax.set_ylabel("Sequences", **font_settings)
         title = "\n".join(
-            wrap("Levenshtein Distance between sequences in " + sample, 40)
+            wrap("Levenshtein Distance between sequences in " + " ".join(samples), 40)
         )
         ax.set_title(title, pad=12, **font_settings)
         plt.tight_layout()

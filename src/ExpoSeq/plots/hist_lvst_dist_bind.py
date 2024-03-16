@@ -10,10 +10,10 @@ from matplotlib import pyplot as plt
 
 class PrepareData:
     @staticmethod
-    def check_input(sample, batch_size, max_cluster_dist, antigens):
+    def check_input(samples, batch_size, max_cluster_dist, antigens):
         assert (
-            type(sample) == str
-        ), "You have to give a string as input for the sample"  # only one sample
+            type(samples) == list
+        ), "You have to give a list as input for the sample"  # only one sample
         assert (
             type(max_cluster_dist) == int
         ), "You have to give an integer as input for the maximum levenshtein distance"
@@ -29,16 +29,17 @@ class PrepareData:
     @staticmethod
     def tidy_data(
         sequencing_report,
-        sample,
+        samples,
         batch_size,
         region_of_interest,
         antigens,
         binding_data,
     ):
         sample_report = sequencing_report[
-            sequencing_report["Experiment"] == sample
+            sequencing_report["Experiment"].isin(samples)
         ]  ## insert test if sample not found
-        report = sample_report.head(batch_size)
+        report = sample_report.groupby("Experiment").head(batch_size)
+        report = report.drop_duplicates(subset=[region_of_interest])
         aa = report[region_of_interest]
         aa = pd.DataFrame(aa)
         pref_columns = antigens + [region_of_interest]
@@ -119,7 +120,7 @@ class PrepareData:
     def process(
         self,
         sequencing_report,
-        sample,
+        samples,
         batch_size,
         region_of_interest,
         antigens,
@@ -127,13 +128,14 @@ class PrepareData:
         max_cluster_dist,
         sample_column_name="Experiment",
     ):
-        assert sample in list(
-            sequencing_report[sample_column_name].unique()
-        ), "The provided sample name does not exist"
-        self.check_input(sample, batch_size, max_cluster_dist, antigens)
+        for sample in samples:
+            assert sample in list(
+                sequencing_report[sample_column_name].unique()
+            ), "The provided sample name does not exist"
+        self.check_input(samples, batch_size, max_cluster_dist, antigens)
         mix, aa_all = self.tidy_data(
             sequencing_report,
-            sample,
+            samples,
             batch_size,
             region_of_interest,
             antigens,
@@ -161,7 +163,7 @@ class DendroBind:
     def __init__(
         self,
         sequencing_report,
-        sample,
+        sample:list,
         region_of_interest,
         antigens,
         batch_size,
@@ -170,7 +172,7 @@ class DendroBind:
         ascending=True,
         fig=None,
         font_settings={},
-    ) -> None:
+    ) :
         linked, aa_clustered, binding_seqs, seq_val = PrepareData().process(
             sequencing_report,
             sample,
@@ -202,13 +204,13 @@ class DendroBind:
 
     def set_dendrogram_labels(
         self,
-        font_settings,
-        sample,
+        font_settings:dict,
+        sample:list,
     ):
         self.ax.set_xlabel("Levenshtein Distance", **font_settings)
         self.ax.set_ylabel("Sequences", **font_settings)
         title = "\n".join(
-            wrap("Levenshtein Distance between sequences in " + sample, 40)
+            wrap("Levenshtein Distance between sequences in " + " ".join(sample), 40)
         )
 
         self.ax.set_title(title, pad=12, **font_settings)

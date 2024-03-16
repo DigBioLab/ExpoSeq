@@ -162,7 +162,7 @@ class PrepareData:
 
     @staticmethod
     def return_binding_results(
-        selected_rows, antigens, region_of_interest, add_clone_size, umap_results
+        selected_rows:pd.DataFrame, antigens, region_of_interest:str, add_clone_size, umap_results:pd.DataFrame
     ):
         """Creates the tsne results objects based on the information in selected rows.
 
@@ -214,15 +214,13 @@ class PrepareData:
 
     @staticmethod
     def label_sequence_characteristic(
-        characteristic, sequences, selected_rows, antigens, umap_results
+        characteristic, sequences:list, selected_rows:pd.DataFrame, antigens
     ):
         if characteristic != None:
-            if characteristic != "binding":
+            if antigens == None:
+                assert len(sequences) == selected_rows.shape[0], f"Length is {len(sequences)} and should be {selected_rows.shape[0]}"
                 Property = GetProteinProperty(sequences)
                 Property.calc_attribute(attribute=characteristic)
-                umap_results = Property.add_attributes_to_table(
-                    umap_results, attribute=characteristic
-                )
                 property_result = list(Property.sequence_property_interest.values())
             else:
                 kds = selected_rows[antigens].max(axis=1)
@@ -230,7 +228,7 @@ class PrepareData:
         else:
             property_result = None
             pass
-        return property_result, umap_results
+        return property_result
 
     @staticmethod
     def save_current_embedding(
@@ -242,6 +240,7 @@ class PrepareData:
         model_choice: str,
         binding_data: pd.DataFrame,
         characteristic: str,
+        number_components:int
     ):
         """This method saves the sequences_list from which contains the array with the high dimensions as npz file.
         Further, it creates in the same directory a pkl file which contains the parameters for that specific embedding.
@@ -264,6 +263,7 @@ class PrepareData:
             "model_choice": model_choice,
             "binding_data": binding_data,
             "characteristic": characteristic,
+            "dimensions": number_components,
         }
         dir_X = os.path.dirname(X_path)
         np.save(os.path.join(dir_X, "current_run.npy"), current_run)
@@ -277,6 +277,7 @@ class PrepareData:
         model_choice: str,
         binding_data: pd.DataFrame,
         characteristic: str,
+        number_components:int
     ):
         """Loads the np array where the embedding is saved and compares the settings of the past run to the settings of the current run and if any is different res will be False and the embedding will be repeated.
 
@@ -309,6 +310,7 @@ class PrepareData:
             "model_choice": model_choice,
             "binding_data": binding_data,
             "characteristic": characteristic,
+            "dimensions": number_components,
         }
         binding_data_old = old_settings.get("binding_data")
         binding_data_new = new_settings.get("binding_data")
@@ -346,6 +348,8 @@ class PrepareData:
         sample_column_name="Experiment",
         X_path="temp/current_array.npz",
         number_jobs=-1,
+        number_components = 2,
+        n_epochs = 1000
     ):
         """creates umap_results as class object which is a table containing all necessary data for the final plot
 
@@ -371,7 +375,7 @@ class PrepareData:
         Returns:
             _type_: _description_
         """
-        batch_size = batch_size * len(list_experiments)
+        batch_size_adapted = batch_size * len(list_experiments)
         for sample in list_experiments:
             assert sample in list(
                 sequencing_report[sample_column_name].unique()
@@ -394,7 +398,7 @@ class PrepareData:
             pca_components,
             n_neighbors,
             random_seed,
-            batch_size,
+            batch_size_adapted,
             model_choice,
             densmap,
             characteristic,
@@ -409,7 +413,7 @@ class PrepareData:
         sequences, sequences_filtered, selected_rows = (
             TransformerBased.filter_sequences(
                 sequencing_report,
-                batch_size / len(list_experiments),
+                int(batch_size_adapted),
                 list_experiments,
                 binding_data,
                 region_of_interest=region_of_interest,
@@ -419,16 +423,16 @@ class PrepareData:
         )
         peptides = selected_rows[region_of_interest].to_list()
         self.clones = selected_rows[cf_column_name].to_list()
-
         if os.path.exists(X_path):
             res, sequences_list = self.load_and_compare_past_run(
                 X_path,
-                batch_size,
+                batch_size_adapted,
                 antigens,
                 region_of_interest,
                 model_choice,
                 binding_data,
                 characteristic,
+                number_components
             )
         else:
             res = False
@@ -439,19 +443,22 @@ class PrepareData:
             self.save_current_embedding(
                 X_path,
                 sequences_list,
-                batch_size,
+                batch_size_adapted,
                 antigens,
                 region_of_interest,
                 model_choice,
                 binding_data,
                 characteristic,
+                number_components
             )
-
+        assert len(sequences_list) > pca_components, f"Length is {len(sequences_list)} and should bigger than {pca_components}"
         X = TransformerBased.do_pca(sequences_list, pca_components)
-        property_result, umap_results = self.label_sequence_characteristic(
-            characteristic, sequences, selected_rows, antigens, self.umap_results
+        assert X.shape[0] == len(sequences), f"Length is {X.shape[0]} and should be {len(sequences)}"
+        property_result = self.label_sequence_characteristic(
+            characteristic, sequences, selected_rows, antigens
         )
-
+        if characteristic != None: # 
+            assert len(property_result) == selected_rows.shape[0], f"Length is {len(property_result)} and should be {selected_rows.shape[0]}"
         umap_results, reduced_dim = TransformerBased.do_umap(
             X,
             n_neighbors,
@@ -461,13 +468,17 @@ class PrepareData:
             y=property_result,
             metric=metric,
             number_jobs=number_jobs,
+            n_components=number_components,
+            n_epochs = n_epochs
         )
-        get_clusters = TransformerBased.cluster_with_hdbscan(
-            umap_results, eps=eps_dbscan, min_pts=min_pts_dbscan
-        ).tolist()
+        if number_components == 2 and characteristic == None:
+            get_clusters = TransformerBased.cluster_with_hdbscan(
+                umap_results, eps=eps_dbscan, min_pts=min_pts_dbscan
+            ).tolist()
+            umap_results["cluster_id"] = get_clusters
         if property_result != None:
             umap_results[characteristic] = property_result
-        umap_results["cluster_id"] = get_clusters
+        
         umap_results["cloneFraction"] = self.clones
         kds, ids, umap_results = self.return_binding_results(
             selected_rows, antigens, region_of_interest, add_clone_size, umap_results
@@ -513,6 +524,7 @@ class PlotEmbedding:
         extra_figure=False,
         prefered_cmap="inferno",
         number_jobs=-1,
+        iterations_umap = 1000
     ):
         self.ax = ax
         self.binding_data = binding_data
@@ -535,7 +547,8 @@ class PlotEmbedding:
             binding_data=binding_data,
             number_jobs=number_jobs,
             eps_dbscan = eps_dbscan,
-            min_pts_dbscan = min_pts_dbscan
+            min_pts_dbscan = min_pts_dbscan,
+            n_epochs = iterations_umap
         )
         self.umap_results = self.data_prep.umap_results
 
@@ -553,7 +566,7 @@ class PlotEmbedding:
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
                 if font_settings != {}:
                     self.ax.set_title(title, pad=12, **font_settings)
-                if colorbar_settings != {} and characteristic != None:
+                if colorbar_settings != {} and sm != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
 
             if font_settings != {}:
@@ -719,5 +732,10 @@ class PlotEmbedding:
         self.add_colorbar(colorbar_settings, "Binding", sm)
 
 
-# PrepData = PrepareData()
-# peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80, characteristic = "length")
+#PrepData = PrepareData()
+#seq_report = r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\software_tests\test_files\test_show\sequencing_report.csv"
+#sequencing_report = pd.read_csv(seq_report)
+#sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
+#list_experiments = ["GeneMind_1", "GeneMind_2"]
+#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80,  number_components = 3)
+#PrepData.umap_results.to_csv("umap3d.csv")
