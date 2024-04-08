@@ -104,7 +104,7 @@ Additional to the plot above you can add this parameter:
 **WITH BINDING DATA: Clustering mutliple samples with functional assay data**
 
 ```bash
-python -m command_line/cl_protein_embedding_umap.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type
+python command_line/cl_protein_embedding_umap.py -r "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv" --save_csv "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\embedding_umap_test.csv" --region_plots "aaSeqCDR3" --samples "GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001" "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001" --batch_size 100 --pca_components 50 --n_neighbors 25 --min_dist 0.1 --metric "euclidean" --eps 0.5 --min_pts 2 --point_size 300 --model_type
  "Rostlab/prot_t5_xl_half_uniref50-enc" --embedding_vector_path "temp/current_array.npz" --n_jobs 1 --binding_data "C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\binding_data_test.csv" --antigen_names "Antigen 1"
 ```
 

@@ -1,4 +1,4 @@
-from .plots.deprecated import cluster_embedding, embedding_with_binding
+from .plots.deprecated import embedding_with_binding
 from .plots import (
     barplot,
     hist_lvst_dist,
@@ -15,6 +15,7 @@ from .plots import (
     hist_lvst_dist_bind,
     multiple_length_plot,
     protein_embedding_umap,
+    length_clone_fraction
 )
 from .plots.matrices import make_matrix
 import matplotlib.pyplot as plt
@@ -414,7 +415,7 @@ class PlotManager:
         # plot
         for experiment in self.experiments_list:
             try:
-                self.lengthDistribution_single(experiment)
+                self.cf_over_length(experiment)
                 self.save_in_plots(os.path.join("length_distributions", experiment))
             except:
                 print(f"Length Distribution for {experiment} failed")
@@ -594,11 +595,13 @@ class PlotManager:
                     )
                 ):
                     try:
-                        self.embedding_tsne(
-                            samples=overlapping_samples[single_experiment],
-                            strands=False,
-                            batch_size=300,
+                        self.umap_sample_cluster(
+                            samples = overlapping_samples,
+                            strands = False,
+                            batch_size = 300,
+                            
                         )
+
                         self.save_in_plots(
                             os.path.join(
                                 "sequence_embedding",
@@ -648,17 +651,17 @@ class PlotManager:
                             experiment + "tsne_cluster_AG.png",
                         )
                     ):
-                        self.cluster_binding_data(
-                            samples=[experiment],
-                            batch_size=300,
-                            antigens=best_binder[experiment],
-                            show_antigen_names=False,
-                            iterations_tsne=1000,
-                            save_report_path=os.path.join(
-                                report_tsne_cluster,
-                                experiment + f"_best_binder{experiment}" + ".xlsx",
-                            ),
-                        )
+                        self.cluster_binding_data_umap(samples = [experiment], 
+                                                       batch_size=300,
+                                                       antigens = best_binder[experiment],
+                                                       show_antigen_names = False,
+                                                       iterations_umap = 1000,
+                                                        save_report_path=os.path.join(
+                                                        report_tsne_cluster,
+                                                        experiment + f"_best_binder{experiment}" + ".xlsx",)
+                                                       
+                                                       )
+
                         self.save_in_plots(
                             os.path.join(
                                 "clustering_antigens", experiment + "tsne_cluster_AG"
@@ -1108,6 +1111,30 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(
             self.ControlFigure.ax, self.ControlFigure.plot_type
         )
+        
+    def cf_over_length(self, sample = None, no_sequences = 15):
+        """Generates a sequence length distribution normed on the clone fraction
+
+        Args:
+            sample (str): is the sample you would like to analyse
+            no_sequences (int): Is the number of sequences you would like to show on the plot
+        """
+        
+        self.ControlFigure.check_fig()
+        self.ControlFigure.plot_type = "single"
+        self.ControlFigure.clear_fig()
+        length_clone_fraction.LengthSeqFraction(self.sequencing_report,
+                                                sample,
+                                                self.region_of_interest,
+                                                self.ControlFigure.ax,
+                                                no_sequences,
+                                                self.legend_settings,
+                                                self.font_settings)
+        self.ControlFigure.update_plot()
+        self.style = plot_styler.PlotStyle(
+            self.ControlFigure.ax, self.ControlFigure.plot_type
+        )
+        
 
     def logoPlot_multi(
         self,
@@ -1350,6 +1377,7 @@ class PlotManager:
         prefered_cmap="viridis",
         save_report_path=None,
         iterations_umap = 1000,
+        **kwargs
     ):
         """You can use this plot to solely compare samples to each other with UMAP as the main dimension reduction technique.
 
@@ -1390,7 +1418,8 @@ class PlotManager:
             font_settings=self.font_settings,
             legend_settings=self.legend_settings,
             prefered_cmap=prefered_cmap,
-            iterations_umap = iterations_umap
+            iterations_umap = iterations_umap,
+            **kwargs
         )
         self.ControlFigure.update_plot()
         self.style = plot_styler.PlotStyle(

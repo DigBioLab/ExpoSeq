@@ -21,6 +21,7 @@ class GetProteinProperty:
         "weight": self.get_weight,
         "mass_charge_ratio": self.mass_charge_ratio,
         "length": self.calc_len,
+        "color_samples": self.color_samples
      }
         
     @staticmethod
@@ -54,6 +55,10 @@ class GetProteinProperty:
     @staticmethod
     def mass_charge_ratio(peptide_object):
         return peptide_object.mz()
+    
+    @staticmethod
+    def color_samples(peptide_object):
+        pass
     
     def calc_attribute(self, attribute, **kwargs):
         assert attribute in self.attribute_funcs.keys(), f"Please enter a value for attribute which is in {self.attribute_funcs.keys()}"

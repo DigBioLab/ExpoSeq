@@ -52,7 +52,7 @@ class Subplotter:
         
         if dir == "tmp_quarto":
             qmd_file = os.path.join(dir, self.figure_title, f"{self.figure_title}.qmd")
-            Builder.write_quarto(save_dir=qmd_file)
+            Builder.write_quarto(save_dir=os.path.dirname(qmd_file))
         else:
             qmd_file = dir
             Builder.write_quarto(save_dir=qmd_file)

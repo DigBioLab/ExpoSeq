@@ -30,6 +30,7 @@ dependencies = [
     "matplotlib-venn",
     "umap-learn==0.5.5",
     "iglabel==0.0.7",
+    "rjieba"
 ]
 requires-python = ">=3.9"
 readme = "README.md"

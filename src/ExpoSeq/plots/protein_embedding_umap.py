@@ -6,7 +6,10 @@ import warnings
 from .contents.simple_protein_property import GetProteinProperty
 import numpy as np
 import os
-import pickle
+import matplotlib.colors as mcolors
+from matplotlib.legend_handler import HandlerPathCollection
+
+
 
 
 class PrepareData:
@@ -43,6 +46,7 @@ class PrepareData:
             "Rostlab/prot_xlnet",
             "Rostlab/prot_bert_bfd",
             "Rostlab/prot_t5_xxl_bfd",
+            "facebook/esm2_t6_8M_UR50D"
         ]
         assert (
             model in models_all
@@ -128,6 +132,7 @@ class PrepareData:
             "length",
             None,
             "binding",
+            "color_samples"
         ]
         assert (
             characteristic in possible_characteristics
@@ -186,6 +191,7 @@ class PrepareData:
             ids = None
         aminoacids = selected_rows[region_of_interest].to_list()
         experiments_batch = selected_rows["Experiment"]
+
         experiments_batch = experiments_batch.replace(
             0, "non-merged binding data"
         )  # this happens because of the merge in TransformerBased and you need to change the label
@@ -195,13 +201,12 @@ class PrepareData:
         umap_results["sequences"] = list(aminoacids)
         umap_results["sequence_id"] = list(range(umap_results.shape[0]))
         if add_clone_size != None:
-            umap_results["size"] = (
-                np.array(selected_rows["cloneFraction"].to_list()) * add_clone_size
-            )
+            clones = selected_rows["cloneFraction"].to_list()
+            umap_results["size"] =  np.array(clones) * add_clone_size # max fraction per experiment will have different dot sizes for different experiments. This must be kept like this otherwise the results are irritating.
         else:
-            umap_results["size"] = (
-                len(selected_rows["cloneFraction"].to_list()) * [add_clone_size]
-            )
+            add_clone_size = 30
+            umap_results["size"] = len(selected_rows["cloneFraction"].to_list()) * [add_clone_size]
+                
         # self.umap_results.reset_index(inplace = True, drop = True)
         return kds, ids, umap_results
 
@@ -216,7 +221,7 @@ class PrepareData:
     def label_sequence_characteristic(
         characteristic, sequences:list, selected_rows:pd.DataFrame, antigens
     ):
-        if characteristic != None:
+        if characteristic != None or characteristic != "color_samples":
             if antigens == None:
                 assert len(sequences) == selected_rows.shape[0], f"Length is {len(sequences)} and should be {selected_rows.shape[0]}"
                 Property = GetProteinProperty(sequences)
@@ -413,7 +418,7 @@ class PrepareData:
         sequences, sequences_filtered, selected_rows = (
             TransformerBased.filter_sequences(
                 sequencing_report,
-                int(batch_size_adapted),
+                batch_size, # single batch_size NOT batch_size * num_experiments
                 list_experiments,
                 binding_data,
                 region_of_interest=region_of_interest,
@@ -471,7 +476,7 @@ class PrepareData:
             n_components=number_components,
             n_epochs = n_epochs
         )
-        if number_components == 2 and characteristic == None:
+        if number_components == 2 and characteristic == None and characteristic != "color_samples":
             get_clusters = TransformerBased.cluster_with_hdbscan(
                 umap_results, eps=eps_dbscan, min_pts=min_pts_dbscan
             ).tolist()
@@ -487,7 +492,9 @@ class PrepareData:
             assert (
                 umap_results[umap_results["experiments_string"] == sample].shape[0] >= 1
             ), f"After processing your data for your parameters no sequences are left for {sample}"
+            assert umap_results[umap_results["experiments_string"] == sample].shape[0]<= batch_size, f"Number of sequences for {sample} is {umap_results[umap_results['experiments_string'] == sample].shape[0]} and should be smaller than {batch_size}"
         assert type(umap_results["experiments_string"].tolist()) == list
+        
         self.umap_results = umap_results
         return peptides, selected_rows, kds, ids
 
@@ -577,14 +584,19 @@ class PlotEmbedding:
                 self.add_seq_anotation(peptides)
 
             if legend_settings != {}:
+
                 self.add_legend(legend_settings)
+
+
 
     def create_plot(self, characteristic, prefered_cmap):
         markers = ["o", "+", "x", "s", "p", "x", "D"]
+        unique_experiments = self.umap_results["experiments_string"].unique()
+        
         if characteristic == None:
             self.umap_results["color"] = self.umap_results["cluster_id"]
             sm = None
-        else:
+        elif characteristic != "color_samples":
             self.umap_results["color"] = self.umap_results[characteristic]
             global_min_color = self.umap_results["color"].min()
             global_max_color = self.umap_results["color"].max()
@@ -594,39 +606,60 @@ class PlotEmbedding:
             )
 
             norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
+        elif characteristic == "color_samples":
+            color_dict = dict(zip(unique_experiments, mcolors.TABLEAU_COLORS))
+            self.umap_results['color'] = self.umap_results['experiments_string'].map(color_dict)
+            sm = None
 
-        unique_experiments = self.umap_results["experiments_string"].unique()
-
-        for index, experiment in enumerate(unique_experiments):
-            local_results = self.umap_results[
-                self.umap_results["experiments_string"] == experiment
-            ]
-            umap_1_values = local_results["UMAP_1"]
-            umap_2_values = local_results["UMAP_2"]
-            if characteristic is not None:
+        
+        if characteristic == "color_samples":
+            for index, experiment in enumerate(sorted(unique_experiments)):
+                local_results = self.umap_results[
+                    self.umap_results["experiments_string"] == experiment
+                ]
+                local_results = local_results.sort_values(by='size', ascending=False)
+                umap_1_values = local_results["UMAP_1"]
+                umap_2_values = local_results["UMAP_2"]
                 self.ax.scatter(
-                    umap_1_values,
-                    umap_2_values,
-                    marker=markers[index],
-                    s=local_results["size"],
-                    c=local_results["color"],
-                    alpha=0.5,
-                    norm=norm,
-                    cmap=prefered_cmap,
-                    label=experiment,
-                )
+                        umap_1_values,
+                        umap_2_values,
+                        s=local_results["size"],
+                        c=local_results["color"],
+                        alpha=0.8,
+                        cmap=prefered_cmap,
+                        label = experiment,
+                    )
+        else:
+            for index, experiment in enumerate(unique_experiments):
+                local_results = self.umap_results[
+                    self.umap_results["experiments_string"] == experiment
+                ]
+                umap_1_values = local_results["UMAP_1"]
+                umap_2_values = local_results["UMAP_2"]
+                if characteristic is not None:
+                    self.ax.scatter(
+                        umap_1_values,
+                        umap_2_values,
+                        marker=markers[index],
+                        s=local_results["size"],
+                        c=local_results["color"],
+                        alpha=1,
+                        norm=norm,
+                        cmap=prefered_cmap,
+                        label=experiment,
+                    )
 
-            else:
-                self.ax.scatter(
-                    umap_1_values,
-                    umap_2_values,
-                    marker=markers[index],
-                    c=local_results["color"],
-                    s=local_results["size"],
-                    alpha=0.5,
-                    cmap="tab20c",
-                    label=experiment,
-                )
+                else:
+                    self.ax.scatter(
+                        umap_1_values,
+                        umap_2_values,
+                        marker=markers[index],
+                        c=local_results["color"],
+                        s=local_results["size"],
+                        alpha=0.5,
+                        cmap="tab20c",
+                        label=experiment,
+                    )
 
         return sm
 
@@ -642,7 +675,12 @@ class PlotEmbedding:
         )
 
     def add_legend(self, legend_settings):
-        self.ax.legend(**legend_settings)
+        from matplotlib.font_manager import FontProperties
+        legend_settings["prop"] = FontProperties(size=10)
+        lgnd = self.ax.legend( **legend_settings)
+        for legend_handle in lgnd.legendHandles:
+            legend_handle._sizes = [5]
+
 
     def add_seq_anotation(self, peptides):
         x = self.umap_results["UMAP_1"].values.tolist()
@@ -733,9 +771,9 @@ class PlotEmbedding:
 
 
 #PrepData = PrepareData()
-#seq_report = r"C:\Users\nilsh\my_projects\ExpoSeq\src\ExpoSeq\software_tests\test_files\test_show\sequencing_report.csv"
+#seq_report = r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\max_new\sequencing_report.csv"
 #sequencing_report = pd.read_csv(seq_report)
 #sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
-#list_experiments = ["GeneMind_1", "GeneMind_2"]
-#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 80,  number_components = 3)
+#list_experiments = sequencing_report["Experiment"].unique().tolist()
+#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 70,  number_components = 2, characteristic = "color_samples")
 #PrepData.umap_results.to_csv("umap3d.csv")
