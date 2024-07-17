@@ -9,6 +9,8 @@ except:
     pass
 import warnings
 import glob          
+from .full_sequence_finder import FullSequence
+
 
 class ManageImportFiles:
     def __init__(self):
@@ -26,8 +28,6 @@ class ManageImportFiles:
         nuc_regions = ["nSeqCDR1", "nSeqFR2", "nSeqCDR2", "nSeqFR3", "nSeqCDR3", "nSeqFR4"]
         aa_regions = ["aaSeqFR1", "aaSeqCDR1", "aaSeqFR2", "aaSeqCDR2","aaSeqFR3", "aaSeqCDR3", "aaSeqFR4"]
         mandatory_cols = ["readFraction", "readCount", "cloneId", "targetSequences"]
-        assert any(item in nuc_regions for item in cols), "No region starting with nSeq found."
-        assert any(item in aa_regions for item in cols), "No region starting with aaSeq found."
         for col in mandatory_cols:
             assert col in cols, f"{col} does not exist in {filename}"
         
@@ -53,13 +53,12 @@ class ManageImportFiles:
         
         return sequencing_report
 
-dir_tsv = r"src\ExpoSeq\software_tests\test_files\test_show\tables_mixcr"
-TSVManager = ManageImportFiles()
-seq_report = TSVManager.merge_tsvs(dir_tsv)
+#sequencing_report = ManageImportFiles().merge_tsvs(r"C:\Users\nilsh\OneDrive\Desktop\results_thesis\data\ngs_data")
+#sequencing_report.to_csv("sequencing_report.csv", index = False)
 
 
 class SequencingReport:
-    def __init__(self,sequencing_report):
+    def __init__(self,sequencing_report:pd.DataFrame):
         """This class can be used to tidy and prepare the sequencing report for the pipeline. Alternatively you can input a string as a path to a directory with tsv files to generate a merged object out of these table which can be prepared as sequencing report then.
 
         Args:
@@ -71,8 +70,13 @@ class SequencingReport:
         if isinstance(sequencing_report, pd.DataFrame) == True: # for pipeline purposes: 
             sequencing_report = sequencing_report.dropna(subset = ["Experiment"])
         elif type(sequencing_report) == str: # fur Platforma purposes to input tsv files
-            TSVManager = ManageImportFiles()
-            sequencing_report = TSVManager.merge_tsvs(sequencing_report) # contains test for path checking
+            if os.path.isdir(sequencing_report):
+                TSVManager = ManageImportFiles()
+                sequencing_report = TSVManager.merge_tsvs(sequencing_report) # contains test for path checking
+            elif os.path.isfile(sequencing_report) and sequencing_report.endswith(".csv"):
+                sequencing_report = pd.read_csv(sequencing_report)
+            else:
+                raise ValueError("Please enter a valid path to a directory with tsv files or a csv file")
         else:
             return ValueError
         
@@ -110,29 +114,55 @@ class SequencingReport:
             pass
         return avail_cols
 
+
+    def get_longest_region(self, aa_string:str, nseq_string:str):
+        """This code modifies the sequencing_report attribute of the class. It will find the longest connecting regions and merges them together to safe them in one column 
+
+        Args:
+            aa_string (str): _description_
+            nseq_string (str): _description_
+        """
+        self.sequencing_report = self.origin_seq_report.copy()
+        columns_to_check = ["nSeqFR1", "nSeqCDR1", "nSeqFR2", "nSeqCDR2", "nSeqFR3", "nSeqCDR3", "nSeqFR4"]
+        present_columns = [col for col in columns_to_check if col in self.sequencing_report]
+        present_columns = [s.replace("nSeq", '') for s in present_columns]
+        GetFullSeq = FullSequence(present_columns)
+        longest_seq_regions = GetFullSeq.find_connecting_seq()
+        aaSeq_cols = ["aaSeq" + region for region in longest_seq_regions]
+        nSeq_cols = ["nSeq" + region for region in longest_seq_regions]
+        mask = self.sequencing_report[nSeq_cols].apply(lambda row: 'region_not_covered' not in row.values, axis=1)
+        self.sequencing_report = self.sequencing_report[mask]
+        self.sequencing_report[aa_string] = self.sequencing_report[aaSeq_cols].apply(lambda row: ''.join(row.values.astype(str)), axis=1)
+        self.sequencing_report[nseq_string] = self.sequencing_report[nSeq_cols].apply(lambda row: ''.join(row.values.astype(str)), axis=1)
+        
+
     
     def filter_region(self, region_string, remove_gaps = True, remove_errors = True):
         fixed_cols = ["Experiment", "cloneId", "readCount", "readFraction"]
         if region_string == "targetSequences":
             aa_string = "aaSeqtargetSequences"
             nseq_string = "nSeqtargetSequences"
-            self.sequencing_report = self.origin_seq_report.copy()
-            self.sequencing_report.rename(columns={region_string: nseq_string}, inplace=True) 
+            self.get_longest_region(aa_string, nseq_string)
+           # self.sequencing_report.rename(columns={region_string: nseq_string}, inplace=True) 
             if remove_gaps:
-                self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)]
+                self.sequencing_report = self.remove_gaps_in_peptide(self.sequencing_report, 'aaSeq' + region_string) 
             else:
-                warnings.warn("You decided to not remove the gaps which means that sequences potentially are not divisible by 3.\nThere is no functionality for finding the open reading frame. Thus, translating the full sequence to a peptide sequence will start at position 1.")
-            self.sequencing_report[aa_string] = self.sequencing_report[nseq_string].apply(self.translate_nucleotide_to_amino_acid) 
+                pass
+         #   self.sequencing_report[aa_string] = self.sequencing_report[nseq_string].apply(self.translate_nucleotide_to_amino_acid) 
             
             added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
             cols_of_interest = fixed_cols + added_columns
             self.sequencing_report = self.sequencing_report[cols_of_interest]
+            self.remove_not_covered()
         else:
             added_columns = ["nSeq" + region_string, "aaSeq" + region_string] #"minQual" + region_string,
             cols_of_interest = fixed_cols + added_columns
+            
             self.sequencing_report = self.origin_seq_report[cols_of_interest]
-            if remove_gaps:
-                self.sequencing_report = self.sequencing_report[self.sequencing_report['nSeq' + region_string].apply(self.is_divisible_by_three)] # removes gaps indirectly
+            self.drop_nas()
+            self.remove_not_covered()
+            if remove_gaps: # removes all sequences with gaps in the peptide sequence for the corresponding region 
+                self.sequencing_report = self.remove_gaps_in_peptide(self.sequencing_report, 'aaSeq' + region_string) 
         
         if remove_errors:
             self.sequencing_report = self.remove_seq_errors(self.sequencing_report, region_string)
@@ -147,8 +177,7 @@ class SequencingReport:
     def trim_data(self, region_string, length_threshold = 9, min_read_count = 0, new_fraction = "cloneFraction"):
         aa_string = "aaSeq" + region_string
         nseq_string = "nSeq" + region_string
-        assert aa_string in self.sequencing_report.columns.tolist(), f"{self.sequencing_report.columns.tolist()}"
-        assert nseq_string in self.sequencing_report.columns.tolist(), f"{self.sequencing_report.columns.tolist()}"
+
         length_threshold = length_threshold - 1
         if min_read_count > 0:
             min_read_count = min_read_count - 1
@@ -158,7 +187,8 @@ class SequencingReport:
         indexes_to_drop = sequencing_report[sequencing_report[aa_string] == 'region_not_covered'].index
         sequencing_report = sequencing_report.drop(indexes_to_drop)
 
-        sequencing_report["lengthOfCDR3"] = sequencing_report[nseq_string].str.len() ## assumes all that pipeline starts with cdr3 region
+        
+        sequencing_report[f"lengthOf{region_string}"] = sequencing_report[nseq_string].str.len() ## assumes all that pipeline starts with cdr3 region
 
         sequencing_report = sequencing_report.reset_index()
 
@@ -174,16 +204,25 @@ class SequencingReport:
     def remove_not_covered(self):
         self.sequencing_report = self.sequencing_report[~self.sequencing_report.applymap(lambda x: x == "region_not_covered").any(axis=1)]
 
+    @staticmethod
+    def remove_gaps_in_peptide(sequencing_report, region_string):
+        filter = sequencing_report[ region_string].str.contains("[_]", na=False)
+        sequencing_report = sequencing_report.loc[~filter.values]
+        return sequencing_report
     
+    def drop_nas(self, ):
+        self.sequencing_report = self.sequencing_report.dropna()
+        
+        
     @staticmethod
     def remove_seq_errors(sequencing_report, region_string):
-        sequencing_report = sequencing_report.loc[~sequencing_report["aaSeq" + region_string].str.contains("[*]")]
+        sequencing_report = sequencing_report.loc[~sequencing_report["aaSeq" + region_string].str.contains("[*]", na = False) ]
         return sequencing_report
     
     def prepare_seq_report(self, region_string, length_threshold, min_read_count, remove_gaps = True, remove_errors = True):
         self.filter_region(region_string, remove_gaps, remove_errors) # sequencing errors are removed here and sequences with gaps are indirectly removed with: divisible_by = 3
         self.trim_data(region_string, length_threshold, min_read_count,)
-        self.remove_not_covered()
+        
        # self.remove_seq_errors()
 
     
@@ -211,8 +250,8 @@ class SequencingReport:
                 break
             else:
                 print("Please enter Y or n")
-            
-        
+  
+  
 
 
 class BindingReport:
@@ -252,7 +291,14 @@ class BindingReport:
                     binding_new = pd.read_csv(binding_file)
                 elif binding_file.endswith(".tsv"):
                     binding_new = pd.read_table(binding_file)
+                if (binding_new.index == binding_new.iloc[:, 0]).all():
+                    binding_new = binding_new.drop(binding_new.columns[0], axis=1) # checks if first column is basically the index column
+                else: pass
+
                 if binding_new.columns.to_list()[0] == "aaSeqCDR3":
+                    second_prompt = False
+                    pass
+                elif binding_new.columns.to_list()[0].capitalize() == "Sequences":
                     second_prompt = False
                     pass
                 else:
@@ -270,23 +316,32 @@ class BindingReport:
                 print("The first five rows of your binding data look like this:")
                 print(binding_data.head(5))
         return binding_data
+    
+    def modify_binding_data(self, binding_data):
+        for column in binding_data.columns[1:]:
+        # Convert non-numeric values to NaN
+            binding_data[column] = pd.to_numeric(binding_data[column], errors='coerce')
+        # Drop rows with NaN values
+        binding_data = binding_data.dropna(axis=1, how='all')
+        return binding_data
+    
         
-    def ask_binding_data(self):
+    def ask_binding_data(self, ):
         if not os.path.isfile(self.binding_data_dir):
             add_binding = input("Do you have binding Data? Y/n")
             if add_binding.lower() in ["Y", "y"]:
                 binding_data = self.collect_binding_data()
-
+                binding_data = self.modify_binding_data(binding_data)
+                binding_data = binding_data.rename(columns={binding_data.columns[0]: "Sequences"})
+                
                 binding_data.to_csv("binding_data.csv")
             else:
                 binding_data = None
         else:
             binding_data = pd.read_csv(self.binding_data_dir)
         if binding_data is not None:
-            binding_data.drop_duplicates(subset = "aaSeqCDR3", inplace = True)
+            binding_data.drop_duplicates(subset = "Sequences", inplace = True)
         return binding_data
-
-
 
 
 

@@ -8,3 +8,6 @@ def test_FullSequence():
     Finder = FullSequence(["FR1", "CDR1", "FR3", "CDR3"])
     row_indexes = Finder.find_connecting_seq()
     assert row_indexes == ["FR3", "CDR3"]
+    Finder = FullSequence(["FR1", "CDR1", "FR2", "CDR2", "FR3", "CDR3", "FR4"])
+    row_indexes = Finder.find_connecting_seq()
+    assert row_indexes == ["FR1", "CDR1", "FR2", "CDR2", "FR3", "CDR3", "FR4"]

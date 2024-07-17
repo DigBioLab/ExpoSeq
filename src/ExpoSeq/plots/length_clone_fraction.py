@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
 from textwrap import wrap
-
+from .global_font import font_settings_title, font_settings_normal
 class PrepareData:
     @staticmethod
     def color_setup(sequencing_report:pd.DataFrame, no_sequences = 10):
@@ -46,6 +46,7 @@ class PrepareData:
         return sequencing_report[sequencing_report["Experiment"] == sample]
     
     
+
 class LengthSeqFraction:
     def __init__(self, sequencing_report:pd.DataFrame, sample:str, region:str,
                  ax = None, no_sequences = 10, legend_params = {}, font_settings = {}):
@@ -79,13 +80,13 @@ class LengthSeqFraction:
         self.ax.legend(**legend_params)
 
     def arange_labels(self, font_settings:dict, sample):
-        self.ax.set_ylabel("Clone Fraction", **font_settings)  # Y label
-        self.ax.set_xlabel("Read Length", **font_settings)  # X label
+        self.ax.set_ylabel("Clone Fraction", **font_settings_normal)  # Y label
+        self.ax.set_xlabel("Sequence Length", **font_settings_normal)  # X label
 
-        original_fontsize = font_settings["fontsize"]
-        font_settings["fontsize"] = 20
+        original_fontsize = font_settings_normal["fontsize"]
+
         title = "\n".join(wrap("Length Distribution of " + sample, 40))
-        plt.title(title, pad=12, **font_settings)
+        plt.title(title, pad=12, **font_settings_title)
         font_settings["fontsize"] = original_fontsize
 
         

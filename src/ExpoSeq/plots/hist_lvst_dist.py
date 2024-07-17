@@ -6,7 +6,7 @@ import warnings
 from textwrap import wrap
 import editdistance
 import numpy as np
-
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     
@@ -92,10 +92,10 @@ class LevenshteinDend:
             labels=aa_clustered,
             ax=ax,
         )
-        ax.set_xlabel("Levenshtein Distance", **font_settings)
-        ax.set_ylabel("Sequences", **font_settings)
+        ax.set_xlabel("Levenshtein Distance", **font_settings_normal)
+        ax.set_ylabel("Sequences", **font_settings_normal)
         title = "\n".join(
             wrap("Levenshtein Distance between sequences in " + " ".join(samples), 40)
         )
-        ax.set_title(title, pad=12, **font_settings)
+        ax.set_title(title, pad=12, **font_settings_title)
         plt.tight_layout()

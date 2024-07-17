@@ -34,6 +34,8 @@ from .settings.figure import MyFigure, save_matrix
 from .settings.markdown_builder import create_quarto
 import warnings
 from .settings.subplots_manager import Subplotter
+from .subplot_figures import create_quality_subplot
+
 
 
 class PlotManager:
@@ -48,7 +50,7 @@ class PlotManager:
         allow_binding_data=True,
         remove_gaps=True,
         remove_errors=True,
-        show_df = True,
+        show_df = False,
     ):
         """
         :param experiment: the name of the experiment you want to analyse
@@ -144,6 +146,9 @@ class PlotManager:
             print_instructions()
         if show_df == True:
             self.show_dataframe()
+            
+            
+        self.prefered_model = "nilsho01/LittleNano"
 
             
     def show_dataframe(self):
@@ -346,16 +351,15 @@ class PlotManager:
         if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding")):
             os.makedirs(os.path.join(self.plot_path, "sequence_embedding"))
 
-        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "sgt")):
-            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "sgt"))
+        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "LittleNano")):
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "LittleNano"))
 
         if not os.path.isdir(
-            os.path.join(self.plot_path, "sequence_embedding", "protbert")
+            os.path.join(self.plot_path, "sequence_embedding", "ESM2")
         ):
-            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "protbert"))
+            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "ESM2"))
 
-        if not os.path.isdir(os.path.join(self.plot_path, "sequence_embedding", "T5")):
-            os.makedirs(os.path.join(self.plot_path, "sequence_embedding", "T5"))
+
 
         if not os.path.isdir(report_seq_cluster):
             os.makedirs(report_seq_cluster)
@@ -470,7 +474,7 @@ class PlotManager:
                 if not os.path.isfile(
                     os.path.join(self.plot_path, "logo_plots", experiment + ".png")
                 ):
-                    self.logoPlot(sample=experiment)
+                    self.logoPlot(sample=[experiment])
                     self.save_in_plots(os.path.join("logo_plots", experiment))
             except:
                 print(f"Logo Plot for {experiment} failed")
@@ -488,46 +492,44 @@ class PlotManager:
         except:
             print("Creation of cluster for all samples failed.")
         for single_experiment in self.experiments_list:
-            try:
-                if not os.path.isfile(
+            
+            if not os.path.isfile(
+                os.path.join(
+                    self.plot_path,
+                    "sequence_cluster",
+                    single_experiment + "ls_dendro.png",
+                )
+            ):
+                self.levenshtein_dendrogram(
+                    samples=[single_experiment], max_cluster_dist=2, batch_size = 200
+                )
+                self.save_in_plots(
                     os.path.join(
-                        self.plot_path,
-                        "sequence_cluster",
-                        single_experiment + "ls_dendro.png",
+                        "sequence_cluster", single_experiment + "ls_dendro"
                     )
-                ):
-                    self.levenshtein_dendrogram(
-                        sample=single_experiment, max_cluster_dist=1
-                    )
-                    self.save_in_plots(
-                        os.path.join(
-                            "sequence_cluster", single_experiment + "ls_dendro"
-                        )
-                    )
-                if not os.path.isfile(
+                )
+            if not os.path.isfile(
+                os.path.join(
+                    self.plot_path,
+                    "sequence_cluster",
+                    single_experiment + "ls_cluster.png",
+                )
+            ):
+                self.basic_cluster(
+                    samples=[single_experiment],
+                    max_ld=2,
+                    batch_size=1000,
+                    save_report_path=os.path.join(
+                        report_seq_cluster,
+                        f"{single_experiment}" + "ls_cluster" + ".xlsx",
+                    ),
+                )
+                self.save_in_plots(
                     os.path.join(
-                        self.plot_path,
-                        "sequence_cluster",
-                        single_experiment + "ls_cluster.png",
+                        "sequence_cluster", single_experiment + "ls_cluster"
                     )
-                ):
-                    self.basic_cluster(
-                        samples=[single_experiment],
-                        max_ld=2,
-                        batch_size=1000,
-                        label_type=None,
-                        save_report_path=os.path.join(
-                            report_seq_cluster,
-                            f"{single_experiment}" + "ls_cluster" + ".xlsx",
-                        ),
-                    )
-                    self.save_in_plots(
-                        os.path.join(
-                            "sequence_cluster", single_experiment + "ls_cluster"
-                        )
-                    )
-            except:
-                print(f"Sequence clustering failed at: {single_experiment}")
+                )
+
         threshold_identity = 0.2
 
         while True:
@@ -562,27 +564,30 @@ class PlotManager:
                     os.path.join(
                         self.plot_path,
                         "sequence_embedding",
-                        "sgt",
-                        single_experiment + "embedding_tsne.png",
+                        "LittleNano",
+                        single_experiment + "embedding_umap.png",
                     )
                 ):
                     try:
-                        self.embedding_tsne(
-                            samples=overlapping_samples[single_experiment],
-                            model="sgt",
-                            strands=False,
-                            batch_size=300,
-                            iterations_tsne=1000,
+                        self.umap_sample_cluster(
+                            samples = overlapping_samples[single_experiment],
+                            model_choice = self.prefered_model,
+                            custom_model=True,
+                            pca_components = 40,
+                            n_neighbors=15,
+
                         )
+
                         self.save_in_plots(
                             os.path.join(
                                 "sequence_embedding",
-                                "sgt",
-                                single_experiment + "embedding_tsne",
+                                "LittleNano",
+                                single_experiment + "embedding_umap",
                             )
                         )
+
                     except:
-                        print(f"Clustering with TSNE failed for {single_experiment}.")
+                        print(f"Clustering with UMAP failed for {single_experiment}.")
 
         if overlapping_samples != None:
             for single_experiment in list(overlapping_samples.keys()):
@@ -590,37 +595,41 @@ class PlotManager:
                     os.path.join(
                         self.plot_path,
                         "sequence_embedding",
-                        "T5",
+                        "ESM2",
                         single_experiment + "embedding.png",
                     )
                 ):
                     try:
                         self.umap_sample_cluster(
-                            samples = overlapping_samples,
-                            strands = False,
+                            samples = overlapping_samples[single_experiment],
                             batch_size = 300,
+                            model_choice="facebook/esm2_t6_8M_UR50D",
+                            pca_components = 40,
+                            n_neighbors=15, 
+                            save_report_path = os.path.join(
+                                "sequence_embedding",
+                                "ESM2",
+                                single_experiment + "embedding"
+                            )
+                            
                             
                         )
 
-                        self.save_in_plots(
-                            os.path.join(
-                                "sequence_embedding",
-                                "T5",
-                                single_experiment + "embedding_tsne",
-                            )
-                        )
                     except:
-                        print(f"Clustering with TSNE failed for {single_experiment}.")
+                        print(f"Clustering with UMAP failed for {single_experiment}.")
 
         else:
             print(
                 "Neither Morosita Horn nor Jaccard matrix was generated, thus no sequence embedding can be created."
             )
-        if self.region_of_interest not in self.binding_data.columns.tolist():
-            print(f"There is no binding data available for {self.region_of_interest}")
-            best_binder = None
+        if self.binding_data is not None:
+            if self.region_of_interest not in self.binding_data.columns.tolist():
+                print(f"There is no binding data available for {self.region_of_interest}")
+                best_binder = None
+            else:
+                best_binder = self.get_best_binder()
         else:
-            best_binder = self.get_best_binder()
+            best_binder = None
 
         if best_binder == None:
             print("No binding data was found. Thus, no binding plots can be created.")
@@ -648,17 +657,21 @@ class PlotManager:
                         os.path.join(
                             self.plot_path,
                             "clustering_antigens",
-                            experiment + "tsne_cluster_AG.png",
+                            experiment + "umap_cluster_AG.png",
                         )
                     ):
                         self.cluster_binding_data_umap(samples = [experiment], 
-                                                       batch_size=300,
+                                                       batch_size=1000,
                                                        antigens = best_binder[experiment],
                                                        show_antigen_names = False,
                                                        iterations_umap = 1000,
                                                         save_report_path=os.path.join(
                                                         report_tsne_cluster,
-                                                        experiment + f"_best_binder{experiment}" + ".xlsx",)
+                                                        experiment + f"_best_binder{experiment}" + ".xlsx",),
+                                                        n_neighbors=15, 
+                                                        pca_components=40,
+                                                        model_choice = self.prefered_model,
+                                                        custom_model = True,
                                                        
                                                        )
 
@@ -711,31 +724,7 @@ class PlotManager:
                                 experiment + "cluster_dendrogram",
                             )
                         )
-                        try:
-                            plt.close("all")
-                            self.cluster_one_AG(
-                                antigen=best_binder[experiment][0],
-                                specific_experiments=[experiment],
-                                batch_size=1000,
-                                max_ld=2,
-                                preferred_cmap="Reds",
-                                label_type=None,
-                                save_report_path=os.path.join(
-                                    report_ls_cluster,
-                                    experiment + f"_ls_binding_cluster" + ".xlsx",
-                                ),
-                            )
-                            self.save_in_plots(
-                                os.path.join(
-                                    "clustering_antigens",
-                                    "ls_binding_cluster",
-                                    experiment + f"_ls_binding_cluster",
-                                )
-                            )
-                        except:
-                            print(
-                                "Could not create levenshtein distance cluster for best binder"
-                            )
+
                 except:
                     print(f"Dendrogram with binding data failed for {experiment}")
 
@@ -869,10 +858,10 @@ class PlotManager:
         assert (
             self.binding_data is not None
         ), "You have not given binding data. You can add it with the add_binding_data function"
-
+        binding_data = self.binding_data.rename(columns={self.binding_data.columns[0]: self.region_of_interest})
         merged_reports = pd.merge(
             self.sequencing_report,
-            self.binding_data,
+            binding_data,
             on="aaSeqCDR3",
             how=merge_technique,
         )
@@ -965,13 +954,14 @@ class PlotManager:
         ], "You have to give True or False as input for the log transformation"
         self.ControlFigure.clear_fig()
         try:
-            barplot.barplot(
-                self.ControlFigure.ax,
-                self.alignment_report,
+            barplot.AlignmentPlot(
                 self.sequencing_report,
+                self.alignment_report,
+                self.ControlFigure.ax,
                 self.font_settings,
                 self.legend_settings,
                 apply_log=log_transformation,
+                
             )
 
             self.ControlFigure.update_plot()
@@ -1119,7 +1109,8 @@ class PlotManager:
             sample (str): is the sample you would like to analyse
             no_sequences (int): Is the number of sequences you would like to show on the plot
         """
-        
+        if sample == None:
+            sample = self.preferred_sample
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
@@ -1369,14 +1360,16 @@ class PlotManager:
         random_seed=42,
         densmap=True,
         metric="euclidean",
-        model_choice="Rostlab/prot_t5_xl_half_uniref50-enc",
+        model_choice="esm2_t6_8M_UR50D",
         show_strands=False,
-        clone_size_factor=300,
+        clone_size_factor=500,
         batch_size=1000,
         pca_components=50,
         prefered_cmap="viridis",
         save_report_path=None,
         iterations_umap = 1000,
+        custom_model = False,
+        characteristic = "color_samples",
         **kwargs
     ):
         """You can use this plot to solely compare samples to each other with UMAP as the main dimension reduction technique.
@@ -1397,6 +1390,8 @@ class PlotManager:
         """
         if samples == None:
             samples = [self.preferred_sample]
+
+            
         self.ControlFigure.check_fig()
         self.ControlFigure.plot_type = "single"
         self.ControlFigure.clear_fig()
@@ -1414,11 +1409,13 @@ class PlotManager:
             densmap,
             metric,
             model_choice,
+            characteristic = characteristic,
             ax=self.ControlFigure.ax,
             font_settings=self.font_settings,
             legend_settings=self.legend_settings,
             prefered_cmap=prefered_cmap,
             iterations_umap = iterations_umap,
+            custom_model = custom_model,
             **kwargs
         )
         self.ControlFigure.update_plot()
@@ -1439,7 +1436,7 @@ class PlotManager:
         random_seed=42,
         densmap=True,
         metric="euclidean",
-        model_choice="Rostlab/prot_t5_xl_half_uniref50-enc",
+        model_choice="esm2_t6_8M_UR50D",
         show_strands=False,
         clone_size_factor=300,
         batch_size=1000,
@@ -1516,7 +1513,7 @@ class PlotManager:
         random_seed=42,
         densmap=True,
         metric="euclidean",
-        model_choice="Rostlab/prot_t5_xl_half_uniref50-enc",
+        model_choice="esm2_t6_8M_UR50D",
         show_strands=False,
         clone_size_factor=300,
         batch_size=1000,
@@ -1599,7 +1596,7 @@ class PlotManager:
         save_report_path=None,
     ):
         """
-        :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sampel_name"].
+        :param samples: A list containing the samples you would like to analyze. Analyze just one sample with: ["My_sample_name"].
         :param max_ld: Maximum allowed levenshtein distance between sequences within one cluster. The higher the distance the larger the clusters.
         :param min_ld: Minimum allowed levenshtein distance between sequences within one cluster.
         :param label_type: Default is numbers. This will label the nodes in the plot with the corresponding identifier in the output report. You can type sequences for labeling the nodes with the sequneces. If you do not want to have labels set it to None.
@@ -1627,9 +1624,9 @@ class PlotManager:
         self.style = plot_styler.PlotStyle(
             self.ControlFigure.ax, self.ControlFigure.plot_type
         )
-        if self.is_test == True:
+        if self.is_test != True:
             self.save_cluster_report(
-                cluster_report=cluster_report, path=save_report_path
+                cluster_report=cluster_report.report, path=save_report_path
             )
 
     def ls_distance_binding(
@@ -2019,7 +2016,7 @@ class PlotManager:
         self,
         samples=None,
         strands=True,
-        model="Rostlab/prot_t5_xl_half_uniref50-enc",
+        model="esm2_t6_8M_UR50D",
         pca_components=80,
         perplexity=30,
         iterations_tsne=2500,
@@ -2264,7 +2261,7 @@ class PlotManager:
 
     def levenshtein_dendrogram(self, samples=None, max_cluster_dist=2, batch_size=1000):
         """
-        :params sample: the sample you would like to analyze in 
+        :params samples: the sample you would like to analyze in 
         :max_cluster_dist: Default is 2. Maximum levenshtein distance between sequences within a cluster.
         :params batch_size: Default is 1000. The size of the sample which is chosen.
         :return: Returns a dendrogram of the sequences based on the Levenshtein distance
@@ -2628,6 +2625,11 @@ class PlotManager:
             export_plots_commands.extend([json_dir])
             export_plots_commands.extend([os.path.join(save_dir, f"{metric}.png")])
             subprocess.run(export_plots_commands)
+            
+            
+            
+    def create_quality_overview(self):
+        create_quality_subplot.create_quality_subplot(self)
 
     # export_plots_commands = self.create_parser()
     # export_plots_commands.extend(["exportPlots"])

@@ -11,6 +11,7 @@ class MyFigure:
         self.plot_type = "multi"
         self.figure_style = figure_style  
         self.test = test
+        self.stop_fig_update = False
 
     def check_fig(self, ):
         if not plt.fignum_exists(1):
@@ -22,7 +23,10 @@ class MyFigure:
             self.ax = self.fig.gca()
 
     def update_plot(self):
-        self.ax = self.fig.gca()
+        if self.stop_fig_update:
+            pass
+        else:
+            self.ax = self.fig.gca()
         self.use_style(self.figure_style)
         self.ax_visibility()
         self.style = plot_styler.PlotStyle(self.ax, self.plot_type)
@@ -65,7 +69,7 @@ def save_matrix(matrix, path = None):
             while True:
                 filename_matrix = input("Enter a name for the file. The file will be saved locally in your IDE.")
                 if not os.path.isfile(filename_matrix):
-                    matrix.to_excel(path + ".xlsx")
+                    matrix.to_excel(filename_matrix + ".xlsx")
                     break
                 else:
                     print("This file already exists. Please choose another name.")

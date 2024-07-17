@@ -66,4 +66,4 @@ if __name__ == "__main__":
             [all_sequences_report, RegionReport.sequencing_report]
         )
 
-    Report.sequencing_report.to_csv(parser.save_csv)
+    Report.sequencing_report.to_csv(parser.save_csv, index = False)

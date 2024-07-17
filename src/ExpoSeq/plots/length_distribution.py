@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ..settings.layout_finder import best_layout
 from textwrap import wrap
+from .global_font import font_settings_title, font_settings_normal
 
 
 class LengthDistributionSingle:
@@ -20,7 +21,7 @@ class LengthDistributionSingle:
         self.plot(unique_length, counts_length, sample, ax, font_settings, title_type)
 
         if title_type == "single":
-            self.title(sample, font_settings)
+            self.title(sample, font_settings_title)
         else:
             pass
 
@@ -44,14 +45,13 @@ class LengthDistributionSingle:
             ax.title.set_size(18)
         else:
             ax.title.set_size(12)
-        ax.set_ylabel("Read Count", **font_settings)  # Y label
-        ax.set_xlabel("Read Length", **font_settings)  # X label
+        ax.set_ylabel("Read Count", **font_settings_normal)  # Y label
+        ax.set_xlabel("Read Length", **font_settings_normal)  # X label
 
-        original_fontsize = font_settings["fontsize"]
-        font_settings["fontsize"] = 20
+        original_fontsize = font_settings_title["fontsize"]
         title = "\n".join(wrap("Length Distribution of " + sample, 40))
-        plt.title(title, pad=12, **font_settings)
-        font_settings["fontsize"] = original_fontsize
+        plt.title(title, pad=12, **font_settings_title)
+        font_settings_title["fontsize"] = original_fontsize
 
     @staticmethod
     def title(sample, font_settings):

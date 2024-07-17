@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from textwrap import wrap
 import pandas as pd
-
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     @staticmethod
@@ -48,12 +48,12 @@ class DiversityPlot:
         self.ax = ax
         self.method = method
         self.font_settings = font_settings
-        values, unique_experiments = PrepareData().cleaning(
+        self.values, unique_experiments = PrepareData().cleaning(
             sequencing_report, region_of_interest, method
         )
         if ax != None:
             self.ax = ax
-            self.create_base_plot(values, unique_experiments)
+            self.create_base_plot(self.values, unique_experiments)
             self.add_plot_addons(unique_experiments)
             self.set_title()
 
@@ -70,23 +70,23 @@ class DiversityPlot:
 
     def add_plot_addons(self, unique_experiments):
         if self.method == "InverseSimpson":
-            self.ax.set_ylabel("Inverse Simpson Index", **self.font_settings)
+            self.ax.set_ylabel("Inverse Simpson Index", **font_settings_normal)
             plt.yscale("log")
         if self.method == "Shannon":
-            self.ax.set_ylabel("Shannon Index", **self.font_settings)
-        self.ax.set_xlabel("Sample", **self.font_settings)
+            self.ax.set_ylabel("Shannon Index", **font_settings_normal)
+        self.ax.set_xlabel("Sample", **font_settings_normal)
         self.ax.set_xticklabels(
             labels=unique_experiments, rotation=45, ha="right", size=12
         )
 
     def set_title(self):
-        if len(self.font_settings) != 0:
-            original_fontsize = self.font_settings["fontsize"]
-            self.font_settings["fontsize"] = 22
+        if len(font_settings_title) != 0:
+            original_fontsize = font_settings_title["fontsize"]
+            font_settings_title["fontsize"] = 22
             if self.method == "InverseSimpson":
                 title = "Diversity based on Inverse Simpson Index"
             if self.method == "Shannon":
                 title = "Diversity based on Shannon Index"
             title = "\n".join(wrap(title, 40))
-            self.ax.set_title(title, pad=12, **self.font_settings)
-            self.font_settings["fontsize"] = original_fontsize
+            self.ax.set_title(title, pad=12, **font_settings_title)
+            font_settings_title["fontsize"] = original_fontsize

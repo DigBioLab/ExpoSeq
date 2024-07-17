@@ -58,4 +58,4 @@ if __name__ == "__main__":
     )
 
 
-    PrepData.umap_results.to_csv(parser.save_csv)
+    PrepData.umap_results.to_csv(parser.save_csv, index = False)

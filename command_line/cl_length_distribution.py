@@ -20,5 +20,5 @@ if __name__ == "__main__":
         sequencing_report, parser.single_sample, parser.region_plots
     )
     pd.DataFrame({"unique_length": unique_length, "counts_length": counts_length}).to_csv(
-        parser.save_csv
+        parser.save_csv, index = False
     )

@@ -53,3 +53,5 @@ results_thesis
 temp.vdjca
 *.fasta
 .vscode
+anes_plots.ipynb
+imgt_labels

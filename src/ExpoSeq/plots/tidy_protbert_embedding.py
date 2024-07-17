@@ -7,39 +7,39 @@ from sklearn.manifold import TSNE
 import numpy as np 
 import umap 
 from sklearn.cluster import DBSCAN
-from transformers import AutoModel, AutoTokenizer 
+from sklearn.utils import shuffle
+from transformers import AutoModel, AutoTokenizer
+import os
 
 class TransformerBased:
 
-    def __init__(self, choice='Rostlab/prot_t5_xl_half_uniref50-enc', truncation = False, max_length = None):
+    def __init__(self, choice='Rostlab/prot_t5_xl_half_uniref50-enc', truncation = False, max_length = None, custom_model = False):
         self.truncation = truncation
         self.max_length = max_length
         self.choice = choice
-        self.prep_model()
-
-    def prep_model(self):
-        model_types = ["facebook/esm2_t6_8M_UR50D", "Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_base_mt_uniref50", "Rostlab/prot_bert_bfd_membrane", "Rostlab/prot_t5_xxl_uniref50",
-                       "Rostlab/ProstT5", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization",
-                       "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd", "Rostlab/prot_t5_xxl_bfd"]
+        self.take_model(custom_model)
         
+        
+    def take_model(self, custom_model):
+        """Loads the model and toeknizer. 
+        Current problem: Some models may not be available here because of AutoModel configuration.
+        """
         t5 = ["Rostlab/ProstT5", "Rostlab/ProstT5_fp16", "Rostlab/prot_t5_xl_uniref50", "Rostlab/prot_t5_xxl_uniref50", "Rostlab/prot_t5_xl_half_uniref50-enc", "Rostlab/prot_t5_xl_bfd", "Rostlab/prot_t5_xxl_bfd"]
-        bertis = ["Rostlab/prot_bert_bfd_ss3", "Rostlab/prot_bert_bfd_localization", "Rostlab/prot_bert", "Rostlab/prot_xlnet", "Rostlab/prot_bert_bfd"]
-        esm = ["facebook/esm2_t6_8M_UR50D"]
-        assert self.choice in model_types, f"Your choice has to be a model from https://huggingface.co/Rostlab and has to be one of {model_types}"
+
         if self.choice in t5:
             from transformers import T5Tokenizer, T5EncoderModel
             self.tokenizer = T5Tokenizer.from_pretrained(self.choice,
                                                     do_lower_case=False,) ## Full transformer
 
             self.model = T5EncoderModel.from_pretrained(self.choice, output_attentions = True )
-        elif self.choice in bertis:
-            from transformers import BertModel, BertTokenizer
-            self.tokenizer = BertTokenizer.from_pretrained(self.choice, do_lower_case=False) # encoder BERT architecture
-            self.model = BertModel.from_pretrained(self.choice, output_attentions = True )
-        elif self.choice in esm:
-            from transformers import AutoTokenizer, EsmModel
-            self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
-            self.model = EsmModel.from_pretrained(self.choice)
+        else:
+            if custom_model:
+                self.tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(self.choice)
+            self.model = AutoModel.from_pretrained(self.choice)
+
+
         
 
     @staticmethod
@@ -50,11 +50,13 @@ class TransformerBased:
 
         
         selected_rows = report_batch.loc[report_batch[sample_column_name].isin(experiments)]
+        # no duplicate removal anymore
         
+        selected_rows = shuffle(selected_rows) # dropping then more balanced between samples
         selected_rows = selected_rows.drop_duplicates(subset=[region_of_interest], keep='first')
         
         assert selected_rows.shape[0] <= len(experiments) * batch_size
-        
+        selected_rows = selected_rows.sort_values(by=[sample_column_name], ascending=True)
         # this is to account for the dropped dups
         max_clone_fraction = selected_rows.groupby(['Experiment', region_of_interest])['cloneFraction'].max() 
         max_clone_fraction = max_clone_fraction.reset_index() # output: one col with Experiment, aaSeqCDR3 and clone fraction
@@ -64,20 +66,19 @@ class TransformerBased:
         selected_rows = result_df[result_df['cloneFraction'] == result_df['cloneFraction_max']]
 
         # Drop the additional column used for comparison
- #       selected_rows.drop(columns=['cloneFraction_max'], inplace=True)
-
-        
-        assert selected_rows.shape[0] <= len(experiments) * batch_size
+ #       selected_rows.drop(columns=['cloneFraction_max'], inplace=True)        
         if binding_data is not None:
+            binding_data = binding_data.rename(columns={binding_data.columns[0]: region_of_interest})
             mix = selected_rows.merge(binding_data, on = region_of_interest, how = "outer")
             selected_rows = mix.fillna(0)
+            mask = (selected_rows[sample_column_name] == 0)
+            selected_rows.loc[mask, sample_column_name] = "Binding Data"
         max_fraction = max(selected_rows[cf_column_name])
         selected_rows.loc[selected_rows[cf_column_name] == 0.0, cf_column_name] = max_fraction
         selected_rows = selected_rows.sort_values(by=[sample_column_name], ascending=True)
         sequences_filtered = selected_rows[region_of_interest]
         sequences = [" ".join(list(re.sub(r"[UZOB*_]", "X", sequence))) for sequence in sequences_filtered]
-        for sample in experiments:  # tests
-            assert selected_rows[selected_rows["Experiment"] == sample].shape[0]<= batch_size, f"Number of sequences for {sample} is {umap_results[umap_results['experiments_string'] == sample].shape[0]} and should be smaller than {batch_size}"
+
         return sequences,sequences_filtered, selected_rows
         
     def prepare_sequences(self,sequences, device = "cpu"):
@@ -86,7 +87,7 @@ class TransformerBased:
         attention_mask = torch.tensor(ids['attention_mask'])
         return attention_mask, input_ids
     
-    def get_result(self, sequences):        
+    def get_result(self, sequences:list):        
         if not self.truncation:    
             encoded_input = self.tokenizer(sequences, return_tensors='pt', padding=True)
         else:
@@ -99,9 +100,29 @@ class TransformerBased:
         
         return embedding_repr
     
+    def embedding_parallel(self, sequences:list[list], batch_size = 32):
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(device)  # Move model to appropriate device
+
+        all_avg_seqs = []
+
+        for i in range(0, len(sequences), batch_size):
+            batch_sequences = sequences[i:i + batch_size]
+            inputs = self.tokenizer(batch_sequences, return_tensors='pt', padding=True)
+            inputs = {k: v.to(device) for k, v in inputs.items()}  # Move inputs to device
+
+            with torch.no_grad():  # Disable gradient computation for inference
+                outputs = self.model(**inputs)
+                last_hidden_state = outputs.last_hidden_state
+                avg_seq = last_hidden_state.mean(dim=1)
+                all_avg_seqs.append(avg_seq.cpu().detach().numpy())  # Move results back to CPU and convert to numpy
+
+        # Concatenate all batch results into a single numpy array
+        sequences_array = np.concatenate(all_avg_seqs, axis=0) # no sequences x dimensions of BERT 
+        return sequences_array
     
-    
-    def embedding_per_seq(self, sequences, normalize = False):
+    def embedding_per_seq(self, sequences:list[list], normalize = False):
         sequences_list = []
         for seq in sequences:
             embeddings = self.get_result(seq)
@@ -203,6 +224,7 @@ class TransformerBased:
         return get_clusters
     
     
+
     
 #sequencing_report = pd.read_csv(r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\max_new\sequencing_report.csv")
 #sequencing_report["cloneFraction"] = sequencing_report["readFraction"]

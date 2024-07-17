@@ -7,7 +7,49 @@ try:
 except:
     pass
 
-def collect_binding_data(binding_data = None):
+
+def modify_binding_data(binding_data):
+    for column in binding_data.columns[1:]:
+    # Convert non-numeric values to NaN
+        binding_data[column] = pd.to_numeric(binding_data[column], errors='coerce')
+    # Drop rows with NaN values
+    binding_data = binding_data.dropna(axis=1, how='all')
+    binding_data = binding_data.rename(columns={binding_data.columns[0]: "Sequences"})
+    return binding_data
+
+
+def open_file_binding(binding_file):
+    if binding_file.endswith(".xlsx") or binding_file.endswith(".csv") or binding_file.endswith(".tsv"):
+        if binding_file.endswith(".xlsx"):
+            binding_new = pd.read_excel(binding_file)
+        elif binding_file.endswith(".csv"):
+            binding_new = pd.read_csv(binding_file)
+        elif binding_file.endswith(".tsv"):
+            binding_new = pd.read_table(binding_file)
+        if (binding_new.index == binding_new.iloc[:, 0]).all():
+            binding_new = binding_new.drop(binding_new.columns[0], axis=1) # checks if first column is basically the index column
+        else: pass
+
+        if binding_new.columns.to_list()[0] == "aaSeqCDR3":
+            second_prompt = False
+            binding_new = modify_binding_data(binding_new)
+            pass
+        elif binding_new.columns.to_list()[0].capitalize() == "Sequences":
+            second_prompt = False
+            binding_new = modify_binding_data(binding_new)
+            pass
+        else:
+            binding_new = None
+            second_prompt = True
+            print("Please chechk if your file follows the following requirements:\n1. The first column must contain the CDR3 sequences and its column name has to be aaSeqCDR3.\n2. Check that you separate your data by comma or tab.\n3. Your file needs to end with .xlsx, .csv or .tsv")
+    else:
+        print("Please enter a valid filepath to a csv or xlsx file")
+        second_prompt = True
+        binding_new = None
+    return binding_new, second_prompt
+
+
+def collect_binding_data(binding_data = None, ):
     if binding_data is None:
         binding_data = pd.DataFrame([])
     else:
@@ -29,22 +71,7 @@ def collect_binding_data(binding_data = None):
                 else:
                     print("Please enter a valid filepath. ")
         
-        if binding_file.endswith(".xlsx") or binding_file.endswith(".csv") or binding_file.endswith(".tsv"):
-            if binding_file.endswith(".xlsx"):
-                binding_new = pd.read_excel(binding_file)
-            elif binding_file.endswith(".csv"):
-                binding_new = pd.read_csv(binding_file)
-            elif binding_file.endswith(".tsv"):
-                binding_new = pd.read_table(binding_file)
-            if binding_new.columns.to_list()[0] == "aaSeqCDR3":
-                second_prompt = False
-                pass
-            else:
-                second_prompt = True
-                print("Please chechk if your file follows the following requirements:\n1. The first column must contain the CDR3 sequences and its column name has to be aaSeqCDR3.\n2. Check that you separate your data by comma or tab.\n3. Your file needs to end with .xlsx, .csv or .tsv")
-        else:
-            print("Please enter a valid filepath to a csv or xlsx file")
-            second_prompt = True
+        binding_new, second_prompt = open_file_binding(binding_file)
 
         if not second_prompt:
             binding_data = pd.concat([binding_data, binding_new])
@@ -53,4 +80,5 @@ def collect_binding_data(binding_data = None):
                 break
             print("The first five rows of your binding data look like this:")
             print(binding_data.head(5))
+        
     return binding_data

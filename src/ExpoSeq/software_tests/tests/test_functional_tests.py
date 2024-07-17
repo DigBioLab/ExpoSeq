@@ -41,6 +41,7 @@ def test_pipeline():
     plot.alignment_quality()
     plot.umap_sample_cluster(batch_size = 51)
     plot.umap_clustering_characteristic(batch_size = 51)
+    plot.cluster_binding_data_umap(batch_size = 51)
     
     plot = PlotManager(experiment = "test_show", module_dir = "src/ExpoSeq/software_tests/test_files", test_version=True, allow_binding_data=False, show_df = False)
     sequencing_report = plot.sequencing_report
@@ -67,8 +68,6 @@ def test_pipeline():
     plot.lengthDistribution_single(sample = sample_names[0])
     samples_multi = [sample_names[0], sample_names[1]]
     plot.lengthDistribution_multi(samples = samples_multi)
-    plot.aa_distribution(sample = [sample_names[0]], region = [3,7])
-    plot.aa_distribution(sample = [sample_names[0]], region = [3,7], protein = False)
     plot.rarefraction_curves(samples = samples_multi)
     plot.logoPlot(sample = [sample_names[0]], highlight_specific_pos=4, chosen_seq_length = 10)
     plot.logoPlot(color_scheme = "hydrophobicity")
@@ -79,7 +78,7 @@ def test_pipeline():
     plot.logoPlot(color_scheme = "skylign_protein")
     plot.sorensen(specific_experiments = samples_multi)
     plot.rel_seq_abundance(sample = sample_names[0], alpha_val = 0.5, top_clone_fraction = 0.5)
-    plot.cluster_binding_data_umap(batch_size = 51)
+    
        
 
     

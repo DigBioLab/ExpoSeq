@@ -6,6 +6,9 @@ from textwrap import wrap
 import pandas as pd
 import warnings
 from iglabel import IMGT
+from scipy import stats
+from .colors_logoplot import logo_colors
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     @staticmethod
@@ -23,12 +26,16 @@ class PrepareData:
 
         
     @staticmethod
-    def calculate_entropy(probs):
-        """Calculate Shannon entropy."""
-        return -np.sum(
-            [p * np.log2(p) if p > 0 else 0 for p in probs]
-        )  # https://biology.stackexchange.com/questions/64368/how-to-determine-the-height-bits-in-a-sequence-logo
+    def calculate_entropy(counts):
+        seqlen, alphalen = counts.shape
+        return np.asarray([np.log(alphalen) - stats.entropy(x)
+                        for x in counts])
 
+    @staticmethod
+    def calculate_bits(counts, entropy):
+        total_heights = entropy * (1 / np.log(2))
+        return total_heights[:, np.newaxis] * counts
+    
     @staticmethod
     def get_labels(region_string:str, chosen_seq_length:int):
         """Creates the IMGT labels for the chosen sequence length
@@ -64,7 +71,7 @@ class PrepareData:
             ][region_string]
         else:
             warnings.warn(
-                "You will no have all sequence length included but the problem of that is that you assume that sequences with different lengths have the same properties on relative amino acid positions, which is not necessarily true."
+                "You will now have all sequence length included but the problem of that is that you assume that sequences with different lengths have the same properties on relative amino acid positions, which is not necessarily true."
             )
             sequences = local_report[region_string]
             chosen_seq_length = int(sequences.str.len().max())
@@ -80,25 +87,26 @@ class PrepareData:
                     compDict[aminoacid][aa_position] += 1
         if method == "bits":
             # Calculate frequencies
-            frequencies = {
-                aa: [count / length_filtered_seqs for count in compDict[aa]]
-                for aa in aminoacids
-            }
+            aa_distribution = pd.DataFrame.from_dict(compDict)
+            aa_distribution = aa_distribution.divide(
+                aa_distribution.sum(axis=1), axis=0
+            )
+            compDict = aa_distribution.to_dict(orient="list")
+            max_entropy = np.log2(20)  # Maximum entropy when all amino acids are equally probable
 
-            # Calculate Shannon entropy for each position
-            entropies = [
-                self.calculate_entropy([frequencies[aa][i] for aa in aminoacids])
-                for i in range(chosen_seq_length)
-            ]
+            def calculate_entropy(frequencies):
+                return -sum(p * np.log2(p) if p > 0 else 0 for p in frequencies)
 
-            # Calculate bits for sequence logo for each amino acid
-            bits_dict = {
-                aa: [
-                    2 - entropies[i] if frequencies[aa][i] > 0 else 0
-                    for i in range(chosen_seq_length)
-                ]
-                for aa in aminoacids
-            }
+            bits_dict = {aa: [] for aa in compDict.keys()}
+            sequence_length = len(next(iter(compDict.values())))  # Get the sequence length from any amino acid entry
+
+            for i in range(sequence_length):
+                position_frequencies = [compDict[aa][i] for aa in compDict]
+                position_entropy = calculate_entropy(position_frequencies)
+                relative_entropy = max_entropy - position_entropy
+                for aa in compDict:
+                    bits_dict[aa].append(compDict[aa][i] * relative_entropy)
+
             aa_distribution = pd.DataFrame.from_dict(bits_dict)
         else:
             aa_distribution = pd.DataFrame.from_dict(compDict)
@@ -107,7 +115,21 @@ class PrepareData:
             )
             aa_distribution.astype("float16")
         return aa_distribution
+    
+    @staticmethod
+    def assign_color_to_table(aa_distribution, chosen_scheme):
+        """Returns a list of colors for the amino acids in the aa_distribution tbale based on the chosen color scheme
 
+        Args:
+            aa_distribution (_type_): aa_distribution matrix (seq_length x 20)
+            chosen_scheme (_type_): skylign_protein, dmslogo_charge, dmslogo_funcgroup, hydrophobicity, chemistry, charge
+
+        Returns:
+            _type_: Returns a list of colors for the amino acids 
+        """
+        color_scheme = logo_colors[chosen_scheme]
+        color_list = [color_scheme[aa] for aa in aa_distribution.columns if aa in ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"]]
+        return color_list
 
 class LogoPlot:
     def __init__(
@@ -127,6 +149,7 @@ class LogoPlot:
         self.avail_regions = avail_regions
         self.region_string = region_string
         self.ax = ax
+        self.method = method
         self.chosen_seq_length = self.find_seq_length(
             sequencing_report, sample, chosen_seq_length, region_string
         )
@@ -187,6 +210,7 @@ class LogoPlot:
             color_scheme=color_scheme,
             show_spines=show_spines,
             ax=self.ax,
+            
         )
         self.logo_plot.style_xticks(anchor=1, spacing=1, rotation=0)
 
@@ -194,20 +218,23 @@ class LogoPlot:
     def add_style(self, highlight_specific_pos, sample):
         if "fontsize" in self.font_settings.keys():
             original_fontsize = self.font_settings["fontsize"]
-            self.ax.set_ylabel("Frequency", **self.font_settings)
-            self.ax.set_xlabel("Position on sequence", **self.font_settings)
-            self.font_settings["fontsize"] = 22
+            if self.method == "bits":
+                label = "Information content"
+            else:
+                label = "Frequency"
+            self.ax.set_ylabel(label, **font_settings_normal)
+            self.ax.set_xlabel("Position on sequence", **font_settings_normal)
             title = "\n".join(
                 wrap(
-                    "Logo Plot of "
+                    "Logo plot of "
                     + " ".join(sample)
-                    + " with sequence length "
+                    + " for sequences with length "
                     + str(self.chosen_seq_length),
                     width=40,
                 )
             )
-            plt.title(title, **self.font_settings)
-            self.font_settings["fontsize"] = original_fontsize
+            plt.title(title, **font_settings_title)
+            font_settings_title["fontsize"] = original_fontsize
             labels_true = list(range(0, self.chosen_seq_length))
             if self.region_string != "targetSequences":
                 region = [self.region_string.replace("aaSeq", "")]
@@ -263,7 +290,6 @@ def plot_logo_multi(
             color_scheme="skylign_protein",
             show_spines=False,
             ax=ax,
-            allow_nan=True,
         )
         # logo_plot.set_xticks(range(aa_distribution.shape[0]))
         logo_plot.style_xticks(
@@ -281,6 +307,8 @@ def plot_logo_multi(
     original_fontsize = font_settings["fontsize"]
     font_settings["fontsize"] = 22
     fig.suptitle(
-        "Logo Plots for sequence Length " + str(chosen_seq_length), **font_settings
+        "Logo plot for sequence Length " + str(chosen_seq_length), **font_settings
     )
     font_settings["fontsize"] = original_fontsize
+
+

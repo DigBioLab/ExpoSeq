@@ -25,4 +25,4 @@ if __name__ == "__main__":
     else:
         raise ValueError("Matrix type not recognized")
 
-    matrix.to_csv(parser.save_csv)
+    matrix.to_csv(parser.save_csv, index = False)

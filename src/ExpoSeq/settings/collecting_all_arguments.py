@@ -24,10 +24,6 @@ class TestArgs:
         ), "Could not read sequencing report. Please verify that your input file is a csv file."
         return report
 
-    def check_tsv_dir(self):
-        assert (
-            os.path.isdir(self.args.tsv_dir) == True
-        ), "Path to directory with tsv files does not exist"
 
     def check_region(self):
         assert self.args.region in [
@@ -97,25 +93,6 @@ class TestArgs:
         assert (
             self.args.iterations_tsne > 251
         ), "Please enter more than 251 for the number of the iterations in tsne"
-
-    def check_model_type(self):
-        assert self.args.model_type in [
-            "facebook/esm2_t6_8M_UR50D",
-            "Rostlab/ProstT5_fp16",
-            "Rostlab/prot_t5_xl_uniref50",
-            "Rostlab/prot_t5_base_mt_uniref50",
-            "Rostlab/prot_bert_bfd_membrane",
-            "Rostlab/prot_t5_xxl_uniref50",
-            "Rostlab/ProstT5",
-            "Rostlab/prot_t5_xl_half_uniref50-enc",
-            "Rostlab/prot_bert_bfd_ss3",
-            "Rostlab/prot_bert_bfd_localization",
-            "Rostlab/prot_t5_xl_bfd",
-            "Rostlab/prot_bert",
-            "Rostlab/prot_xlnet",
-            "Rostlab/prot_bert_bfd",
-            "Rostlab/prot_t5_xxl_bfd",
-        ], "please enter a valid model"
 
     def check_batch_size(self):
         assert type(self.args.batch_size) == int
@@ -233,7 +210,9 @@ class TestArgs:
     def check_chosen_seq_length(self):
         assert type(self.args.chosen_seq_length) == int, "Please enter an integer value"
         assert self.args.chosen_seq_length >= 1, "Please enter a value larger than 1"
-        
+
+            
+    
     def check_method_logo(self):
         assert self.args.method_logo in ['bits', '', "proportional"], "Please enter a valid method for the logo plot"
 
@@ -264,6 +243,9 @@ class TestArgs:
     def check_limit_seq(self):
         assert self.args.limit_seq > 0, "Please enter a value larger than 0"
         assert type(self.args.limit_seq) == int, "Please enter an integer value"
+        
+    def check_color_scheme_logo(self):
+        assert self.args.color_scheme_logo in ['chemistry', 'dmslogo_charge', 'dmslogo_funcgroup', 'skylign_protein', 'hydrophobicity', 'charge'], "Please enter a valid color scheme"
         
 class ExpoSeqArgs:
     def __init__(self, **kwargs) -> None:
@@ -366,7 +348,7 @@ class ExpoSeqArgs:
         self.chosen_tests.append("check_batch_size")
 
     def add_model_type(
-        self, flag="--model_type", default_value="Rostlab/prot_t5_xl_half_uniref50-enc"
+        self, flag="--model_type", default_value="facebook/esm2_t6_8M_UR50D"
     ):
         self.parser.add_argument(
             flag,
@@ -374,7 +356,6 @@ class ExpoSeqArgs:
             type=str,
             default=default_value,
         )
-        self.chosen_tests.append("check_model_type")
 
     def add_strands(self, flag="--show_strands", default_value=True):
         self.parser.add_argument(
@@ -391,7 +372,6 @@ class ExpoSeqArgs:
             type=str,
             required=True,
         )
-        self.chosen_tests.append("check_tsv_dir")
 
     def add_length_threshold(self, flag="--length_threshold", default_value=5):
         self.parser.add_argument(
@@ -529,7 +509,7 @@ class ExpoSeqArgs:
         )
         self.chosen_tests.append("check_n_jobs")
         
-    def add_chosen_seq_length(self, flag="--chosen_seq_length", default_value=6):
+    def add_chosen_seq_length(self, flag="--chosen_seq_length", default_value=12):
         self.parser.add_argument(
             flag,
             help="The sequence length you want to analyse. If you do not insert a value the most frequent sequence length will be chosen.",
@@ -601,6 +581,22 @@ class ExpoSeqArgs:
             default=default_value,
         )
         self.chosen_tests.append("check_fraction")
+        
+    def add_color_scheme_logo(self, flag="--color_scheme_logo", default_value="chemistry"):
+        self.parser.add_argument(
+            flag,
+            help="The color scheme you want to use for the logo plot.",
+            type=str,
+            default=default_value,
+        )
+        
+    def add_no_sequences_to_viz(self, flag = "--no_sequences_to_viz", default_value=10):
+        self.parser.add_argument(
+            flag,
+            help="The number of sequences you want to visualize in the plot.",
+            type=int,
+            default=default_value,
+        )
 
 def prep_args(args):
     parser = args.parser.parse_args()

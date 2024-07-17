@@ -3,7 +3,7 @@ import random
 from collections import Counter
 from textwrap import wrap
 import pandas as pd
-
+from .global_font import font_settings_normal, font_settings_title
 
 class PrepareData:
     @staticmethod
@@ -87,7 +87,7 @@ class RarefractionCurves:
         self.plot()
         self.customize_axis(font_settings)
         self.legend(legend_settings, samples)
-        self.title(font_settings)
+        self.title()
 
     @staticmethod
     def prepare_data(sequencing_report, samples, region_of_interest, fraction_column):
@@ -99,7 +99,7 @@ class RarefractionCurves:
         )
 
     def plot(self):
-        if self.ax != None:
+        if self.ax is not None:
             for i, row in self.plot_data.iterrows():
                 self.ax.plot(
                     row["x_axis"],
@@ -112,20 +112,16 @@ class RarefractionCurves:
 
     @staticmethod
     def customize_axis(font_settings):
-        if font_settings != {}:
-            plt.xlabel("Total sampled sequences", **font_settings)
-            plt.ylabel("Total Unique Sequences", **font_settings)
+        if font_settings_normal != {}:
+            plt.xlabel("Total sampled sequences", **font_settings_normal)
+            plt.ylabel("Total unique Sequences", **font_settings_normal)
 
     def legend(self, legend_settings, samples):
         if legend_settings != {}:
             plt.legend(samples, title="Sample Names", **legend_settings)
 
     @staticmethod
-    def title(font_settings):
-        if font_settings != {}:
-            original_fontsize = font_settings["fontsize"]
-            font_settings["fontsize"] = 22
-
+    def title():
+        if font_settings_normal != {}:
             title = "\n".join(wrap("Sequencing depth of the given samples", 40))
-            plt.title(title, pad=12, **font_settings)
-            font_settings["fontsize"] = original_fontsize
+            plt.title(title, pad=12, **font_settings_title)

@@ -6,7 +6,7 @@ import warnings
 import numpy as np
 import os
 from .contents.simple_protein_property import GetProteinProperty
-
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     def __init__(self):
@@ -27,26 +27,7 @@ class PrepareData:
             batch_size != 0
         ), "batch_size value must not be 0"  # indirectly tests that perplexity and pca components must not be 0 as well
         # more models will follow
-        models_all = [
-            "Rostlab/ProstT5_fp16",
-            "Rostlab/prot_t5_xl_uniref50",
-            "Rostlab/prot_t5_base_mt_uniref50",
-            "Rostlab/prot_bert_bfd_membrane",
-            "Rostlab/prot_t5_xxl_uniref50",
-            "Rostlab/ProstT5",
-            "Rostlab/prot_t5_xl_half_uniref50-enc",
-            "Rostlab/prot_bert_bfd_ss3",
-            "Rostlab/prot_bert_bfd_localization",
-            "Rostlab/prot_electra_generator_bfd",
-            "Rostlab/prot_t5_xl_bfd",
-            "Rostlab/prot_bert",
-            "Rostlab/prot_xlnet",
-            "Rostlab/prot_bert_bfd",
-            "Rostlab/prot_t5_xxl_bfd",
-        ]
-        assert (
-            model in models_all
-        ), f"Please enter a valid model name which are\n{models_all}. You can find the models at: https://huggingface.co/Rostlab"
+
         assert (
             iterations_tsne > 250
         ), "The number of iterations must be larger than 250 according to sklearn"
@@ -341,7 +322,8 @@ class PrepareData:
 
         if res == False:
             Transformer = TransformerBased(choice=model_choice)
-            sequences_list = Transformer.embedding_per_seq(sequences)
+            print(sequences)
+            sequences_list = Transformer.embedding_parallel(sequences)
             self.save_current_embedding(
                 X_path,
                 sequences_list,
@@ -352,6 +334,13 @@ class PrepareData:
                 binding_data,
                 iterations_tsne
             )
+        if len(sequences_list) < pca_components:
+            pca_components = int(len(sequences_list)/2)
+            if pca_components <2:
+                pca_components = 2
+        else:
+            pass
+            
         X = TransformerBased.do_pca(sequences_list, pca_components)
         tsne_results = TransformerBased.do_tsne(X, perplexity, iterations_tsne)
   #      get_clusters = TransformerBased.cluster_with_hdbscan( # not recommended for tsne
@@ -440,18 +429,18 @@ class PlotEmbedding:
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"t-SNE embedding for {antigens}", 40))
-                    self.ax.set_title(title, pad=12, **font_settings)
+                    self.ax.set_title(title, pad=12, **font_settings_title)
             else:
                 title = "\n".join(wrap("TSNE embedding for given samples", 40))
                 sm = self.create_plot(characteristic, prefered_cmap)
                 if colorbar_settings != {} and sm != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
                 if font_settings != {}:
-                    self.ax.set_title(title, pad=12, **font_settings)
+                    self.ax.set_title(title, pad=12, **font_settings_title)
 
             if font_settings != {}:
-                self.ax.set_xlabel("t-SNE1", **font_settings)  # add font_settings
-                self.ax.set_ylabel("t-SNE2", **font_settings)
+                self.ax.set_xlabel("t-SNE1", **font_settings_normal)  # add font_settings
+                self.ax.set_ylabel("t-SNE2", **font_settings_normal)
 
             if strands == True:
                 self.add_seq_anotation(peptides)
@@ -544,8 +533,8 @@ class PlotEmbedding:
         self.fig2 = plt.figure(100)
         self.ax2 = self.fig2.gca()
         self.ax2.scatter(self.tsne_results.tsne1, self.tsne_results.tsne2, alpha=0.0)
-        self.ax2.set_xlabel("t-SNE 1", **font_settings)
-        self.ax2.set_ylabel("t-SNE 2", **font_settings)
+        self.ax2.set_xlabel("t-SNE 1", **font_settings_normal)
+        self.ax2.set_ylabel("t-SNE 2", **font_settings_normal)
         n = 0
         for j, row in self.tsne_results.iterrows():
             if row["binding"] > 1:
@@ -616,9 +605,4 @@ class PlotEmbedding:
         self.add_colorbar(colorbar_settings, "Binding", sm)
 
 
-# sequencing_report_path = r"C:\Users\nilsh\my_projects\ExpoSeq\tmp_test\test_report.csv"
-# sequencing_report = pd.read_csv(sequencing_report_path)
-# peptides, selected_rows, tsne_results = PrepareData().tidy(sequencing_report, ["GeneMind_TRABkit_DNA77_300ng_repl1_L01_R1_001", "GeneMind_TRABkit_DNA80_300ng_repl1_L01_R1_001"], region_of_interest = "aaSeqCDR3", batch_size = 100)
-# print(peptides)
-# print(selected_rows)
-# print(tsne_results)
+

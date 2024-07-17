@@ -41,10 +41,13 @@ Plot Commands
 - plot.rarefraction_curves(): 
     Shows the rarefraction curves for the given samples.
 
-- plot.logoPlot_single(): 
+- plot.logoPlot(): 
     A logo Plot showing the composition of amino acids per position.
+    
+- plot.cf_over_length():
+    Shows the distribution of the clone fraction of the different lengths of the region.
 
-- plot.logoPlot_multiple(): 
+- plot.logoPlot_multi(): 
     A logo Plot showing the composition of amino acids per position for multiple samples.
 
 - plot.lengthDistribution_single(): 
@@ -52,6 +55,9 @@ Plot Commands
 
 - plot.lengthDistribution_multi(): 
     Shows the length distribution of the given samples.
+    
+- plit.length_distribution_all():
+    Shows the length distribution of all samples in one single plot as boxplot or violinplot.
 
 - plot.rel_seq_abundance(): 
     Shows the clone fractions of a given sample in a tree map plot
@@ -59,12 +65,18 @@ Plot Commands
 - plot.ls_distance_binding():
     Advanced and new version of clustser_one_AG. You can include multiple samples and antigens here. 
     You will cluster sequences based on Levenshtein distance and combine them with your binding data.
+    
+- plot.umap_sample_cluster():
+    Cluster samlpes based on the embedding of the sequences and uses UMAP for dimension reduction. This functionality is mainly used for clustering samples and color them. 
+    
+- plot.cluster_binding_data_umap():
+    Clusters sequences with UMAP for dimension reduction. It combines the sequences from NGS with metadata like binding data 
 
 - plot.cluster_one_AG(): 
-    Clusters sequences based on Levenshtein distance and shows binding data against a specific antigen.
+    Clusters sequences based on Levenshtein distance and shows binding data against a specific antigen. This functionality is deprecated. Use ls_distance_binding instead.
 
 - plot.tsne_cluster_AG(): 
-    Embeds sequences in a vector space, reduces dimensions, and clusters them. Also plots binding data.
+    Embeds sequences in a vector space, reduces dimensions, and clusters them. Also plots binding data.This functionality is deprecated. Use cluster_binding_data instead.
 
 - plot.embedding_tsne(): 
     Transforms sequences into a vector space and uses PCA and t-SNE for dimensionality reduction.
@@ -96,8 +108,7 @@ Plot Commands
 - plot.sample_diversity()
     Shows the diversity of your samples based on the Inverse Simpson Index or the Shannon Index.
     
-- plot.length_distribution_all()
-    Shows you the length distribution for all of your samples separately in one plot as Violin or Boxplot.
+
 -----------------------
 Non-Plot Commands
 -----------------------

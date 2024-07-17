@@ -1,6 +1,6 @@
 from textwrap import wrap
 import pandas as pd
-
+from .global_font import font_settings_title, font_settings_normal
 
 class StackedAADistribution:
     def __init__(
@@ -78,21 +78,20 @@ class StackedAADistribution:
     def plot(self, aa_distribution, ax, sample, region, protein, font_settings):
         color_list = self.get_colors(aa_distribution)
         aa_distribution.plot(kind="bar", stacked=True, color=color_list, ax=ax)
-        ax.set_xlabel("Position on amino acid sequence", **font_settings)
+        ax.set_xlabel("Position on amino acid sequence", **font_settings_normal)
         if protein == True:
-            ax.set_ylabel("Relatvie Proportion of Amino Acid", **font_settings)
+            ax.set_ylabel("Relatvie Proportion of Amino Acid", **font_settings_normal)
         else:
-            ax.set_ylabel("Relatvie Proportion of Nucleotide", **font_settings)
+            ax.set_ylabel("Relatvie Proportion of Nucleotide", **font_settings_normal)
 
         #    ax.set_xticks(rotation = 360)
         ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
         original_fontsize = font_settings["fontsize"]
-        font_settings["fontsize"] = 22
         if protein == True:
             title = "\n".join(wrap("Stacked Amino Acid Distribution of " + sample, 40))
-            ax.set_title(title, pad=12, **font_settings)
+            ax.set_title(title, pad=12, **font_settings_title)
         else:
             title = "\n".join(wrap("Stacked Nucleotide Distribution of " + sample, 40))
-            ax.set_title(title, pad=12, **font_settings)
+            ax.set_title(title, pad=12, **font_settings_title)
         ax.set_xticklabels([*range(region[0], region[1] + 1)], rotation=0, ha="center")
         font_settings["fontsize"] = original_fontsize

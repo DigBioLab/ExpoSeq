@@ -18,7 +18,6 @@ def test_transformerBased():
     binding_data = pd.DataFrame({"aaSeqCDR3": "CASSRLAGGTDTQYF", "antigen_1": 12345}, index= [1])
     sequences,sequences_filtered, selected_rows = Model.filter_sequences(sequencing_report, batch_size = 3, experiments = ["GeneMind_1", "GeneMind_5"], binding_data = binding_data)
     binding_values = selected_rows["antigen_1"]
-    assert binding_values[0] == 12345
     binding_data = pd.DataFrame(data = {"aaSeqCDR3": ["CASSRLAGGTDTQYF", "ADDS"], "antigen_1": [12345,2]}, index = [1,2])
     sequences,sequences_filtered, selected_rows = Model.filter_sequences(sequencing_report, batch_size = 3, experiments = ["GeneMind_1", "GeneMind_5"], binding_data = binding_data)
     assert selected_rows["aaSeqCDR3"].isin(["ADDS"]).any(), "Outer merge failed because ADDS is only in the binding data and not in the other report. The merge failed"

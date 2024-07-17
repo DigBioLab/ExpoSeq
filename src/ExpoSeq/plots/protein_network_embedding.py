@@ -6,7 +6,7 @@ from .tidy_protbert_embedding import TransformerBased
 import matplotlib.pyplot as plt
 import community.community_louvain as community
 from sklearn.cluster import KMeans
-
+from .global_font import font_settings_title
 
 class PrepareData:
     @staticmethod
@@ -90,7 +90,7 @@ class Network_Embedding:
             nodesize = 500
         self.generate_plot(nodesize=nodesize, cmap=cmap)
         title = "\n".join(wrap("Network embedding for given samples", 40))
-        self.ax.set_title(title, pad=12, **font_settings)
+        self.ax.set_title(title, pad=12, **font_settings_title)
 
     @staticmethod
     def k_means_clustering(distance_matrix):

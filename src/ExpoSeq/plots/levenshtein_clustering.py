@@ -4,7 +4,7 @@ import math
 import pandas as pd
 import community.community_louvain as community
 import editdistance
-
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     @staticmethod
@@ -45,6 +45,7 @@ class PrepareData:
         if binding_data is not None:
             merged_columns = [region_of_interest] + antigens
             binding_data = binding_data[merged_columns]
+            binding_data = binding_data.rename(columns={binding_data.columns[0]: region_of_interest})
             mix = sample_report.merge(binding_data, on=region_of_interest, how="outer")
             sample_report = mix.fillna(0)
 
@@ -345,12 +346,11 @@ class LevenshteinClustering:
         return partition
 
     def add_header(self, font_settings, samples):
-        original_fontsize = font_settings["fontsize"]
-        font_settings["fontsize"] = 22
+        original_fontsize = font_settings_title["fontsize"]
         self.ax.set_title(
-            f"Connected components of {', '.join(samples)}", **font_settings
+            f"Connected components of {', '.join(samples)}", **font_settings_title
         )
-        font_settings["fontsize"] = original_fontsize
+        font_settings_title["fontsize"] = original_fontsize
         self.ax.set_axis_off()
 
     @staticmethod

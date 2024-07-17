@@ -26,4 +26,4 @@ if __name__ == '__main__':
                              )
     cfs = top_95_percent["cloneFraction"].values.tolist()
     cf_id = list(range(1, len(cfs) + 1))
-    pd.DataFrame([cf_id, cfs]).T.to_csv(parser.save_csv)
+    pd.DataFrame([cf_id, cfs]).T.to_csv(parser.save_csv, index= False)

@@ -6,10 +6,7 @@ import warnings
 from .contents.simple_protein_property import GetProteinProperty
 import numpy as np
 import os
-import matplotlib.colors as mcolors
-from matplotlib.legend_handler import HandlerPathCollection
-
-
+from .global_font import font_settings_normal, font_settings_title
 
 
 class PrepareData:
@@ -30,27 +27,7 @@ class PrepareData:
             batch_size != 0
         ), "batch_size value must not be 0"  # indirectly tests that perplexity and pca components must not be 0 as well
         # more models will follow
-        models_all = [
-            "Rostlab/ProstT5_fp16",
-            "Rostlab/prot_t5_xl_uniref50",
-            "Rostlab/prot_t5_base_mt_uniref50",
-            "Rostlab/prot_bert_bfd_membrane",
-            "Rostlab/prot_t5_xxl_uniref50",
-            "Rostlab/ProstT5",
-            "Rostlab/prot_t5_xl_half_uniref50-enc",
-            "Rostlab/prot_bert_bfd_ss3",
-            "Rostlab/prot_bert_bfd_localization",
-            "Rostlab/prot_electra_generator_bfd",
-            "Rostlab/prot_t5_xl_bfd",
-            "Rostlab/prot_bert",
-            "Rostlab/prot_xlnet",
-            "Rostlab/prot_bert_bfd",
-            "Rostlab/prot_t5_xxl_bfd",
-            "facebook/esm2_t6_8M_UR50D"
-        ]
-        assert (
-            model in models_all
-        ), f"Please enter a valid model name which are\n{models_all}. You can find the models at: https://huggingface.co/Rostlab"
+
         assert n_neighbors > 1, "The number of neighbors must be larger than 1"
         assert (
             n_neighbors < batch_size
@@ -62,7 +39,7 @@ class PrepareData:
 
         if characteristic != None and characteristic != "binding":
             assert (
-                binding_data == None
+                binding_data is None
             ), "You cannot combine a binding data analysis and a sequence attribute analysis"
 
     @staticmethod
@@ -78,6 +55,7 @@ class PrepareData:
         add_clone_size,
         metric,
         min_dist,
+        
     ):
         assert (
             type(samples) == list
@@ -204,7 +182,7 @@ class PrepareData:
             clones = selected_rows["cloneFraction"].to_list()
             umap_results["size"] =  np.array(clones) * add_clone_size # max fraction per experiment will have different dot sizes for different experiments. This must be kept like this otherwise the results are irritating.
         else:
-            add_clone_size = 30
+            add_clone_size = 70
             umap_results["size"] = len(selected_rows["cloneFraction"].to_list()) * [add_clone_size]
                 
         # self.umap_results.reset_index(inplace = True, drop = True)
@@ -213,7 +191,10 @@ class PrepareData:
     @staticmethod
     def filter_binding_data(binding_data, region_of_interest, antigens):
         if binding_data is not None:
-            merged_columns = [region_of_interest] + antigens
+            if binding_data.columns[0] == region_of_interest:
+                cols = binding_data.columns.tolist()
+                binding_data.rename(columns = {cols[0]: "Sequences"}, inplace = True)
+            merged_columns = ["Sequences"] + antigens
             binding_data = binding_data[merged_columns]
         return binding_data
 
@@ -221,15 +202,19 @@ class PrepareData:
     def label_sequence_characteristic(
         characteristic, sequences:list, selected_rows:pd.DataFrame, antigens
     ):
-        if characteristic != None or characteristic != "color_samples":
-            if antigens == None:
-                assert len(sequences) == selected_rows.shape[0], f"Length is {len(sequences)} and should be {selected_rows.shape[0]}"
-                Property = GetProteinProperty(sequences)
-                Property.calc_attribute(attribute=characteristic)
-                property_result = list(Property.sequence_property_interest.values())
+        if characteristic != None:
+            if characteristic == "color_samples":
+                property_result = None
             else:
-                kds = selected_rows[antigens].max(axis=1)
-                property_result = kds.fillna(0)
+                if antigens == None:
+                    assert len(sequences) == selected_rows.shape[0], f"Length is {len(sequences)} and should be {selected_rows.shape[0]}"
+                    Property = GetProteinProperty(sequences)
+                    Property.calc_attribute(attribute=characteristic)
+                    property_result = list(Property.sequence_property_interest.values())
+                else:
+                    kds = selected_rows[antigens].max(axis=1)
+                    property_result = kds.fillna(0)
+            
         else:
             property_result = None
             pass
@@ -354,7 +339,8 @@ class PrepareData:
         X_path="temp/current_array.npz",
         number_jobs=-1,
         number_components = 2,
-        n_epochs = 1000
+        n_epochs = 1000,
+        custom_model = False
     ):
         """creates umap_results as class object which is a table containing all necessary data for the final plot
 
@@ -381,14 +367,8 @@ class PrepareData:
             _type_: _description_
         """
         batch_size_adapted = batch_size * len(list_experiments)
-        for sample in list_experiments:
-            assert sample in list(
-                sequencing_report[sample_column_name].unique()
-            ), f"{sample} does not exist"
-        if binding_data is not None:
-            assert (
-                region_of_interest in binding_data.columns.to_list()
-            ), f"You must have sequences for {region_of_interest} in your binding data"
+        
+
 
         self.logical_check(
             batch_size,
@@ -443,8 +423,8 @@ class PrepareData:
             res = False
 
         if res == False:
-            Transformer = TransformerBased(choice=model_choice)
-            sequences_list = Transformer.embedding_per_seq(sequences)
+            Transformer = TransformerBased(choice=model_choice, custom_model = custom_model)
+            sequences_list = Transformer.embedding_parallel(sequences)
             self.save_current_embedding(
                 X_path,
                 sequences_list,
@@ -458,12 +438,9 @@ class PrepareData:
             )
         assert len(sequences_list) > pca_components, f"Length is {len(sequences_list)} and should bigger than {pca_components}"
         X = TransformerBased.do_pca(sequences_list, pca_components)
-        assert X.shape[0] == len(sequences), f"Length is {X.shape[0]} and should be {len(sequences)}"
         property_result = self.label_sequence_characteristic(
             characteristic, sequences, selected_rows, antigens
         )
-        if characteristic != None: # 
-            assert len(property_result) == selected_rows.shape[0], f"Length is {len(property_result)} and should be {selected_rows.shape[0]}"
         umap_results, reduced_dim = TransformerBased.do_umap(
             X,
             n_neighbors,
@@ -494,7 +471,8 @@ class PrepareData:
             ), f"After processing your data for your parameters no sequences are left for {sample}"
             assert umap_results[umap_results["experiments_string"] == sample].shape[0]<= batch_size, f"Number of sequences for {sample} is {umap_results[umap_results['experiments_string'] == sample].shape[0]} and should be smaller than {batch_size}"
         assert type(umap_results["experiments_string"].tolist()) == list
-        
+        #selected_rows = shuffle(selected_rows) # dropping then more balanced between samples
+      #  selected_rows = selected_rows.drop_duplicates(subset=[region_of_interest], keep='first')
         self.umap_results = umap_results
         return peptides, selected_rows, kds, ids
 
@@ -531,7 +509,8 @@ class PlotEmbedding:
         extra_figure=False,
         prefered_cmap="inferno",
         number_jobs=-1,
-        iterations_umap = 1000
+        iterations_umap = 1000,
+        custom_model = False
     ):
         self.ax = ax
         self.binding_data = binding_data
@@ -555,7 +534,8 @@ class PlotEmbedding:
             number_jobs=number_jobs,
             eps_dbscan = eps_dbscan,
             min_pts_dbscan = min_pts_dbscan,
-            n_epochs = iterations_umap
+            n_epochs = iterations_umap,
+            custom_model = custom_model
         )
         self.umap_results = self.data_prep.umap_results
 
@@ -567,18 +547,18 @@ class PlotEmbedding:
                 if extra_figure == True and font_settings != {}:
                     self.create_second_bind_plot(font_settings)
                     title = "\n".join(wrap(f"UMAP embedding for {antigens}", 40))
-                    self.ax.set_title(title, pad=12, **font_settings)
+                    self.ax.set_title(title, pad=12, **font_settings_title)
             else:
                 sm = self.create_plot(characteristic, prefered_cmap)
                 title = "\n".join(wrap("UMAP embedding for given samples", 40))
-                if font_settings != {}:
-                    self.ax.set_title(title, pad=12, **font_settings)
+                if font_settings_title != {}:
+                    self.ax.set_title(title, pad=12, **font_settings_title)
                 if colorbar_settings != {} and sm != None:
                     self.add_colorbar(colorbar_settings, characteristic, sm)
 
             if font_settings != {}:
-                self.ax.set_xlabel("UMAP_1", **font_settings)  # add font_settings
-                self.ax.set_ylabel("UMAP_2", **font_settings)
+                self.ax.set_xlabel("UMAP_1", **font_settings_normal)  # add font_settings
+                self.ax.set_ylabel("UMAP_2", **font_settings_normal)
 
             if strands == True:
                 self.add_seq_anotation(peptides)
@@ -607,7 +587,10 @@ class PlotEmbedding:
 
             norm = plt.Normalize(vmin=global_min_color, vmax=global_max_color)
         elif characteristic == "color_samples":
-            color_dict = dict(zip(unique_experiments, mcolors.TABLEAU_COLORS))
+            num_unique_experiments = len(unique_experiments)
+            set3_cmap = plt.cm.get_cmap(prefered_cmap, num_unique_experiments)  # Get a colormap object
+            colors_from_cmap = [set3_cmap(i) for i in range(num_unique_experiments)]
+            color_dict = dict(zip(unique_experiments, colors_from_cmap))
             self.umap_results['color'] = self.umap_results['experiments_string'].map(color_dict)
             sm = None
 
@@ -625,7 +608,7 @@ class PlotEmbedding:
                         umap_2_values,
                         s=local_results["size"],
                         c=local_results["color"],
-                        alpha=0.8,
+                        alpha=0.5,
                         cmap=prefered_cmap,
                         label = experiment,
                     )
@@ -643,7 +626,7 @@ class PlotEmbedding:
                         marker=markers[index],
                         s=local_results["size"],
                         c=local_results["color"],
-                        alpha=1,
+                        alpha=0.8,
                         norm=norm,
                         cmap=prefered_cmap,
                         label=experiment,
@@ -657,7 +640,7 @@ class PlotEmbedding:
                         c=local_results["color"],
                         s=local_results["size"],
                         alpha=0.5,
-                        cmap="tab20c",
+                        cmap=prefered_cmap,
                         label=experiment,
                     )
 
@@ -678,8 +661,9 @@ class PlotEmbedding:
         from matplotlib.font_manager import FontProperties
         legend_settings["prop"] = FontProperties(size=10)
         lgnd = self.ax.legend( **legend_settings)
-        for legend_handle in lgnd.legendHandles:
-            legend_handle._sizes = [5]
+        for legend_handle in lgnd.legend_handles:
+            legend_handle._sizes = [20]
+    
 
 
     def add_seq_anotation(self, peptides):
@@ -698,8 +682,8 @@ class PlotEmbedding:
         self.ax2.scatter(
             self.umap_results["UMAP_1"], self.umap_results["UMAP_2"], alpha=0.0
         )
-        self.ax2.set_xlabel("UMAP_1", **font_settings)
-        self.ax2.set_ylabel("UMAP_2", **font_settings)
+        self.ax2.set_xlabel("UMAP_1", **font_settings_normal)
+        self.ax2.set_ylabel("UMAP_2", **font_settings_normal)
         n = 0
         for j, row in self.umap_results.iterrows():
             if row["binding"] > 1:
@@ -736,7 +720,7 @@ class PlotEmbedding:
     ):
         markers = ["o", "+", "x", "s", "p", "x", "D"]
         self.umap_results["color"] = self.umap_results["binding"]
-        sm, norm = self.get_sm(self.umap_results["binding"], prefered_cmap)
+        sm, norm = self.get_sm(self.umap_results["color"], prefered_cmap)
 
         unique_experiments = self.umap_results["experiments_string"].unique()
 
@@ -750,10 +734,10 @@ class PlotEmbedding:
             self.ax.scatter(
                 umap_1_values,
                 umap_2_values,
-                c=local_results["binding"],
+                c=local_results["color"],
                 marker=markers[index],
                 s=local_results["size"],
-                alpha=0.9,
+                alpha=0.75,
                 cmap=prefered_cmap,
                 label=experiment,
             )
@@ -767,13 +751,7 @@ class PlotEmbedding:
             else:
                 pass
 
-        self.add_colorbar(colorbar_settings, "Binding", sm)
+        self.add_colorbar(colorbar_settings, "Affinity", sm)
 
 
-#PrepData = PrepareData()
-#seq_report = r"C:\Users\nilsh\my_projects\ExpoSeq\my_experiments\max_new\sequencing_report.csv"
-#sequencing_report = pd.read_csv(seq_report)
-#sequencing_report["cloneFraction"] = sequencing_report["readFraction"] 
-#list_experiments = sequencing_report["Experiment"].unique().tolist()
-#peptides, selected_rows, kds, ids = PrepData.tidy(sequencing_report, list_experiments, "aaSeqCDR3", batch_size = 70,  number_components = 2, characteristic = "color_samples")
-#PrepData.umap_results.to_csv("umap3d.csv")
+

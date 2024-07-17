@@ -94,3 +94,10 @@ class PrepareData:
     
 
 
+#sequencing_report = pd.read_csv(r"C:\Users\nilsh\OneDrive\Desktop\results_thesis\scripts\data_preparation_and_vis\my_experiments\max_new\sequencing_report.csv")
+#samples = sequencing_report["Experiment"].unique().tolist()
+#sequencing_report = sequencing_report.groupby("Experiment").dropna(subset=["aaSeqCDR3"], inplace=True)
+#sequences = sequencing_report["aaSeqCDR3"].unique().tolist()
+#protein = True
+#region_string = "aaSeqCDR3"
+#PrepareData().cleaningPlot(samples, sequencing_report, protein, region_string)

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ExpoSeq
-Version: 4.5.0
+Version: 4.5.3
 Summary: A pacakge which provides various ways to analyze NGS data from phage display campaigns
 Home-page: https://github.com/nilshof01/ExpoSeq
 Author: Nils Hofmann
@@ -11,6 +11,7 @@ Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: PyQT6
+Requires-Dist: PyQT5
 Requires-Dist: biopython==1.80
 Requires-Dist: editdistance==0.6.2
 Requires-Dist: logomaker==0.8
@@ -34,6 +35,9 @@ Requires-Dist: transformers==4.34.1
 Requires-Dist: matplotlib-venn
 Requires-Dist: umap-learn==0.5.5
 Requires-Dist: iglabel==0.0.7
+Requires-Dist: rjieba
+Requires-Dist: protobuf
+Requires-Dist: peptides
 
 # Welcome to ExpoSeq
 

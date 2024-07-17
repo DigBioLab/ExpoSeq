@@ -29,6 +29,6 @@ if __name__ == "__main__":
     cluster_2 = linked[:, 1] # there are higher numbers for cluster id than sequences avaialbale because new clusteres are formed by mergin existing clusters during the hierarchical clustering process
     
     pd.DataFrame({"distance": distance, "cluster_id1": cluster_1, "cluster_id2": cluster_2}).to_csv(
-        parser.save_csv
+        parser.save_csv, index = False
     )
     

@@ -59,5 +59,22 @@ def test_sequencingreportclass():
     
     
     
-
-
+def test_get_longest_region():
+    report_path = os.path.join(r"src/ExpoSeq/software_tests/test_files/test_show/sequencing_report.csv")
+    divisble_by = 3
+    length_threshold = 3
+    min_read_count = 10
+    example_report = pd.read_csv(report_path)
+    Report = SequencingReport(example_report)
+    Report.get_longest_region("aaSeqtargetSequences", "nSeqtargetSequences")
+    Report.sequencing_report.to_csv("test.csv")
+    assert Report.sequencing_report["aaSeqCDR3"].equals(Report.sequencing_report["aaSeqtargetSequences"])
+    report_path = os.path.join(r"src\ExpoSeq\software_tests\test_files\my_experiments\multi_region\sequencing_report.csv")
+    example_report = pd.read_csv(report_path)
+    Report = SequencingReport(example_report)
+    Report.get_longest_region("aaSeqtargetSequences", "nSeqtargetSequences")
+    
+    assert Report.sequencing_report["aaSeqtargetSequences"].iloc[0] == "GFTFDDYAIGWFRQAPGKEREGISCISSSDGSTYYADSAKGRFTISSDNAKNMVYLQMNSLKPEDTAVYFCAADVASWSLGSRVCSAFPYDYWGQGTQVTVSS_", f"it is {Report.sequencing_report['aaSeqtargetSequences'].iloc[0]} instead"
+    
+    
+    

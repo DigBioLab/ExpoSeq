@@ -35,7 +35,7 @@ class FullSequence:
         row_indexes = col_series.index[start:end_ind].to_list()
         return row_indexes
     
-    def find_connecting_seq(self):
+    def find_connecting_seq(self) -> list:
         region_order = ["FR1", "CDR1", "FR2", "CDR2", "FR3", "CDR3", "FR4"]
         region_matrix = pd.DataFrame(0, index=region_order, columns=region_order)
         len_matrix = len(region_order)

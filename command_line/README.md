@@ -8,10 +8,17 @@ git clone https://github.com/nilshof01/ExpoSeq
 You can find all necessary scripts with:
 
 ```bash
-cd src/ExpoSeq/command_line
+cd command_line
 ```
 
 However, the following guides will be all executed from the root dir of the repository.
+
+
+The commands for the following command line scripts can be also reviewd in the test script attached to this folder. You can run the test script with:
+
+```bash
+python -m pytest
+```
 
 
 # Highest layer: Sequencing report

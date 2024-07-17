@@ -74,6 +74,6 @@ if __name__ == "__main__":
                 data.loc[index, "matching_z"] = edge_pair[0, 2]
         
     data.to_csv(
-        parser.save_csv
+        parser.save_csv, index = False
     )
     

@@ -6,7 +6,7 @@ import warnings
 from scipy.cluster.hierarchy import dendrogram, linkage
 from textwrap import wrap
 from matplotlib import pyplot as plt
-
+from .global_font import font_settings_title, font_settings_normal
 
 class PrepareData:
     @staticmethod
@@ -42,11 +42,12 @@ class PrepareData:
         report = report.drop_duplicates(subset=[region_of_interest])
         aa = report[region_of_interest]
         aa = pd.DataFrame(aa)
-        pref_columns = antigens + [region_of_interest]
+        pref_columns =[region_of_interest] + antigens 
         for i in antigens:
             assert i in binding_data.columns.tolist(), f"{i} not in your binding data"
-        assert region_of_interest in binding_data.columns.tolist()
         b_data = binding_data[pref_columns]
+        if region_of_interest != b_data.columns[0]:
+            b_data = b_data.rename(columns={b_data.columns[0]: region_of_interest})
         mix = aa.merge(b_data, how="outer", on=region_of_interest)
         mix = mix.fillna(0)
         mix = mix.reset_index()
@@ -189,8 +190,8 @@ class DendroBind:
             self.create_dendrogram(linked, aa_clustered)
             self.create_bar_plot(binding_seqs, seq_val, ascending)
         if font_settings != {}:
-            self.set_dendrogram_labels(font_settings, sample)
-            self.set_barplot_labels(font_settings)
+            self.set_dendrogram_labels(font_settings_normal, sample)
+            self.set_barplot_labels(font_settings_normal)
 
     def create_dendrogram(self, linked, aa_clustered):
         dendrogram(
@@ -207,13 +208,13 @@ class DendroBind:
         font_settings:dict,
         sample:list,
     ):
-        self.ax.set_xlabel("Levenshtein Distance", **font_settings)
-        self.ax.set_ylabel("Sequences", **font_settings)
+        self.ax.set_xlabel("Levenshtein Distance", **font_settings_normal)
+        self.ax.set_ylabel("Sequences", **font_settings_normal)
         title = "\n".join(
             wrap("Levenshtein Distance between sequences in " + " ".join(sample), 40)
         )
 
-        self.ax.set_title(title, pad=12, **font_settings)
+        self.ax.set_title(title, pad=12, **font_settings_title)
 
     @staticmethod
     def sort_binding_seqs(binding_seqs, seq_val, ascending=False):
@@ -238,5 +239,6 @@ class DendroBind:
         bars = self.ax2.barh(binding_seqs_sorted, binding_values_sorted)
 
     def set_barplot_labels(self, font_settings):
-        self.ax2.set_ylabel("Sequences with binding data", **font_settings)
-        self.ax2.set_xlabel("Binding Value", **font_settings)
+        self.ax2.set_ylabel("Sequences with binding data", **font_settings_normal)
+        self.ax2.set_xlabel("Binding Value", **font_settings_normal)
+

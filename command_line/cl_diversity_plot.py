@@ -22,4 +22,5 @@ if __name__ == '__main__':
         sequencing_report, parser.region_plots, parser.method
     )
     data_diversity = pd.DataFrame({"y_axis": values, "x_axis": unique_experiments})
-    data_diversity.to_csv(parser.save_csv)
+    data_diversity.to_csv(parser.save_csv, index = False)
+    

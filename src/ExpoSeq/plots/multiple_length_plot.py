@@ -1,7 +1,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 from textwrap import wrap
-
+from .global_font import font_settings_title, font_settings_normal
 
 class LengthPlotMultiple:
     def __init__(
@@ -53,13 +53,13 @@ class LengthPlotMultiple:
         sns.despine(top=True, right=True, bottom=True, left=True, ax=self.ax)
 
     def add_labels(self, font_settings):
-        self.ax.set_ylabel("Read Count", **font_settings)  # Y label
-        self.ax.set_xlabel("Read Length", **font_settings)  # X label
+        self.ax.set_ylabel("Read Count", **font_settings_normal)  # Y label
+        self.ax.set_xlabel("Read Length", **font_settings_normal)  # X label
 
     @staticmethod
     def title(font_settings):
         original_fontsize = font_settings["fontsize"]
-        font_settings["fontsize"] = 20
+
         title = "\n".join(wrap("Length Distribution of all samples ", 40))
-        plt.title(title, pad=12, **font_settings)
+        plt.title(title, pad=12, **font_settings_title)
         font_settings["fontsize"] = original_fontsize

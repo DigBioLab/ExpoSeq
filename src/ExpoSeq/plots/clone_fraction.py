@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import pandas as pd
 from textwrap import wrap
-
+from .global_font import font_settings_title, font_settings_normal
 
 class VisFrac:
 
@@ -41,7 +41,7 @@ class VisFrac:
             prefered_cmap=prefered_cmap,
         )
         self.no_axis()
-        self.add_title(font_settings, sample, top_clone_fraction)
+        self.add_title(font_settings_title, sample, top_clone_fraction)
 
     @staticmethod
     def get_top_fraction(report, sample, force_reducing, fraction=0.95):
@@ -85,11 +85,11 @@ class VisFrac:
     def no_axis(self):
         self.ax.set_axis_off()
 
-    def add_title(self, font_settings, sample, top_clone_fraction):
+    def add_title(self, font_settings_title, sample, top_clone_fraction):
         title = "\n".join(
             wrap("Clone fraction of " + sample + f"for top {top_clone_fraction} %", 40)
         )
-        self.ax.set_title(title, pad=12, **font_settings)
+        self.ax.set_title(title, pad=12, **font_settings_title)
 
     def make_plot(self, pad, visualize_seqs, alpha_val, prefered_cmap, **kwargs):
         if visualize_seqs == False:
