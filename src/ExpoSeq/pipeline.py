@@ -127,7 +127,6 @@ class PlotManager:
         )
         # self.Report.map_exp_names(self.unique_experiments)
         self.avail_regions = self.Report.get_fragment()
-        self.sequencing_report = self.Report.sequencing_report
 
         self.ControlFigure = MyFigure(test_version)
         self.ControlFigure.set_backend()
@@ -149,6 +148,8 @@ class PlotManager:
             
             
         self.prefered_model = "nilsho01/LittleNano"
+        self.Report._get_origin_order()
+        self.sequencing_report = self.Report.sequencing_report
 
             
     def show_dataframe(self):
@@ -1078,8 +1079,8 @@ class PlotManager:
         self.ControlFigure.plot_type = "single"
         if highlight_specific_pos != None:
             assert (
-                type(highlight_specific_pos) == int
-            ), "You have to give an integer as input for the specific position you want to highlight"
+                type(highlight_specific_pos) == list
+            ), "You have to give a list with integer as input for the specific position you want to highlight"
 
         self.ControlFigure.clear_fig()
 

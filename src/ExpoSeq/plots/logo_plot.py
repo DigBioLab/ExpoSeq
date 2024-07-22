@@ -114,6 +114,7 @@ class PrepareData:
                 aa_distribution.sum(axis=1), axis=0
             )
             aa_distribution.astype("float16")
+        aa_distribution = aa_distribution.fillna(0)
         return aa_distribution
     
     @staticmethod
@@ -236,7 +237,7 @@ class LogoPlot:
             plt.title(title, **font_settings_title)
             font_settings_title["fontsize"] = original_fontsize
             labels_true = list(range(0, self.chosen_seq_length))
-            if self.region_string != "targetSequences":
+            if self.region_string != "aaSeqtargetSequences":
                 region = [self.region_string.replace("aaSeq", "")]
                 label_dict, _ = IMGT([self.chosen_seq_length * "A"], region, save = False)
                 numbers_true = list(label_dict.values())[0]
@@ -245,7 +246,12 @@ class LogoPlot:
             assert len(numbers_true) == len(labels_true), f" you have {len(numbers_true)} labels and {len(labels_true)} and xticsk"
             plt.xticks(labels_true, numbers_true)
             if highlight_specific_pos != None:
-                self.logo_plot.highlight_position(p=5, color="gold", alpha=0.5)
+                if type(highlight_specific_pos) == list:
+                    pass
+                else:
+                    raise ValueError("input must be list for highlighting.")
+                for i in highlight_specific_pos:
+                    self.logo_plot.highlight_position(p=i, color="gold", alpha=0.5)
 
 
 def plot_logo_multi(

@@ -219,10 +219,17 @@ class SequencingReport:
         sequencing_report = sequencing_report.loc[~sequencing_report["aaSeq" + region_string].str.contains("[*]", na = False) ]
         return sequencing_report
     
+    def _get_origin_order(self):
+        """I could not find the code where the order of the sequencing report object is rearranged, so I created this function which sets the old order again, which is important for some plots.
+        """
+        order_mapping = {name: i for i, name in enumerate (self.origin_seq_report["Experiment"].unique())}
+        self.sequencing_report["order"] = self.sequencing_report["Experiment"].map(order_mapping)
+        self.sequencing_report = self.sequencing_report.sort_values("order").drop(columns = "order")
+    
     def prepare_seq_report(self, region_string, length_threshold, min_read_count, remove_gaps = True, remove_errors = True):
         self.filter_region(region_string, remove_gaps, remove_errors) # sequencing errors are removed here and sequences with gaps are indirectly removed with: divisible_by = 3
         self.trim_data(region_string, length_threshold, min_read_count,)
-        
+        self._get_origin_order()
        # self.remove_seq_errors()
 
     

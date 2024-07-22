@@ -8,10 +8,7 @@ class PrepareData:
     @staticmethod
     def cleaning_data(all_alignment_reports, sequencing_report):
 
-        unique_experiments = sequencing_report.sort_values("Experiment")[
-            "Experiment"
-        ].unique()
-        unique_experiments = list(unique_experiments)
+        unique_experiments = sequencing_report["Experiment"].unique().tolist()
         tot_sequencing_reads = all_alignment_reports["Total sequencing reads"]
         aligned_reads = (
             all_alignment_reports["Successfully aligned reads"]

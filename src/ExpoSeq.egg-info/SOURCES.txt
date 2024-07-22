@@ -111,6 +111,5 @@ src/ExpoSeq/software_tests/tests/__init__.py
 src/ExpoSeq/software_tests/tests/test_functional_tests.py
 src/ExpoSeq/subplot_figures/__init__.py
 src/ExpoSeq/subplot_figures/create_quality_subplot.py
-src/ExpoSeq/subplot_figures/create_quality_subplot_me.py
 src/ExpoSeq/subplot_figures/create_subplots.py
 src/ExpoSeq/subplot_figures/evaluate_umap.py
